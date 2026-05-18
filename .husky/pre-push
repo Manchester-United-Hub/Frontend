@@ -22,14 +22,19 @@ else
 fi
 
 echo ""
+TEST_FILES=$(find . -type f \( -name "*.test.ts" -o -name "*.test.tsx" -o -name "*.spec.ts" -o -name "*.spec.tsx" \) -not -path "*/node_modules/*" -not -path "*/.next/*")
 echo "${YELLOW}${BOLD}[2/3] Running tests...${RESET}"
 echo "${CYAN}──────────────────────────────────────────────────${RESET}"
-if pnpm test; then
-  echo "${GREEN}${BOLD}✔ Tests passed${RESET}"
+if [ -z "$TEST_FILES" ]; then
+  echo "${YELLOW}  ⚠ No test files found — skipping${RESET}"
 else
-  echo "${RED}${BOLD}✖ Tests failed — push aborted${RESET}"
-  echo ""
-  exit 1
+  if pnpm test; then
+    echo "${GREEN}${BOLD}✔ Tests passed${RESET}"
+  else
+    echo "${RED}${BOLD}✖ Tests failed — push aborted${RESET}"
+    echo ""
+    exit 1
+  fi
 fi
 
 echo ""
