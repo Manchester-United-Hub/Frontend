@@ -19,7 +19,12 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@pages/*": ["./src/b_pages/*"],
+      "@widgets/*": ["./src/c_widgets/*"],
+      "@features/*": ["./src/d_features/*"],
+      "@entities/*": ["./src/e_entities/*"],
+      "@shared/*": ["./src/f_shared/*"],
+      "@test/*": ["./test/*"]
     }
   },
   "include": [
