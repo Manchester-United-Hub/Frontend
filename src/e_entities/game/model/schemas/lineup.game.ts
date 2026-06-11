@@ -28,7 +28,7 @@ const SubstituteDTOSchema = PlayerDTOSchema.extend({
 
 const LineupDTOSchema = z.object({
   team: TeamDTOSchema,
-  formatioin: z.string(),
+  formation: z.string(),
   coach: CoachDTOSchema,
   startPlayers: z.array(StartPlayerDTOSchema),
   substitutes: z.array(SubstituteDTOSchema),
