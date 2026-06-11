@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { API_PATH, FETCH_TIMEOUT_SECOND } from '@shared/api/configs';
+import { API_PATH, FETCH_TIMEOUT_MICROSECOND } from '@shared/api/configs';
 
 describe('API_PATH', () => {
   it('newsList()는 /api/news를 반환한다', () => {
@@ -12,7 +12,7 @@ describe('API_PATH', () => {
     expect(API_PATH.teamStatistics()).toBe('/api/team/statistics');
   });
   it('team(teamId)는 /api/teams/:teamId를 반환한다', () => {
-    expect(API_PATH.team((1))).toBe('/api/teams/1');
+    expect(API_PATH.team(1)).toBe('/api/teams/1');
   });
   it('playerList()는 /api/players를 반환한다', () => {
     expect(API_PATH.playerList()).toBe('/api/players');
@@ -21,15 +21,15 @@ describe('API_PATH', () => {
     expect(API_PATH.gameSchedule()).toBe('/api/fixtures');
   });
   it('pastGameDetail(gameId)는 /api/fixtures/:gameId/detail을 반환한다', () => {
-    expect(API_PATH.pastGameDetail((42))).toBe('/api/fixtures/42/detail');
+    expect(API_PATH.pastGameDetail(42)).toBe('/api/fixtures/42/detail');
   });
   it('liveGameLineup(gameId)는 /api/fixtures/:gameId/lineups를 반환한다', () => {
-    expect(API_PATH.liveGameLineup((42))).toBe('/api/fixtures/42/lineups');
+    expect(API_PATH.liveGameLineup(42)).toBe('/api/fixtures/42/lineups');
   });
 });
 
-describe('FETCH_TIMEOUT_SECOND', () => {
+describe('FETCH_TIMEOUT_MICROSECOND', () => {
   it('5000ms이다', () => {
-    expect(FETCH_TIMEOUT_SECOND).toBe(5000);
+    expect(FETCH_TIMEOUT_MICROSECOND).toBe(5000);
   });
 });

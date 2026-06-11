@@ -2,7 +2,7 @@ import { env } from '@shared/utils';
 
 const BASE_URL = env().baseUrl || '';
 
-const FETCH_TIMEOUT_SECOND = 5000;
+const FETCH_TIMEOUT_MICROSECOND = 5000;
 
 const API_PATH = {
   newsList() {
@@ -31,4 +31,4 @@ const API_PATH = {
   },
 };
 
-export { BASE_URL, FETCH_TIMEOUT_SECOND, API_PATH };
+export { BASE_URL, FETCH_TIMEOUT_MICROSECOND, API_PATH };

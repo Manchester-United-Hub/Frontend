@@ -1,5 +1,5 @@
-import { FETCH_TIMEOUT_SECOND } from '../configs';
+import { FETCH_TIMEOUT_MICROSECOND } from '../configs';
 import { Fetcher } from '../fetcher';
 
-const clientFetcher = new Fetcher('', FETCH_TIMEOUT_SECOND);
+const clientFetcher = new Fetcher('', FETCH_TIMEOUT_MICROSECOND);
 export { clientFetcher };
