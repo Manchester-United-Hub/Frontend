@@ -8,7 +8,7 @@ vi.mock('@entities/news/api/server', () => ({
 }));
 
 vi.mock('@shared/model', async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await importOriginal<typeof import('@shared/model')>();
   return {
     ...actual,
     toBffResponse: vi.fn((result) => result),
@@ -33,7 +33,7 @@ describe('GET /api/v1/news', () => {
 
   describe('일반 목록 조회일 때', () => {
     it('fetchNewsList를 query 파라미터와 함께 호출한다', async () => {
-      vi.mocked(fetchNewsList).mockResolvedValue({ isSuccess: true, status: 200, data: {} });
+      vi.mocked(fetchNewsList).mockResolvedValue({ isSuccess: true, status: 200, data: { newsList: [], nextCursorAt: '2024-01-01T00:00', nextCursorId: 0 } });
 
       const { GET } = await import('@app/api/v1/news/route');
       const request = new NextRequest(
@@ -46,7 +46,7 @@ describe('GET /api/v1/news', () => {
     });
 
     it('200 응답을 반환한다', async () => {
-      vi.mocked(fetchNewsList).mockResolvedValue({ isSuccess: true, status: 200, data: {} });
+      vi.mocked(fetchNewsList).mockResolvedValue({ isSuccess: true, status: 200, data: { newsList: [], nextCursorAt: '2024-01-01T00:00', nextCursorId: 0 } });
 
       const { GET } = await import('@app/api/v1/news/route');
       const request = new NextRequest(

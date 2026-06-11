@@ -31,7 +31,7 @@ describe('GET /api/v1/team/statistics', () => {
   });
 
   it('외부 API 실패 시 500 상태로 응답한다', async () => {
-    vi.mocked(fetchTeamStatistics).mockResolvedValue({ isSuccess: false, status: 500, data: null });
+    vi.mocked(fetchTeamStatistics).mockResolvedValue({ isSuccess: false, status: 500, data: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' } });
 
     const { GET } = await import('@app/api/v1/team/statistics/route');
     const response = await GET();

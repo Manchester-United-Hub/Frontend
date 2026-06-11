@@ -14,7 +14,7 @@ describe('GET /api/v1/player', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('season과 position을 파싱해 fetchPlayerList를 호출한다', async () => {
-    vi.mocked(fetchPlayerList).mockResolvedValue({ isSuccess: true, status: 200, data: {} });
+    vi.mocked(fetchPlayerList).mockResolvedValue({ isSuccess: true, status: 200, data: { players: [] } });
 
     const { GET } = await import('@app/api/v1/player/route');
     const request = new NextRequest('http://localhost/api/v1/player?season=2024&position=FW');
@@ -24,7 +24,7 @@ describe('GET /api/v1/player', () => {
   });
 
   it('position이 없으면 undefined로 전달된다', async () => {
-    vi.mocked(fetchPlayerList).mockResolvedValue({ isSuccess: true, status: 200, data: {} });
+    vi.mocked(fetchPlayerList).mockResolvedValue({ isSuccess: true, status: 200, data: { players: [] } });
 
     const { GET } = await import('@app/api/v1/player/route');
     const request = new NextRequest('http://localhost/api/v1/player?season=2024');
@@ -34,7 +34,7 @@ describe('GET /api/v1/player', () => {
   });
 
   it('200 응답을 반환한다', async () => {
-    vi.mocked(fetchPlayerList).mockResolvedValue({ isSuccess: true, status: 200, data: {} });
+    vi.mocked(fetchPlayerList).mockResolvedValue({ isSuccess: true, status: 200, data: { players: [] } });
 
     const { GET } = await import('@app/api/v1/player/route');
     const request = new NextRequest('http://localhost/api/v1/player?season=2024&position=FW');

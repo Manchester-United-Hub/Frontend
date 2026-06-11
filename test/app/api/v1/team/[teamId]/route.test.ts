@@ -14,7 +14,7 @@ describe('GET /api/v1/team/[teamId]', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('teamId를 number로 변환해 fetchTeamInfo를 호출한다', async () => {
-    vi.mocked(fetchTeamInfo).mockResolvedValue({ isSuccess: true, status: 200, data: {} });
+    vi.mocked(fetchTeamInfo).mockResolvedValue({ isSuccess: true, status: 200, data: { id: 1, name: '', photo: '', founded: 2000, location: '', stadium: '', coachName: '' } });
 
     const { GET } = await import('@app/api/v1/team/[teamId]/route');
     const request = new NextRequest('http://localhost/api/v1/team/33');
@@ -24,7 +24,7 @@ describe('GET /api/v1/team/[teamId]', () => {
   });
 
   it('200 응답을 반환한다', async () => {
-    vi.mocked(fetchTeamInfo).mockResolvedValue({ isSuccess: true, status: 200, data: {} });
+    vi.mocked(fetchTeamInfo).mockResolvedValue({ isSuccess: true, status: 200, data: { id: 1, name: '', photo: '', founded: 2000, location: '', stadium: '', coachName: '' } });
 
     const { GET } = await import('@app/api/v1/team/[teamId]/route');
     const request = new NextRequest('http://localhost/api/v1/team/33');
@@ -34,7 +34,7 @@ describe('GET /api/v1/team/[teamId]', () => {
   });
 
   it('외부 API 실패 시 500 상태로 응답한다', async () => {
-    vi.mocked(fetchTeamInfo).mockResolvedValue({ isSuccess: false, status: 500, data: null });
+    vi.mocked(fetchTeamInfo).mockResolvedValue({ isSuccess: false, status: 500, data: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' } });
 
     const { GET } = await import('@app/api/v1/team/[teamId]/route');
     const request = new NextRequest('http://localhost/api/v1/team/33');

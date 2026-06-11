@@ -31,7 +31,7 @@ describe('GET /api/v1/game/schedule', () => {
   });
 
   it('외부 API 실패 시 500 상태로 응답한다', async () => {
-    vi.mocked(fetchGameScheduleList).mockResolvedValue({ isSuccess: false, status: 500, data: null });
+    vi.mocked(fetchGameScheduleList).mockResolvedValue({ isSuccess: false, status: 500, data: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' } });
 
     const { GET } = await import('@app/api/v1/game/schedule/route');
     const response = await GET();
