@@ -3,6 +3,9 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    env: {
+      BASE_URL: 'http://example.com',
+    },
     environment: 'jsdom',
     passWithNoTests: true,
     include: ['test/**/*.{test,spec}.{ts,tsx}'],

@@ -7,9 +7,13 @@ vi.mock('@entities/news/api/server', () => ({
   fetchRecentNews: vi.fn(),
 }));
 
-vi.mock('@shared/model', () => ({
-  toBffResponse: vi.fn((result) => result),
-}));
+vi.mock('@shared/model', async (importOriginal) => {
+  const actual = await importOriginal();
+  return {
+    ...actual,
+    toBffResponse: vi.fn((result) => result),
+  };
+});
 
 describe('GET /api/v1/news', () => {
   beforeEach(() => vi.clearAllMocks());
