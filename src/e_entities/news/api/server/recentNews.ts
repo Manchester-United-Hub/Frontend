@@ -1,16 +1,16 @@
 import { RecentNewsListDTO } from '@entities/news/model';
 import { API_PATH, serverFetcher } from '@shared/api';
-import { ServerApiResult } from '@shared/model';
+import { ApiErrorResponse, ServerApiResult } from '@shared/model';
 
 const fetchRecentNews = async (): Promise<
   ServerApiResult<RecentNewsListDTO>
 > => {
   const response = await serverFetcher.get(API_PATH.recentNews());
-  return {
-    isSuccess: response.ok,
-    status: response.status,
-    data: await response.json(),
-  } as ServerApiResult<RecentNewsListDTO>;
+  const data = await response.json();
+  if (response.ok) {
+    return { isSuccess: true, status: response.status, data: data as RecentNewsListDTO };
+  }
+  return { isSuccess: false, status: response.status, data: data as ApiErrorResponse };
 };
 
 export { fetchRecentNews };

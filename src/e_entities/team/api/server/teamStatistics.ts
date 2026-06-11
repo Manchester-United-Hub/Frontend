@@ -1,16 +1,16 @@
 import { TeamStatisticsListDTO } from '@entities/team/model';
 import { API_PATH, serverFetcher } from '@shared/api';
-import { ServerApiResult } from '@shared/model';
+import { ApiErrorResponse, ServerApiResult } from '@shared/model';
 
 const fetchTeamStatistics = async (): Promise<
   ServerApiResult<TeamStatisticsListDTO>
 > => {
   const response = await serverFetcher.get(API_PATH.teamStatistics());
-  return {
-    isSuccess: response.ok,
-    status: response.status,
-    data: await response.json(),
-  } as ServerApiResult<TeamStatisticsListDTO>;
+  const data = await response.json();
+  if (response.ok) {
+    return { isSuccess: true, status: response.status, data: data as TeamStatisticsListDTO };
+  }
+  return { isSuccess: false, status: response.status, data: data as ApiErrorResponse };
 };
 
 export { fetchTeamStatistics };

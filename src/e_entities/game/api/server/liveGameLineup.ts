@@ -1,16 +1,16 @@
 import { GameDetailsQueryDTO, LiveGameLineupDTO } from '@entities/game/model';
 import { API_PATH, serverFetcher } from '@shared/api';
-import { ServerApiResult } from '@shared/model';
+import { ApiErrorResponse, ServerApiResult } from '@shared/model';
 
 const fetchLiveGameLineup = async ({
   fixtureId,
 }: GameDetailsQueryDTO): Promise<ServerApiResult<LiveGameLineupDTO>> => {
   const response = await serverFetcher.get(API_PATH.liveGameLineup(fixtureId));
-  return {
-    isSuccess: response.ok,
-    status: response.status,
-    data: await response.json(),
-  } as ServerApiResult<LiveGameLineupDTO>;
+  const data = await response.json();
+  if (response.ok) {
+    return { isSuccess: true, status: response.status, data: data as LiveGameLineupDTO };
+  }
+  return { isSuccess: false, status: response.status, data: data as ApiErrorResponse };
 };
 
 export { fetchLiveGameLineup };
