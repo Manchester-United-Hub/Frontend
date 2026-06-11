@@ -5,6 +5,13 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     passWithNoTests: true,
+    include: ['test/**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      enabled: true,
+      include: ['src/**/*.{ts, tsx}'],
+      exclude: ['**/index.ts', 'configs/**', 'types/**', 'assets/**'],
+    },
   },
   resolve: {
     alias: {
