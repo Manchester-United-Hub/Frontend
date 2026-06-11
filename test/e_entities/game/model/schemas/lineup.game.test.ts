@@ -34,7 +34,7 @@ const validStartPlayer = { ...validPlayer, grid: '1:1' };
 const validSubstitute = { ...validPlayer, grid: null };
 const validLineup = {
   team: validTeam,
-  formatioin: '4-2-3-1',
+  formation: '4-2-3-1',
   coach: validCoach,
   startPlayers: [validStartPlayer],
   substitutes: [validSubstitute],

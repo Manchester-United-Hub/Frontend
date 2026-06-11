@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { serverFetcher, API_PATH } from '@shared/api';
+import { serverFetcher } from '@shared/api';
 import { fetchNewsList } from '@entities/news/api/server/newsList';
 
 vi.mock('@shared/api', async (importOriginal) => {
