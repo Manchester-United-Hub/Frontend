@@ -1,7 +1,7 @@
 import { z } from 'zod';
-import { ServerApiResult } from './serverApi';
+import { ApiResponseWrapper } from './ApiWrapper';
 
-const BffApiSuccessSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+const BffApiSuccessSchema = <T extends z.ZodType>(dataSchema: T) =>
   z.object({
     success: z.literal(true),
     data: dataSchema,
@@ -17,17 +17,24 @@ const BffApiErrorSchema = z.object({
   }),
 });
 
-const BffApiResponseSchema = <T extends z.ZodTypeAny>(dataSchema: T) =>
+const BffApiResponseSchema = <T extends z.ZodType>(dataSchema: T) =>
   z.union([BffApiSuccessSchema(dataSchema), BffApiErrorSchema]);
 
-type BffApiSuccess<T> = z.infer<ReturnType<typeof BffApiSuccessSchema<z.ZodType<T>>>>;
+type BffApiSuccess<T> = z.infer<
+  ReturnType<typeof BffApiSuccessSchema<z.ZodType<T>>>
+>;
 type BffApiError = z.infer<typeof BffApiErrorSchema>;
 type BffApiResponse<T> = BffApiSuccess<T> | BffApiError;
 
-const toBffResponse = <T>(result: ServerApiResult<T>): BffApiResponse<T> =>
+const toBffResponse = <T>(result: ApiResponseWrapper<T>): BffApiResponse<T> =>
   result.isSuccess
     ? { success: true, data: result.data, error: null }
     : { success: false, data: null, error: result.data };
 
 export type { BffApiResponse, BffApiSuccess, BffApiError };
-export { BffApiResponseSchema, BffApiSuccessSchema, BffApiErrorSchema, toBffResponse };
+export {
+  BffApiResponseSchema,
+  BffApiSuccessSchema,
+  BffApiErrorSchema,
+  toBffResponse,
+};

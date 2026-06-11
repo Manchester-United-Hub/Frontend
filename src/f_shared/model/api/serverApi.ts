@@ -1,15 +1,5 @@
-import { z } from 'zod';
+import { ApiResponseWrapper } from './ApiWrapper';
 
-const ApiErrorResponseSchema = z.object({
-  code: z.string(),
-  message: z.string(),
-});
+type ServerApiResult<T> = ApiResponseWrapper<T>;
 
-type ApiErrorResponse = z.infer<typeof ApiErrorResponseSchema>;
-
-type ServerApiResult<T> =
-  | { isSuccess: true; status: number; data: T }
-  | { isSuccess: false; status: number; data: ApiErrorResponse };
-
-export type { ApiErrorResponse, ServerApiResult };
-export { ApiErrorResponseSchema };
+export type { ServerApiResult };
