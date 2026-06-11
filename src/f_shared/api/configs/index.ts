@@ -1,6 +1,6 @@
 import { env } from '@shared/utils';
 
-const BASE_URL = env().baseUrl || '';
+const BASE_URL = env.BASE_URL;
 
 const FETCH_TIMEOUT_MICROSECOND = 5000;
 
