@@ -1,7 +1,7 @@
 import z from 'zod';
 
 const TeamStatisticsDTOSchema = z.object({
-  teamId: z.bigint(),
+  teamId: z.number(),
   teamName: z.string(),
   season: z.number(),
   win: z.number(),
@@ -19,11 +19,11 @@ type TeamStatisticsDTO = z.infer<typeof TeamStatisticsDTOSchema>;
 type TeamStatisticsListDTO = z.infer<typeof TeamStatisticsListDTOSchema>;
 
 const TeamInfoParamsDTOSchema = z.object({
-  teamId: z.bigint(),
+  teamId: z.number(),
 });
 
 const TeamInfoDTOSchema = z.object({
-  id: z.bigint(),
+  id: z.number(),
   name: z.string(),
   photo: z.httpUrl(),
   founded: z.number(),

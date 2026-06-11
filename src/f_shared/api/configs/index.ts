@@ -14,7 +14,7 @@ const API_PATH = {
   teamStatistics() {
     return '/api/team/statistics';
   },
-  team(teamId: bigint) {
+  team(teamId: number) {
     return `/api/teams/${teamId}`;
   },
   playerList() {
@@ -23,10 +23,10 @@ const API_PATH = {
   gameSchedule() {
     return '/api/fixtures';
   },
-  pastGameDetail(gameId: bigint) {
+  pastGameDetail(gameId: number) {
     return `/api/fixtures/${gameId}/detail`;
   },
-  liveGameLineup(gameId: bigint) {
+  liveGameLineup(gameId: number) {
     return `/api/fixtures/${gameId}/lineups`;
   },
 };

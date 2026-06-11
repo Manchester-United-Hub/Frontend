@@ -3,12 +3,12 @@ import { DateStringType } from '@shared/model';
 
 const NewsQuerySchema = z.object({
   cursorAt: DateStringType['yyyy-MM-ddTHH:mm'],
-  cursorId: z.bigint(),
+  cursorId: z.number(),
   size: z.number(),
 });
 
 const NewsDTOSchema = z.object({
-  id: z.bigint(),
+  id: z.number(),
   title: z.string(),
   description: z.string(),
   link: z.string(),
@@ -19,7 +19,7 @@ const NewsDTOSchema = z.object({
 const NewsListDTOSchema = z.object({
   newsList: z.array(NewsDTOSchema),
   nextCursorAt: DateStringType['yyyy-MM-ddTHH:mm'],
-  nextCursorId: z.bigint(),
+  nextCursorId: z.number(),
 });
 
 const RecentNewsDTOSchema = NewsDTOSchema.pick({

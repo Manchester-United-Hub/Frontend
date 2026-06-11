@@ -8,7 +8,7 @@ const VenueDTOSchema = z.object({
 });
 
 const TeamDTOSchema = z.object({
-  teamId: z.bigint(),
+  teamId: z.number(),
   name: z.string(),
   logo: z.httpUrl(),
   winner: z.boolean(),
@@ -20,7 +20,7 @@ const ScoreDTOSchema = z.object({
 });
 
 const GameScheduleDTOSchema = z.object({
-  fixtureId: z.bigint(),
+  fixtureId: z.number(),
   date: DateStringType['yyyy-MM-ddTHH:mm'],
   venue: VenueDTOSchema,
   homeTeam: TeamDTOSchema,
@@ -31,7 +31,7 @@ const GameScheduleDTOSchema = z.object({
 const GameScheduleListDTOSchema = z.array(GameScheduleDTOSchema);
 
 const GameDetailsQueryDTOSchema = z.object({
-  fixtureId: z.bigint(),
+  fixtureId: z.number(),
 });
 
 export {

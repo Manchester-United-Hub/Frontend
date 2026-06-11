@@ -1,19 +1,19 @@
 import z from 'zod';
 
 const TeamDTOSchema = z.object({
-  teamId: z.bigint(),
+  teamId: z.number(),
   name: z.string(),
   logo: z.httpUrl(),
 });
 
 const CoachDTOSchema = z.object({
-  coachId: z.bigint(),
+  coachId: z.number(),
   name: z.string(),
   photo: z.httpUrl(),
 });
 
 const PlayerDTOSchema = z.object({
-  playerId: z.bigint(),
+  playerId: z.number(),
   name: z.string(),
   number: z.number(),
   position: z.string(),
@@ -57,7 +57,7 @@ const PastGameDetailDTOSchema = z.object({
 });
 
 const LiveGameLineupDTOSchema = z.object({
-  fixtureId: z.bigint(),
+  fixtureId: z.number(),
   lineups: z.array(LineupDTOSchema),
 });
 
