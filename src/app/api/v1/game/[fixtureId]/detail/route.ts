@@ -11,6 +11,6 @@ export async function GET(
 ) {
   const { fixtureId } = await params;
 
-  const result = await fetchPastGameDetail({ fixtureId: BigInt(fixtureId) });
+  const result = await fetchPastGameDetail({ fixtureId: Number(fixtureId) });
   return NextResponse.json(toBffResponse(result), { status: result.status });
 }

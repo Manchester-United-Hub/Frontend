@@ -11,6 +11,6 @@ export async function GET(
 ) {
   const { teamId } = await params;
 
-  const result = await fetchTeamInfo({ teamId: BigInt(teamId) });
+  const result = await fetchTeamInfo({ teamId: Number(teamId) });
   return NextResponse.json(toBffResponse(result), { status: result.status });
 }
