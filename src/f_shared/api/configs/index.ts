@@ -1,0 +1,34 @@
+import { env } from '@shared/utils';
+
+const BASE_URL = env.BASE_URL;
+
+const FETCH_TIMEOUT_MICROSECOND = 5000;
+
+const API_PATH = {
+  newsList() {
+    return '/api/news';
+  },
+  recentNews() {
+    return '/api/news/recent';
+  },
+  teamStatistics() {
+    return '/api/team/statistics';
+  },
+  team(teamId: number) {
+    return `/api/teams/${teamId}`;
+  },
+  playerList() {
+    return '/api/players';
+  },
+  gameSchedule() {
+    return '/api/fixtures';
+  },
+  pastGameDetail(gameId: number) {
+    return `/api/fixtures/${gameId}/detail`;
+  },
+  liveGameLineup(gameId: number) {
+    return `/api/fixtures/${gameId}/lineups`;
+  },
+};
+
+export { BASE_URL, FETCH_TIMEOUT_MICROSECOND, API_PATH };
