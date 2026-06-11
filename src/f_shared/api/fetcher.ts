@@ -29,12 +29,13 @@ class Fetcher implements ApiFetcher {
     const controller = new AbortController();
     const id = setTimeout(() => controller.abort(), this._timeoutSec);
     try {
-      const response = await fetch(uri, options);
-      clearTimeout(id);
+      const response = await fetch(uri, {
+        signal: controller.signal,
+        ...options,
+      });
       return response;
-    } catch (error) {
+    } finally {
       clearTimeout(id);
-      throw error;
     }
   };
 
