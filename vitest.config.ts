@@ -3,11 +3,22 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    env: {
+      BASE_URL: 'http://example.com',
+    },
     environment: 'jsdom',
     passWithNoTests: true,
+    include: ['test/**/*.{test,spec}.{ts,tsx}'],
+    coverage: {
+      provider: 'v8',
+      enabled: true,
+      include: ['src/**/*.{ts, tsx}'],
+      exclude: ['**/index.ts', 'configs/**', 'types/**', 'assets/**'],
+    },
   },
   resolve: {
     alias: {
+      '@app': path.resolve(__dirname, './src/app'),
       '@pages': path.resolve(__dirname, './src/b_pages'),
       '@widgets': path.resolve(__dirname, './src/c_widgets'),
       '@features': path.resolve(__dirname, './src/d_features'),
