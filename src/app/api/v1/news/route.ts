@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { toBffResponse } from '@shared/model';
-import { NewsQuery } from '@entities/news/model';
+import { NewsQuerySchema } from '@entities/news/model';
 import { fetchNewsList, fetchRecentNews } from '@entities/news/api/server';
 
 export const dynamic = 'auto';
@@ -15,12 +15,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(toBffResponse(result), { status: result.status });
   }
 
-  const newsParams: NewsQuery = {
-    cursorAt: searchParams.get('cursorAt')!,
-    cursorId: BigInt(searchParams.get('cursorId')!),
-    size: Number(searchParams.get('size')!),
-  };
-
-  const result = await fetchNewsList(newsParams);
+  const parsed = NewsQuerySchema.safeParse(
+    Object.fromEntries(request.nextUrl.searchParams)
+  );
+  if (!parsed.success) {
+    return NextResponse.json({ error: parsed.error.message }, { status: 400 });
+  }
+  const result = await fetchNewsList(parsed.data);
   return NextResponse.json(toBffResponse(result), { status: result.status });
 }
