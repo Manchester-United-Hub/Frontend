@@ -8,12 +8,13 @@ const buildQuery = (params: QueryParams): string => {
 
   if (entries.length === 0) return '';
 
-  const queryStr = entries.reduce((qs, [k, v], idx) => {
-    if (idx > 0) qs += '&';
-    return qs + `${k}=${v}`;
-  }, '?');
+  const searchParams = new URLSearchParams(
+    entries
+      .filter(([, v]) => v !== undefined && v !== null)
+      .map(([k, v]) => [k, String(v)])
+  );
 
-  return encodeURI(queryStr);
+  return '?' + searchParams.toString();
 };
 
 export { buildQuery };
