@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-@import '@shared/ui/tokens/colors.css';
-@import '@shared/ui/tokens/typography.css';
+@import '../f_shared/ui//tokens/colors.css';
+@import '../f_shared/ui/tokens/typography.css';
 
 @theme inline {
   /* Colors */
