@@ -1,0 +1,52 @@
+:root {
+  /* Font families */
+  --font-sans:
+    'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, Roboto, 'Helvetica Neue', 'Segoe UI', 'Apple SD Gothic Neo',
+    'Noto Sans KR', 'Malgun Gothic', sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+
+  /* Font weights */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Type scale */
+  --text-h1-size: 48px;
+  --text-h1-line: 48px;
+  --text-h1-tracking: -0.025em;
+
+  --text-h2-size: 30px;
+  --text-h2-line: 36px;
+  --text-h2-tracking: -0.0125em;
+
+  --text-h3-size: 24px;
+  --text-h3-line: 32px;
+  --text-h3-tracking: -0.0125em;
+
+  --text-h4-size: 20px;
+  --text-h4-line: 28px;
+  --text-h4-tracking: -0.0125em;
+
+  --text-lead-size: 20px;
+  --text-lead-line: 28px;
+
+  --text-large-size: 18px;
+  --text-large-line: 28px;
+
+  --text-body-size: 16px;
+  --text-body-line: 24px;
+
+  --text-small-size: 14px;
+  --text-small-line: 20px;
+
+  --text-muted-size: 14px;
+  --text-muted-line: 20px;
+
+  --text-ui-size: 14px;
+  --text-ui-line: 20px;
+}
