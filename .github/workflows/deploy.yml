@@ -54,7 +54,7 @@ jobs:
       - name: Build and push Docker image
         run: |
           docker build \
-            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            --build-arg API_BASE_URL=${{ secrets.API_BASE_URL }} \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/mu-hub-frontend:latest \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/mu-hub-frontend:${{ github.sha }} \
             .
