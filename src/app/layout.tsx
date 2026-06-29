@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-import { TanstackQueryProvider } from './providers';
 import './globals.css';
 
 const pretendard = localFont({
@@ -30,9 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">
-        <TanstackQueryProvider>{children}</TanstackQueryProvider>
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }
