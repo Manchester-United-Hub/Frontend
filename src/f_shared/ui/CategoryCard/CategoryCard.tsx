@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import Link from 'next/link';
 import { Route } from 'next';
+import { ChevronRight } from 'lucide-react';
 
 import { cn } from '@shared/utils';
 
@@ -15,23 +16,6 @@ interface CategoryCardProps {
   className?: string;
 }
 
-const ChevronRight = () => (
-  <svg
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-    className="shrink-0"
-  >
-    <path d="m9 18 6-6-6-6" />
-  </svg>
-);
-
 const CategoryCard = ({
   icon,
   name,
@@ -43,7 +27,7 @@ const CategoryCard = ({
 }: CategoryCardProps) => {
   const cardClass = cn(
     'group relative flex min-h-[188px] cursor-pointer flex-col justify-between overflow-hidden rounded-lg border border-border bg-card p-5 transition-[box-shadow,transform,border-color] hover:-translate-y-0.5 hover:shadow-md hover:border-[color-mix(in_srgb,var(--united-red)_36%,var(--border))]',
-    className,
+    className
   );
 
   const content = (
@@ -62,7 +46,7 @@ const CategoryCard = ({
       </div>
       <span className="mt-3.5 inline-flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground transition-colors group-hover:text-united-red">
         {goLabel}
-        <ChevronRight />
+        <ChevronRight size={14} className="shrink-0" aria-hidden />
       </span>
     </>
   );
