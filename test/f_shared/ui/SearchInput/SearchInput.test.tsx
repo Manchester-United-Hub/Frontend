@@ -79,4 +79,38 @@ describe('SearchInput (Combobox)', () => {
     await user.click(await screen.findByText('브루누 페르난데스'));
     expect(onSelect).toHaveBeenCalledWith({ id: 1, name: '브루누 페르난데스' });
   });
+
+  it('후보가 없으면 emptyMessage를 보여준다', async () => {
+    const user = userEvent.setup();
+    render(
+      <SearchInput<Player>
+        items={[]}
+        value={null}
+        onChange={() => {}}
+        onQueryChange={() => {}}
+        getKey={(p) => p.id}
+        getLabel={(p) => p.name}
+        emptyMessage="결과 없음"
+      />
+    );
+    await user.click(screen.getByRole('combobox'));
+    expect(await screen.findByText('결과 없음')).toBeInTheDocument();
+  });
+
+  it('renderOption으로 후보를 커스텀 렌더한다', async () => {
+    const user = userEvent.setup();
+    render(
+      <SearchInput<Player>
+        items={PLAYERS}
+        value={null}
+        onChange={() => {}}
+        onQueryChange={() => {}}
+        getKey={(p) => p.id}
+        getLabel={(p) => p.name}
+        renderOption={(p) => <span>★ {p.name}</span>}
+      />
+    );
+    await user.click(screen.getByRole('combobox'));
+    expect(await screen.findByText('★ 브루누 페르난데스')).toBeInTheDocument();
+  });
 });

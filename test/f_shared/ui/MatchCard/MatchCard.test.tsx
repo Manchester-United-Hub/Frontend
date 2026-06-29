@@ -63,4 +63,14 @@ describe('MatchCard', () => {
     expect(screen.getByText('W')).toBeInTheDocument();
     expect(screen.getByText('3–1')).toBeInTheDocument();
   });
+
+  it('highlight 팀의 crest는 united-red 배경을 적용한다', () => {
+    render(
+      <MatchCard
+        {...nextProps}
+        home={{ code: 'MUN', name: '맨유', highlight: true }}
+      />
+    );
+    expect(screen.getByText('MUN')).toHaveClass('bg-united-red');
+  });
 });
