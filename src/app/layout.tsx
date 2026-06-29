@@ -7,6 +7,14 @@ const pretendard = localFont({
   variable: '--font-sans',
   display: 'swap',
   weight: '100 900',
+  fallback: [
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'system-ui',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'sans-serif',
+  ],
 });
 
 export const metadata: Metadata = {
