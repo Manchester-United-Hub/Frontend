@@ -8,7 +8,7 @@ const Skeleton = ({ className, ...rest }: SkeletonProps) => {
   return (
     <div
       aria-hidden
-      className={cn('animate-pulse rounded-md bg-muted', className)}
+      className={cn('motion-safe:animate-pulse rounded-md bg-muted', className)}
       {...rest}
     />
   );
