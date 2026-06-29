@@ -26,7 +26,7 @@ const CategoryCard = ({
   className,
 }: CategoryCardProps) => {
   const cardClass = cn(
-    'group relative flex min-h-[188px] cursor-pointer flex-col justify-between overflow-hidden rounded-lg border border-border bg-card p-5 transition-[box-shadow,transform,border-color] hover:-translate-y-0.5 hover:shadow-md hover:border-[color-mix(in_srgb,var(--united-red)_36%,var(--border))]',
+    'group relative flex min-h-[188px] flex-col justify-between overflow-hidden rounded-lg border border-border bg-card p-5 transition-[box-shadow,transform,border-color] motion-safe:hover:-translate-y-0.5 hover:shadow-md hover:border-[color-mix(in_srgb,var(--united-red)_36%,var(--border))]',
     className
   );
 
@@ -53,7 +53,7 @@ const CategoryCard = ({
 
   if (href) {
     return (
-      <Link href={href} className={cardClass}>
+      <Link href={href} className={cn(cardClass, 'cursor-pointer')}>
         {content}
       </Link>
     );
