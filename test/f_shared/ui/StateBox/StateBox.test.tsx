@@ -24,12 +24,20 @@ describe('StateBox', () => {
     expect(screen.getByRole('button', { name: '전체 일정' })).toBeInTheDocument();
   });
 
-  it('variant=error는 아이콘에 destructive 톤을 적용한다', () => {
+  it('variant=error는 role=alert와 아이콘 destructive 톤을 적용한다', () => {
     render(
       <StateBox variant="error" icon={<svg data-testid="icon" />} title="오류" />
     );
+    expect(screen.getByRole('alert')).toBeInTheDocument();
     expect(screen.getByTestId('icon').parentElement).toHaveClass(
       'text-destructive'
     );
+  });
+
+  it('headingLevel로 제목 헤딩 레벨을 바꾼다', () => {
+    render(<StateBox icon={<svg />} title="제목" headingLevel={2} />);
+    expect(
+      screen.getByRole('heading', { level: 2, name: '제목' })
+    ).toBeInTheDocument();
   });
 });
