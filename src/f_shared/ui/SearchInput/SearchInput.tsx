@@ -18,9 +18,7 @@ interface SearchInputProps<T> {
   value: T | null;
   /** 후보 선택 시 호출. */
   onChange: (value: T | null) => void;
-  /** 현재 입력 질의(제어형). */
-  query: string;
-  /** 입력 변경 시 호출 — 소비자가 items를 필터링한다. */
+  /** 입력 변경 시 호출 — 소비자가 이 값으로 items를 필터링한다. 입력 텍스트 자체는 컴포넌트(Headless UI)가 관리한다. */
   onQueryChange: (query: string) => void;
   /** 후보의 고유 key. */
   getKey: (item: T) => string | number;
@@ -42,7 +40,6 @@ function SearchInput<T>({
   items,
   value,
   onChange,
-  query,
   onQueryChange,
   getKey,
   getLabel,
@@ -55,7 +52,14 @@ function SearchInput<T>({
   'aria-label': ariaLabel = '검색',
 }: SearchInputProps<T>) {
   return (
-    <Combobox value={value} onChange={onChange} immediate>
+    <Combobox
+      value={value}
+      onChange={onChange}
+      by={(a, b) =>
+        a == null || b == null ? a === b : getKey(a) === getKey(b)
+      }
+      immediate
+    >
       <div className="relative">
         <div
           className={cn(
