@@ -45,7 +45,7 @@ const PlayerCard = ({
   return (
     <div
       className={cn(
-        'relative cursor-pointer overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[box-shadow,transform] hover:-translate-y-0.5 hover:shadow-md',
+        'relative overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[box-shadow,transform] motion-safe:hover:-translate-y-0.5 hover:shadow-md',
         className,
       )}
     >
