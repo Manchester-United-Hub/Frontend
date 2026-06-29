@@ -15,4 +15,13 @@ describe('ResultBadge', () => {
     render(<ResultBadge result={result} />);
     expect(screen.getByText(result)).toHaveClass(cls);
   });
+
+  it.each([
+    ['W', '승'],
+    ['D', '무'],
+    ['L', '패'],
+  ] as const)('결과 %s를 스크린리더에 "%s"로 전달한다', (result, label) => {
+    render(<ResultBadge result={result} />);
+    expect(screen.getByRole('img', { name: label })).toBeInTheDocument();
+  });
 });
