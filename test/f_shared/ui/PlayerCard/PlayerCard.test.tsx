@@ -44,4 +44,17 @@ describe('PlayerCard', () => {
     );
     expect(screen.getByAltText('브루누 사진')).toBeInTheDocument();
   });
+
+  it('meta가 있으면 함께 표시한다', () => {
+    render(
+      <PlayerCard
+        name="A"
+        nameEn="A"
+        position="MF"
+        status="active"
+        meta="2020–현재"
+      />
+    );
+    expect(screen.getByText('· 2020–현재')).toBeInTheDocument();
+  });
 });
