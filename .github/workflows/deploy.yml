@@ -55,11 +55,11 @@ jobs:
         run: |
           docker build \
             --build-arg API_BASE_URL=${{ secrets.API_BASE_URL }} \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/mu-hub-frontend:latest \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/mu-hub-frontend:${{ github.sha }} \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/manuhub-frontend:latest \
+            -t ${{ secrets.DOCKERHUB_USERNAME }}/manuhub-frontend:${{ github.sha }} \
             .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mu-hub-frontend:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/mu-hub-frontend:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/manuhub-frontend:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/manuhub-frontend:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
