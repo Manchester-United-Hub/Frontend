@@ -76,4 +76,23 @@ describe('Button', () => {
     expect(btn).toHaveClass('bg-blue-500');
     expect(btn).not.toHaveClass('bg-primary');
   });
+
+  it('mode=link에 disabled면 링크 대신 비활성 요소로 렌더된다', () => {
+    render(
+      <Button mode="link" togo={'/x' as Route} disabled>
+        비활성
+      </Button>
+    );
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(screen.getByText('비활성')).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('mode=icon은 size=icon(정사각형)을 자동 적용한다', () => {
+    render(
+      <Button mode="icon" aria-label="메뉴">
+        x
+      </Button>
+    );
+    expect(screen.getByRole('button', { name: '메뉴' })).toHaveClass('w-10');
+  });
 });
