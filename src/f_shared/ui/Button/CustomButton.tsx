@@ -48,14 +48,26 @@ const Button = ({
   togo,
   children,
   className,
+  disabled,
   ...rest
 }: ButtonProps) => {
-  const classes = cn(buttonVariants({ variant, size }), className);
+  const resolvedSize = size ?? (mode === 'icon' ? 'icon' : undefined);
+  const classes = cn(buttonVariants({ variant, size: resolvedSize }), className);
 
   switch (mode) {
     case 'link':
       if (!togo) {
         throw new Error('link button must have togo props.');
+      }
+      if (disabled) {
+        return (
+          <span
+            className={cn(classes, 'pointer-events-none opacity-50')}
+            aria-disabled="true"
+          >
+            {children}
+          </span>
+        );
       }
       return (
         <Link href={togo} className={classes}>
@@ -64,19 +76,34 @@ const Button = ({
       );
     case 'icon':
       return (
-        <HLButton type="button" className={classes} {...rest}>
+        <HLButton
+          type="button"
+          disabled={disabled}
+          className={classes}
+          {...rest}
+        >
           {children}
         </HLButton>
       );
     case 'submit':
       return (
-        <HLButton type="submit" className={classes} {...rest}>
+        <HLButton
+          type="submit"
+          disabled={disabled}
+          className={classes}
+          {...rest}
+        >
           {children}
         </HLButton>
       );
     default:
       return (
-        <HLButton type="button" className={classes} {...rest}>
+        <HLButton
+          type="button"
+          disabled={disabled}
+          className={classes}
+          {...rest}
+        >
           {children}
         </HLButton>
       );
