@@ -44,7 +44,6 @@ function Harness({ onSelect }: { onSelect?: (p: Player | null) => void }) {
         setValue(v);
         onSelect?.(v);
       }}
-      query={query}
       onQueryChange={setQuery}
       getKey={(p) => p.id}
       getLabel={(p) => p.name}
