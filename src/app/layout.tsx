@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
+import { TanstackQueryProvider } from './providers';
 import './globals.css';
 
 const pretendard = localFont({
@@ -7,6 +8,14 @@ const pretendard = localFont({
   variable: '--font-sans',
   display: 'swap',
   weight: '100 900',
+  fallback: [
+    '-apple-system',
+    'BlinkMacSystemFont',
+    'system-ui',
+    'Apple SD Gothic Neo',
+    'Noto Sans KR',
+    'sans-serif',
+  ],
 });
 
 export const metadata: Metadata = {
@@ -21,7 +30,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <TanstackQueryProvider>{children}</TanstackQueryProvider>
+      </body>
     </html>
   );
 }
