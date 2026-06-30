@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+
 @import '../f_shared/ui/tokens/colors.css';
 @import '../f_shared/ui/tokens/typography.css';
 
@@ -36,6 +37,13 @@
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
 }
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+} */
 
 body {
   background: var(--background);
