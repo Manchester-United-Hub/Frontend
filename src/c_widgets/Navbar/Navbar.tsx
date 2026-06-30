@@ -4,7 +4,7 @@ import { BurgerButton, LogoBlock, NavLinkItem } from './ui';
 function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-background/86 backdrop-blur-[10px] backdrop-saturate-[1.4] border-b border-border">
-      <div className="max-w-300 mx-auto px-6 flex items-center gap-7 h-16">
+      <div className="max-w-[1200px] mx-auto px-6 flex items-center gap-7 h-16">
         <LogoBlock />
         <nav
           aria-label="주요 메뉴"
