@@ -37,6 +37,7 @@ vi.mock('next/navigation', () => ({
 
 import { MatchStripSection } from '@pages/landing/ui/MatchStripSection';
 import { recentMatch, nextMatch } from '@pages/landing/model/mockData';
+import type { MatchItem } from '@pages/landing/model/types';
 
 describe('MatchStripSection 상태 분기', () => {
   it('ready → MatchCard 팀명("맨체스터 유나이티드") 렌더', () => {
@@ -89,5 +90,25 @@ describe('MatchStripSection 상태 분기', () => {
     );
     const section = container.querySelector('section[aria-labelledby]');
     expect(section).not.toBeNull();
+  });
+
+  /* ── 다음 경기 옵션 필드 분기 (time·countdown 부재) ───────────────────── */
+
+  it('next에 time·countdown 없으면 날짜만 렌더하고 카운트다운 Badge 미표시', () => {
+    const nextNoTime: MatchItem = {
+      variant: 'next',
+      tag: '다음 경기',
+      competition: '프리미어리그 · 33R',
+      home: { code: 'MUN', name: '맨체스터 유나이티드' },
+      away: { code: 'ARS', name: '아스널' },
+      venue: '에미레이츠',
+      date: '5월 25일 (일)',
+    };
+    const { container } = render(
+      <MatchStripSection status="ready" recent={recentMatch} next={nextNoTime} />,
+    );
+    expect(container.textContent).toContain('5월 25일 (일)');
+    // countdown 부재 → 기본 데이터의 'D-3' Badge가 나타나지 않음
+    expect(container.textContent).not.toContain('D-3');
   });
 });
