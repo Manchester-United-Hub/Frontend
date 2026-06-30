@@ -1,4 +1,4 @@
-import { CalendarDays, Users, Shield, Play, Newspaper } from 'lucide-react';
+import { CalendarDays, Users, Shield, Play, Newspaper, LayoutGrid } from 'lucide-react';
 
 import { CategoryCard, Eyebrow } from '@shared/ui';
 import type { CategoryItem } from '../../model/types';
@@ -14,6 +14,9 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   highlights: <Play size={ICON_SIZE} aria-hidden />,
   articles: <Newspaper size={ICON_SIZE} aria-hidden />,
 };
+
+/** 매핑에 없는 key에 대한 기본 아이콘 — 빈 슬롯 렌더 방지 */
+const FALLBACK_ICON = <LayoutGrid size={ICON_SIZE} aria-hidden />;
 
 const SECTION_HEADING_ID = 'category-cards-heading';
 
@@ -47,7 +50,7 @@ export function CategoryCardsSection({ categories }: CategoryCardsSectionProps) 
           {categories.map((cat: CategoryItem) => (
             <li key={cat.key}>
               <CategoryCard
-                icon={ICON_MAP[cat.key]}
+                icon={ICON_MAP[cat.key] ?? FALLBACK_ICON}
                 name={cat.name}
                 nameEn={cat.nameEn}
                 description={cat.description}
