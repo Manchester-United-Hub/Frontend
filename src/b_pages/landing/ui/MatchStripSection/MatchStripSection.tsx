@@ -1,8 +1,9 @@
 import { AlertTriangle, ArrowRight, Inbox } from 'lucide-react';
 
-import { Badge, Eyebrow, MatchCard, StateBox } from '@shared/ui';
+import { Eyebrow, StateBox } from '@shared/ui';
 import type { MatchItem, MatchStripStatus } from '../../model/types';
 import { MatchCardSkeleton } from './MatchCardSkeleton';
+import { MatchStripGrid } from './MatchStripGrid';
 
 // ── 상수 ────────────────────────────────────────────────────────────────
 
@@ -55,44 +56,6 @@ const SECTION_HEADER = (
     </span>
   </div>
 );
-
-// ── 경기 그리드 (ready 상태 — props 의존) ──────────────────────────────
-
-interface MatchStripGridProps {
-  recent: MatchItem;
-  next: MatchItem;
-}
-
-function MatchStripGrid({ recent, next }: MatchStripGridProps) {
-  return (
-    <div className="grid grid-cols-2 gap-5 max-[860px]:grid-cols-1">
-      <MatchCard
-        variant="past"
-        tag={recent.tag}
-        competition={recent.competition}
-        home={recent.home}
-        away={recent.away}
-        result={recent.result}
-        venue={recent.venue}
-        date={recent.date}
-      />
-      <MatchCard
-        variant="next"
-        tag={next.tag}
-        competition={next.competition}
-        home={next.home}
-        away={next.away}
-        venue={next.venue}
-        date={next.time != null ? `${next.date} ${next.time}` : next.date}
-        action={
-          next.countdown != null ? (
-            <Badge variant="soft">{next.countdown}</Badge>
-          ) : undefined
-        }
-      />
-    </div>
-  );
-}
 
 // ── 섹션 컴포넌트 ──────────────────────────────────────────────────────
 
