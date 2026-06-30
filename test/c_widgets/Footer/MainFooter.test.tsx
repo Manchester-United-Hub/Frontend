@@ -7,7 +7,7 @@
  * - 둘러보기 컬럼 링크 텍스트 (시즌·선수·하이라이트·기사)
  * - 저작권 텍스트 (Manchester United FC Hub · 2026)
  * - 로고 워드마크 텍스트 (MANCHESTER UNITED)
- * - anchor 링크 수 ≥ 12 (3컬럼 × 4링크)
+ * - 링크 항목 수 ≥ 12 (3컬럼 × 4) — ADR-7 비링크(span), dead link 없음
  *
  * ⚠️ Footer는 app/layout 전역 소관. LandingPage 내부에 포함되지 않으므로
  *    LandingPage 스모크에서 footer를 기대하지 않는다 — 이 파일에서만 검증.
@@ -76,9 +76,11 @@ describe('MainFooter 위젯', () => {
     expect(container.textContent).toContain('MANCHESTER UNITED');
   });
 
-  it('footer anchor 링크 수 ≥ 12 (3컬럼 × 4링크)', () => {
+  it('링크 컬럼 항목 12개 렌더(3컬럼×4) — ADR-7: 라우트 미존재로 비링크(span) 처리', () => {
     const { container } = render(<MainFooter />);
-    const links = container.querySelectorAll('footer a');
-    expect(links.length).toBeGreaterThanOrEqual(12);
+    const items = container.querySelectorAll('footer ul[role="list"] li');
+    expect(items.length).toBeGreaterThanOrEqual(12);
+    // dead link(href="#")를 남기지 않는다
+    expect(container.querySelectorAll('footer a[href="#"]').length).toBe(0);
   });
 });
