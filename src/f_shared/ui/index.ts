@@ -7,3 +7,4 @@ export * from './Eyebrow';
 export * from './MatchCard';
 export * from './PlayerCard';
 export * from './CategoryCard';
+export * from './UnitedShield';
