@@ -39,6 +39,8 @@ vi.mock('next/navigation', () => ({
 
 import { HeroSection } from '@pages/landing/ui/HeroSection';
 import { heroContent, nextMatch } from '@pages/landing/model/mockData';
+import type { HeroContent } from '@pages/landing/model/types';
+import type { Route } from 'next';
 
 describe('HeroSection', () => {
   it('Eyebrow 텍스트 렌더', () => {
@@ -87,5 +89,45 @@ describe('HeroSection', () => {
     expect(
       container.querySelector('section[aria-labelledby="hero-heading"]'),
     ).not.toBeNull();
+  });
+
+  /* ── 옵션 필드 분기 (mockData 기본값의 반대 케이스) ───────────────────── */
+
+  it('accent가 headline에 없으면 분리 없이 전체 텍스트 렌더 (splitAtAccent -1 분기)', () => {
+    const content: HeroContent = {
+      ...heroContent,
+      headline: '액센트 없는 헤드라인 문장',
+      accent: '여기에없는단어',
+    };
+    const { container } = render(<HeroSection content={content} nextMatch={nextMatch} />);
+    expect(container.textContent).toContain('액센트 없는 헤드라인 문장');
+  });
+
+  it('href 있는 CTA는 링크(mode=link)로 렌더 — red·outline variant 모두 (cta.href != null 분기)', () => {
+    const content: HeroContent = {
+      ...heroContent,
+      ctas: [
+        { label: '선수 보기', variant: 'red', href: '/players' as Route },
+        { label: '일정 보기', variant: 'outline', href: '/season' as Route },
+      ],
+    };
+    const { container } = render(<HeroSection content={content} nextMatch={nextMatch} />);
+    const redLink = container.querySelector('a[href="/players"]');
+    const outlineLink = container.querySelector('a[href="/season"]');
+    expect(redLink).not.toBeNull();
+    expect(redLink?.textContent).toContain('선수 보기');
+    expect(outlineLink).not.toBeNull();
+    expect(outlineLink?.textContent).toContain('일정 보기');
+  });
+
+  it('unit 있는 stat은 강조 span으로 렌더 (stat.unit !== "" 분기)', () => {
+    const content: HeroContent = {
+      ...heroContent,
+      stats: [{ num: '99', unit: '%', label: '승률' }],
+    };
+    const { container } = render(<HeroSection content={content} nextMatch={nextMatch} />);
+    const unit = container.querySelector('span.text-united-red');
+    expect(unit).not.toBeNull();
+    expect(unit?.textContent).toBe('%');
   });
 });
