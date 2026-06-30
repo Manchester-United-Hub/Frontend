@@ -2,6 +2,7 @@ import { CalendarDays, Bell, MapPin, Clock } from 'lucide-react';
 import type { MatchItem } from '../../model/types';
 import { Button } from '@shared/ui';
 import { cn } from '@shared/utils';
+import { DARK_OUTLINE } from './styles';
 
 /* ── 패널 전용 아이콘 (모듈 스코프 호이스팅) ─────────────────────────── */
 
@@ -9,8 +10,6 @@ const ICON_CAL_SM = <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true
 const ICON_BELL = <Bell size={16} strokeWidth={1.75} aria-hidden="true" />;
 const ICON_MAP = <MapPin size={15} strokeWidth={1.75} aria-hidden="true" />;
 const ICON_CLOCK = <Clock size={15} strokeWidth={1.75} aria-hidden="true" />;
-
-const DARK_OUTLINE = 'bg-transparent text-white border-[#3f3f46] hover:bg-[#1f1f23]';
 
 /* ── 컴포넌트 ─────────────────────────────────────────────────────── */
 

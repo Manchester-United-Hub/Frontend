@@ -5,14 +5,12 @@ import type { HeroContent, HeroCta } from '../../model/types';
 import type { MatchItem } from '../../model/types';
 import { Button, Eyebrow } from '@shared/ui';
 import { FeaturedMatchPanel } from './FeaturedMatchPanel';
+import { DARK_OUTLINE } from './styles';
 
 /* ── 히어로 전용 아이콘 (모듈 스코프 호이스팅) ──────────────────────── */
 
 const ICON_USERS = <Users size={18} strokeWidth={1.75} aria-hidden="true" />;
 const ICON_CAL = <CalendarDays size={18} strokeWidth={1.75} aria-hidden="true" />;
-
-/** 다크 배경 위 outline 버튼 override */
-const DARK_OUTLINE = 'bg-transparent text-white border-[#3f3f46] hover:bg-[#1f1f23]';
 
 function splitAtAccent(text: string, accent: string): [string, string, string] {
   const i = text.indexOf(accent);
