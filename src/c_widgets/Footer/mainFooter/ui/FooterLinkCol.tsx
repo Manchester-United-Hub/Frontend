@@ -6,9 +6,9 @@ interface FooterLinkColProps {
 function FooterLinkCol({ heading, links }: FooterLinkColProps) {
   return (
     <div>
-      <h5 className="mt-0 mb-[14px] text-[12px] tracking-[0.12em] uppercase text-[#71717a] font-semibold">
+      <h3 className="mt-0 mb-[14px] text-[12px] tracking-[0.12em] uppercase text-[#71717a] font-semibold">
         {heading}
-      </h5>
+      </h3>
       <ul role="list" className="m-0 p-0 list-none">
         {links.map((link) => (
           <li key={link}>
