@@ -73,4 +73,16 @@ describe('CategoryCardsSection', () => {
     const { container } = render(<CategoryCardsSection categories={categories} />);
     expect(container.querySelector('section[aria-labelledby]')).not.toBeNull();
   });
+
+  it('매핑에 없는 key는 폴백 아이콘으로 렌더된다', () => {
+    const { container } = render(
+      <CategoryCardsSection
+        categories={[
+          { key: 'unknown', name: '기타', nameEn: 'Etc', description: 'd' },
+        ]}
+      />
+    );
+    // 폴백 아이콘(LayoutGrid) + goLabel chevron = svg 2개. 슬롯이 비지 않는다.
+    expect(container.querySelectorAll('svg')).toHaveLength(2);
+  });
 });
