@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
-
+import { TanstackQueryProvider } from './providers';
 import { Navbar } from '@widgets/Navbar';
 import { MainFooter } from '@widgets/Footer';
 import './globals.css';
@@ -34,7 +34,7 @@ export default function RootLayout({
     <html lang="ko" className={`${pretendard.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">
         <Navbar />
-        {children}
+        <TanstackQueryProvider>{children}</TanstackQueryProvider>
         <MainFooter />
       </body>
     </html>
