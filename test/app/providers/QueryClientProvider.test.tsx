@@ -15,7 +15,6 @@ import { describe, it, expect, afterEach } from 'vitest';
 import { render, screen, cleanup } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 import { QueryClient, useQueryClient } from '@tanstack/react-query';
-import React from 'react';
 
 import { TanstackQueryProvider } from '@app/providers';
 
@@ -53,7 +52,6 @@ describe('TanstackQueryProvider', () => {
   });
 
   it('부모를 rerender해도 동일 QueryClient 인스턴스가 유지된다 (lazy init 회귀 가드)', () => {
-    let firstClient: QueryClient | undefined;
     let latestClient: QueryClient | undefined;
 
     function Consumer() {
@@ -71,7 +69,7 @@ describe('TanstackQueryProvider', () => {
     }
 
     const { rerender } = render(<Wrapper tick={0} />);
-    firstClient = latestClient;
+    const firstClient: QueryClient | undefined = latestClient;
 
     rerender(<Wrapper tick={1} />);
     expect(latestClient).toBe(firstClient);
