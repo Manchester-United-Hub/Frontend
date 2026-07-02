@@ -11,6 +11,8 @@ interface SubTabProps {
 
 /** 탭 버튼 1개. 모듈 스코프 정의(SubTabNav 내부 정의 금지 — code-conventions §1). */
 function SubTab({ tab, isActive, onChange }: SubTabProps) {
+  const handleClick = () => onChange(tab.id);
+
   return (
     <button
       type="button"
@@ -18,7 +20,7 @@ function SubTab({ tab, isActive, onChange }: SubTabProps) {
       id={`tab-${tab.id}`}
       aria-selected={isActive}
       aria-controls={`panel-${tab.id}`}
-      onClick={() => onChange(tab.id)}
+      onClick={handleClick}
       className={cn(
         'relative flex flex-none flex-col items-center gap-px whitespace-nowrap border-0 bg-transparent px-4 pb-3.25 pt-3.5 text-[15px] font-medium text-muted-foreground transition-colors',
         'hover:text-foreground',
