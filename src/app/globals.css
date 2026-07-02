@@ -36,6 +36,9 @@
   /* Typography */
   --font-sans: var(--font-sans);
   --font-mono: var(--font-mono);
+
+  /* Layout */
+  --container-shell: 75rem; /* 1200px — 페이지 셸 max-width. `max-w-shell` 유틸리티로 노출된다. */
 }
 
 /* @media (prefers-color-scheme: dark) {
