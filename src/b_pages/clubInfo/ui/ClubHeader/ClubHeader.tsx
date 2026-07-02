@@ -51,17 +51,20 @@ export function ClubHeader({ identity }: ClubHeaderProps) {
       <Shell className="relative z-2 pb-10 pt-12">
         <div className="relative flex items-center gap-6 max-[620px]:flex-col max-[620px]:items-start max-[620px]:gap-4">
           {/* 창단연도 워터마크 */}
-          <span
+          {/* <span
             aria-hidden="true"
             className="pointer-events-none absolute right-[-30px] top-1/2 -translate-y-1/2 select-none text-[240px] font-extrabold leading-none tracking-[-0.02em] text-white/[0.06]"
           >
             {identity.founded}
-          </span>
+          </span> */}
 
           {/* 크레스트 */}
-          <span className="grid h-24 w-24 flex-none place-items-center rounded-lg bg-white max-[620px]:h-[72px] max-[620px]:w-[72px]">
-            <UnitedShield size={64} className="max-[620px]:h-12 max-[620px]:w-12" />
-          </span>
+          {/* <span className="grid h-24 w-24 flex-none place-items-center rounded-lg bg-white max-[620px]:h-[72px] max-[620px]:w-[72px]">
+            <UnitedShield
+              size={64}
+              className="max-[620px]:h-12 max-[620px]:w-12"
+            />
+          </span> */}
 
           {/* 구단명 · 닉네임 */}
           <div className="min-w-0">
@@ -83,7 +86,7 @@ export function ClubHeader({ identity }: ClubHeaderProps) {
           </div>
 
           {/* 액션 — model에 ctas 없음: club.jsx처럼 정적 JSX로 직접 작성 */}
-          <div className="ml-auto flex gap-2.5 max-[620px]:ml-0">
+          {/* <div className="ml-auto flex gap-2.5 max-[620px]:ml-0">
             <Button mode="default" variant="outline" className={DARK_OUTLINE}>
               {ICON_AWARD}
               명예의 전당
@@ -92,7 +95,7 @@ export function ClubHeader({ identity }: ClubHeaderProps) {
               {ICON_BELL}
               구단 소식 받기
             </Button>
-          </div>
+          </div> */}
         </div>
       </Shell>
     </section>

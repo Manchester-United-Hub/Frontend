@@ -3,7 +3,13 @@
 import { useState, type ReactNode } from 'react';
 
 import type { SubTabId } from '../../model/types';
-import { emptyTabCopy, historyEvents, manager, stadium, subTabs } from '../../model/mockData';
+import {
+  emptyTabCopy,
+  historyEvents,
+  manager,
+  stadium,
+  subTabs,
+} from '../../model/mockData';
 import { EmptyTab } from '../EmptyTab';
 import { HistoryTab } from '../HistoryTab';
 import { ManagerTab } from '../ManagerTab';
@@ -16,7 +22,8 @@ import { SubTabNav } from '../SubTabNav';
 const DEFAULT_TAB_ID: SubTabId = 'history';
 
 /** "준비 중" 탭 라벨 — subTabs(단일 소스)에서 파생, 하드코딩 중복 금지. */
-const HIGHLIGHTS_LABEL = subTabs.find((tab) => tab.id === 'highlights')?.kr ?? '하이라이트';
+const HIGHLIGHTS_LABEL =
+  subTabs.find((tab) => tab.id === 'highlights')?.kr ?? '하이라이트';
 const STATS_LABEL = subTabs.find((tab) => tab.id === 'stats')?.kr ?? '팀통계';
 
 /**
@@ -27,7 +34,9 @@ const STATS_LABEL = subTabs.find((tab) => tab.id === 'stats')?.kr ?? '팀통계'
  */
 const TAB_PANELS: Record<SubTabId, ReactNode> = {
   history: <HistoryTab historyEvents={historyEvents} />,
-  highlights: <EmptyTab label={HIGHLIGHTS_LABEL} copy={emptyTabCopy.highlights} />,
+  highlights: (
+    <EmptyTab label={HIGHLIGHTS_LABEL} copy={emptyTabCopy.highlights} />
+  ),
   squad: <SquadTab />,
   manager: <ManagerTab manager={manager} />,
   stadium: <StadiumTab stadium={stadium} />,
