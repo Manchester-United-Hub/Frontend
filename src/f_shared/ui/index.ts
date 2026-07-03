@@ -8,3 +8,6 @@ export * from './MatchCard';
 export * from './PlayerCard';
 export * from './CategoryCard';
 export * from './UnitedShield';
+export * from './Card';
+export * from './BilingualLabel';
+export * from './Shell';
