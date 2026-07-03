@@ -27,11 +27,13 @@ describe('ClubHeader', () => {
     expect(screen.getByText(new RegExp(`Est\\.\\s*${clubIdentity.founded}`))).toBeInTheDocument();
   });
 
-  it('액션 버튼 2개(명예의 전당·구단 소식 받기)가 렌더된다', () => {
+  it('명예의 전당 액션 버튼을 렌더한다 (구단 소식 받기 알림 버튼은 임시 비활성화)', () => {
     render(<ClubHeader identity={clubIdentity} />);
 
     expect(screen.getByRole('button', { name: /명예의 전당/ })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /구단 소식 받기/ })).toBeInTheDocument();
+    // 알림 버튼 임시 비활성화 — 원복 시 아래 주석 해제
+    // expect(screen.getByRole('button', { name: /구단 소식 받기/ })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /구단 소식 받기/ })).not.toBeInTheDocument();
   });
 
   it('창단연도 워터마크(장식 요소)가 aria-hidden으로 렌더된다', () => {
