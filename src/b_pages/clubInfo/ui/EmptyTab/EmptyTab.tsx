@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
-import { Award, BarChart3, Bell, LayoutGrid } from 'lucide-react';
+import { Award, BarChart3, LayoutGrid } from 'lucide-react';
 
-import { Button, Shell, StateBox } from '@shared/ui';
+import { Shell, StateBox } from '@shared/ui';
 import type { EmptyTabCopy } from '../../model/types';
 
 /**
@@ -22,7 +22,8 @@ const EMPTY_ICON_MAP: Record<string, ReactNode> = {
 /** 매핑에 없는 icon name에 대한 기본 아이콘 — 빈 슬롯 렌더 방지 */
 const FALLBACK_EMPTY_ICON = <LayoutGrid size={EMPTY_ICON_SIZE} aria-hidden="true" />;
 
-const BELL_ICON = <Bell size={16} aria-hidden="true" />;
+// 알림 기능 임시 비활성화 (원복 시 Bell·Button import·아래 상수·action prop 주석 해제)
+// const BELL_ICON = <Bell size={16} aria-hidden="true" />;
 
 export interface EmptyTabProps {
   /** 탭 국문 라벨(예: "하이라이트") — "{label} 준비 중이에요" 타이틀에 쓰인다. */
@@ -40,12 +41,13 @@ export function EmptyTab({ label, copy }: EmptyTabProps) {
         icon={EMPTY_ICON_MAP[copy.icon] ?? FALLBACK_EMPTY_ICON}
         title={`${label} 준비 중이에요`}
         description={copy.desc}
-        action={
-          <Button mode="default" variant="outline">
-            {BELL_ICON}
-            업데이트되면 알림 받기
-          </Button>
-        }
+        // 알림 버튼 임시 비활성화 (원복 시 아래 action prop 주석 해제)
+        // action={
+        //   <Button mode="default" variant="outline">
+        //     {BELL_ICON}
+        //     업데이트되면 알림 받기
+        //   </Button>
+        // }
       />
     </Shell>
   );

@@ -1,4 +1,4 @@
-import { Award, Bell, History } from 'lucide-react';
+import { Award, History } from 'lucide-react';
 
 import type { ClubIdentity } from '../../model/types';
 import { Badge, Button, Eyebrow, Shell, UnitedShield } from '@shared/ui';
@@ -7,7 +7,8 @@ import { DARK_OUTLINE } from './styles';
 /* ── 헤더 전용 아이콘 (모듈 스코프 호이스팅) ─────────────────────────── */
 
 const ICON_AWARD = <Award size={16} aria-hidden="true" />;
-const ICON_BELL = <Bell size={16} aria-hidden="true" />;
+// 알림 기능 임시 비활성화 (원복 시 Bell import·아래 상수·버튼 주석 해제)
+// const ICON_BELL = <Bell size={16} aria-hidden="true" />;
 const ICON_HISTORY = <History size={13} aria-hidden="true" />;
 
 const CLUB_HEADER_HEADING_ID = 'club-header-heading';
@@ -91,10 +92,12 @@ export function ClubHeader({ identity }: ClubHeaderProps) {
               {ICON_AWARD}
               명예의 전당
             </Button>
+            {/* 알림 버튼 임시 비활성화
             <Button mode="default" variant="red">
               {ICON_BELL}
               구단 소식 받기
             </Button>
+            */}
           </div>
         </div>
       </Shell>

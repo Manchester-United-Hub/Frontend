@@ -1,4 +1,4 @@
-import { CalendarDays, Bell, MapPin, Clock } from 'lucide-react';
+import { CalendarDays, MapPin, Clock } from 'lucide-react';
 import type { MatchItem } from '../../model/types';
 import { Button } from '@shared/ui';
 import { cn } from '@shared/utils';
@@ -7,7 +7,8 @@ import { DARK_OUTLINE } from './styles';
 /* ── 패널 전용 아이콘 (모듈 스코프 호이스팅) ─────────────────────────── */
 
 const ICON_CAL_SM = <CalendarDays size={14} strokeWidth={1.75} aria-hidden="true" />;
-const ICON_BELL = <Bell size={16} strokeWidth={1.75} aria-hidden="true" />;
+// 알림 기능 임시 비활성화 (원복 시 Bell import·아래 상수·버튼 주석 해제)
+// const ICON_BELL = <Bell size={16} strokeWidth={1.75} aria-hidden="true" />;
 const ICON_MAP = <MapPin size={15} strokeWidth={1.75} aria-hidden="true" />;
 const ICON_CLOCK = <Clock size={15} strokeWidth={1.75} aria-hidden="true" />;
 
@@ -65,9 +66,11 @@ export function FeaturedMatchPanel({ match, className }: FeaturedMatchPanelProps
 
       {/* Actions */}
       <div className="relative z-10 mt-[18px] flex gap-2.5">
+        {/* 알림 버튼 임시 비활성화
         <Button mode="default" variant="red" size="default" className="flex-1">
           {ICON_BELL}경기 알림 받기
         </Button>
+        */}
         <Button mode="default" variant="outline" size="default" className={DARK_OUTLINE}>
           {match.countdown ?? '—'}
         </Button>
