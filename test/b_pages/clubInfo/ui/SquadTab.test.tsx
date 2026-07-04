@@ -2,12 +2,16 @@
  * SquadTab 포메이션 전환 테스트 — QA 검증(qa-clubInfo).
  *
  * 검증 목적:
- * - 포메이션 4종 전환 시 세그먼트 컨트롤의 aria-pressed 갱신
+ * - 포메이션 4종 전환 시 세그먼트 컨트롤의 aria-checked 갱신
  * - 피치 토큰 좌표가 FORMATIONS[name][i] ↔ lineup[i] 인덱스 페어링대로 재배치되는가
  * - GK(lineup[0])가 항상 formations 테이블의 index 0(스폿)에 페어링되는가(11명 전원)
  *
  * 토큰 조회: PitchToken 래퍼 div만 인라인 style="left:...;top:..."을 갖는다(LineupList 행은
  * Tailwind 클래스만 사용, 인라인 style 없음) — 'div[style*="left:"]' 선택자로 피치 토큰만 스코프.
+ *
+ * ADR-9 note: FormationSegmentedControl은 공통 SegmentedControl(Headless UI RadioGroup)
+ * 소비 어댑터로 리팩터되어 시맨틱이 button/aria-pressed → radio/aria-checked로 바뀌었다.
+ * 아래 테스트는 시나리오(기본값·전환·재전환·피치 연동)는 그대로 두고 셀렉터만 갱신했다.
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
@@ -34,10 +38,10 @@ function findTokenByNum(tokens: HTMLDivElement[], num: number) {
 }
 
 describe('SquadTab 포메이션 전환', () => {
-  it('기본 포메이션은 4-3-3 — 세그먼트 컨트롤 aria-pressed 초기값', () => {
+  it('기본 포메이션은 4-3-3 — 세그먼트 컨트롤 aria-checked 초기값', () => {
     render(<SquadTab />);
-    expect(screen.getByRole('button', { name: '4-3-3' })).toHaveAttribute('aria-pressed', 'true');
-    expect(screen.getByRole('button', { name: '4-4-2' })).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.getByRole('radio', { name: '4-3-3' })).toHaveAttribute('aria-checked', 'true');
+    expect(screen.getByRole('radio', { name: '4-4-2' })).toHaveAttribute('aria-checked', 'false');
   });
 
   it('피치 토큰 11개가 렌더되고, GK(오나나 #24)는 formations 테이블 index 0 좌표에 위치한다', () => {
@@ -57,8 +61,8 @@ describe('SquadTab 포메이션 전환', () => {
       const user = userEvent.setup();
       const { container } = render(<SquadTab />);
 
-      await user.click(screen.getByRole('button', { name }));
-      expect(screen.getByRole('button', { name })).toHaveAttribute('aria-pressed', 'true');
+      await user.click(screen.getByRole('radio', { name }));
+      expect(screen.getByRole('radio', { name })).toHaveAttribute('aria-checked', 'true');
 
       const tokens = pitchTokens(container);
       expect(tokens).toHaveLength(11);
@@ -76,10 +80,10 @@ describe('SquadTab 포메이션 전환', () => {
     const user = userEvent.setup();
     const { container } = render(<SquadTab />);
 
-    await user.click(screen.getByRole('button', { name: '4-4-2' }));
-    await user.click(screen.getByRole('button', { name: '4-3-3' }));
+    await user.click(screen.getByRole('radio', { name: '4-4-2' }));
+    await user.click(screen.getByRole('radio', { name: '4-3-3' }));
 
-    expect(screen.getByRole('button', { name: '4-3-3' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('radio', { name: '4-3-3' })).toHaveAttribute('aria-checked', 'true');
     const tokens = pitchTokens(container);
     const rbCoord = FORMATIONS['4-3-3'][1];
     const rbToken = findTokenByNum(tokens, lineup[1].num);
@@ -89,7 +93,10 @@ describe('SquadTab 포메이션 전환', () => {
   it('선발 라인업 카드에 포메이션 라벨 배지가 갱신된다', async () => {
     const user = userEvent.setup();
     render(<SquadTab />);
-    await user.click(screen.getByRole('button', { name: '3-4-2-1' }));
-    expect(screen.getByText('3-4-2-1', { selector: 'span' })).toBeInTheDocument();
+    await user.click(screen.getByRole('radio', { name: '3-4-2-1' }));
+    // radio 옵션도 텍스트 "3-4-2-1"인 span이므로 배지(non-radio span)로 스코프를 좁힌다.
+    expect(
+      screen.getByText('3-4-2-1', { selector: 'span:not([role="radio"])' }),
+    ).toBeInTheDocument();
   });
 });
