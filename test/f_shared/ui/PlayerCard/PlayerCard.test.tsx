@@ -1,4 +1,5 @@
 import type { Route } from 'next';
+import Image from 'next/image';
 import { afterEach, describe, expect, it } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
@@ -41,7 +42,7 @@ describe('PlayerCard', () => {
         nameEn="Bruno"
         position="MF"
         status="active"
-        photo={<img alt="브루누 사진" src="bruno.png" />}
+        photo={<Image alt="브루누 사진" src="/bruno.png" width={100} height={100} />}
       />
     );
     expect(screen.getByAltText('브루누 사진')).toBeInTheDocument();
