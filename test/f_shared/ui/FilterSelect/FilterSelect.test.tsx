@@ -26,15 +26,27 @@ const OPTIONS = [
 describe('FilterSelect (Listbox)', () => {
   it('label과 선택된 값을 렌더한다', () => {
     render(
-      <FilterSelect label="포지션" value="all" options={OPTIONS} onChange={() => {}} />,
+      <FilterSelect
+        label="포지션"
+        value="all"
+        options={OPTIONS}
+        onChange={() => {}}
+      />
     );
     expect(screen.getByText('포지션')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: '포지션' })).toHaveTextContent('전체 포지션');
+    expect(screen.getByRole('button', { name: '포지션' })).toHaveTextContent(
+      '전체 포지션'
+    );
   });
 
   it('aria-label 미지정 시 label을 접근성 이름으로 폴백한다', () => {
     render(
-      <FilterSelect label="포지션" value="all" options={OPTIONS} onChange={() => {}} />,
+      <FilterSelect
+        label="포지션"
+        value="all"
+        options={OPTIONS}
+        onChange={() => {}}
+      />
     );
     // 폴백 검증: 접근성 이름은 label('포지션')이고, 버튼에 보이는 선택값('전체 포지션')과 구분된다.
     const button = screen.getByRole('button', { name: '포지션' });
@@ -50,16 +62,36 @@ describe('FilterSelect (Listbox)', () => {
         options={OPTIONS}
         onChange={() => {}}
         aria-label="스쿼드 선택"
-      />,
+      />
     );
-    expect(screen.getByRole('button', { name: '스쿼드 선택' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: '스쿼드 선택' })
+    ).toBeInTheDocument();
+  });
+
+  it('매칭되는 옵션이 없으면 버튼 내용이 비어 있다', () => {
+    render(
+      <FilterSelect
+        label="포지션"
+        value="unknown"
+        options={OPTIONS}
+        onChange={() => {}}
+      />
+    );
+    // ChevronDown(aria-hidden svg)은 텍스트가 없으므로 textContent는 ''
+    expect(screen.getByRole('button').textContent).toBe('');
   });
 
   it('버튼 클릭 시 옵션 목록이 열리고 선택하면 onChange가 key로 호출된다', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     render(
-      <FilterSelect label="포지션" value="all" options={OPTIONS} onChange={onChange} />,
+      <FilterSelect
+        label="포지션"
+        value="all"
+        options={OPTIONS}
+        onChange={onChange}
+      />
     );
 
     await user.click(screen.getByRole('button', { name: '포지션' }));
@@ -77,7 +109,7 @@ describe('FilterSelect (Listbox)', () => {
         options={OPTIONS}
         onChange={() => {}}
         className="flex-1"
-      />,
+      />
     );
     expect(container.querySelector('.flex-1')).not.toBeNull();
   });
