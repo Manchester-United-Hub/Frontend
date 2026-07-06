@@ -61,8 +61,8 @@ function PlayerCard({
   const hasNationality = Boolean(nationality && flag);
 
   const cardClassName = cn(
-    'relative overflow-hidden rounded-lg border border-border bg-card transition-[box-shadow,transform] motion-safe:hover:-translate-y-0.5 hover:shadow-md',
-    className,
+    'relative block overflow-hidden rounded-lg border border-border bg-card transition-[box-shadow,transform] motion-safe:hover:-translate-y-0.5 hover:shadow-md',
+    className
   );
 
   const cardContent = (
@@ -100,14 +100,14 @@ function PlayerCard({
         <div
           className={cn(
             'flex items-center gap-2 text-xs text-muted-foreground',
-            hasNationality ? 'mt-1' : 'mt-2.5',
+            hasNationality ? 'mt-1' : 'mt-2.5'
           )}
         >
           <span className="inline-flex items-center gap-1.5">
             <span
               className={cn(
                 'h-1.5 w-1.5 rounded-full',
-                status === 'active' ? 'bg-win' : 'bg-muted-foreground',
+                status === 'active' ? 'bg-win' : 'bg-muted-foreground'
               )}
             />
             {/* retired는 우상단 Badge("은퇴")가 상태 표식을 전담 — 이 행은 dot + 재임 기간(meta)만 표시해
