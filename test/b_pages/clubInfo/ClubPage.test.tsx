@@ -58,7 +58,9 @@ describe('ClubPage 서브탭 전환', () => {
     const user = userEvent.setup();
     render(<ClubPage />);
     await user.click(screen.getByRole('tab', { name: /선수정보/ }));
-    expect(screen.getByRole('group', { name: '포메이션 선택' })).toBeInTheDocument();
+    // ADR-9: FormationSegmentedControl이 공통 SegmentedControl(RadioGroup)로 리팩터되어
+    // role이 group → radiogroup으로 바뀐다(체크포인트 A 승인 사항의 기계적 후속 조정).
+    expect(screen.getByRole('radiogroup', { name: '포메이션 선택' })).toBeInTheDocument();
     expect(screen.getByText('선발 라인업')).toBeInTheDocument();
   });
 

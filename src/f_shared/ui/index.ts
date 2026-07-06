@@ -11,3 +11,5 @@ export * from './UnitedShield';
 export * from './Card';
 export * from './BilingualLabel';
 export * from './Shell';
+export * from './FilterSelect';
+export * from './SegmentedControl';
