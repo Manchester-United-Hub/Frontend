@@ -32,11 +32,14 @@ describe('FilterSelect (Listbox)', () => {
     expect(screen.getByRole('button', { name: '포지션' })).toHaveTextContent('전체 포지션');
   });
 
-  it('aria-label 미지정 시 label로 폴백한다', () => {
+  it('aria-label 미지정 시 label을 접근성 이름으로 폴백한다', () => {
     render(
-      <FilterSelect label="스쿼드" value="all" options={OPTIONS} onChange={() => {}} />,
+      <FilterSelect label="포지션" value="all" options={OPTIONS} onChange={() => {}} />,
     );
-    expect(screen.getByRole('button', { name: '스쿼드' })).toBeInTheDocument();
+    // 폴백 검증: 접근성 이름은 label('포지션')이고, 버튼에 보이는 선택값('전체 포지션')과 구분된다.
+    const button = screen.getByRole('button', { name: '포지션' });
+    expect(button).toHaveAccessibleName('포지션');
+    expect(button).toHaveTextContent('전체 포지션');
   });
 
   it('aria-label을 지정하면 우선한다', () => {
