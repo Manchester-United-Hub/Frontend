@@ -55,7 +55,22 @@ describe('SegmentedControl (RadioGroup)', () => {
     expect(onChange).toHaveBeenCalledWith('list');
   });
 
-  it('키보드 화살표로 옵션 간 이동이 가능하다', async () => {
+  it('리스트뷰에서 카드뷰 옵션 클릭 시 onChange가 card로 호출된다', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <SegmentedControl
+        options={OPTIONS}
+        value="list"
+        onChange={onChange}
+        aria-label="보기 전환"
+      />,
+    );
+    await user.click(screen.getByRole('radio', { name: '카드뷰' }));
+    expect(onChange).toHaveBeenCalledWith('card');
+  });
+
+  it('키보드 화살표로 카드뷰 → 리스트뷰 이동이 가능하다', async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     render(
@@ -71,12 +86,28 @@ describe('SegmentedControl (RadioGroup)', () => {
     expect(onChange).toHaveBeenCalledWith('list');
   });
 
-  it('icon 슬롯을 옵션과 함께 렌더한다', () => {
+  it('키보드 화살표로 리스트뷰 → 카드뷰 이동이 가능하다', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(
+      <SegmentedControl
+        options={OPTIONS}
+        value="list"
+        onChange={onChange}
+        aria-label="보기 전환"
+      />,
+    );
+    screen.getByRole('radio', { name: '리스트뷰' }).focus();
+    await user.keyboard('{ArrowLeft}');
+    expect(onChange).toHaveBeenCalledWith('card');
+  });
+
+  it('각 옵션(카드뷰·리스트뷰)의 icon 슬롯을 함께 렌더한다', () => {
     render(
       <SegmentedControl
         options={[
           { value: 'card' as ViewOption, label: '카드뷰', icon: <span data-testid="grid-icon" /> },
-          { value: 'list' as ViewOption, label: '리스트뷰' },
+          { value: 'list' as ViewOption, label: '리스트뷰', icon: <span data-testid="list-icon" /> },
         ]}
         value="card"
         onChange={() => {}}
@@ -84,5 +115,6 @@ describe('SegmentedControl (RadioGroup)', () => {
       />,
     );
     expect(screen.getByTestId('grid-icon')).toBeInTheDocument();
+    expect(screen.getByTestId('list-icon')).toBeInTheDocument();
   });
 });
