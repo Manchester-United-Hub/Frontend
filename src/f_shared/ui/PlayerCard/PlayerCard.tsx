@@ -61,7 +61,7 @@ function PlayerCard({
   const hasNationality = Boolean(nationality && flag);
 
   const cardClassName = cn(
-    'relative overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-[box-shadow,transform] motion-safe:hover:-translate-y-0.5 hover:shadow-md',
+    'relative overflow-hidden rounded-lg border border-border bg-card transition-[box-shadow,transform] motion-safe:hover:-translate-y-0.5 hover:shadow-md',
     className,
   );
 
