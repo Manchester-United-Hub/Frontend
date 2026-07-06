@@ -17,43 +17,15 @@
 import { Shell } from '@shared/ui';
 
 import { DECADES, PLAYERS, POSITIONS, SQUADS, usePlayerListFilters } from './model';
-import type { PlayerListItem, RosterView } from './model';
 import {
   FilterBarSection,
   ResultRow,
-  RosterEmpty,
-  RosterGrid,
+  RosterContent,
   RosterHeadSection,
-  RosterListView,
-  RosterSkeleton,
 } from './ui';
-
-interface RosterContentParams {
-  isLoading: boolean;
-  results: PlayerListItem[];
-  view: RosterView;
-  onReset: () => void;
-}
-
-/** 로딩 → 0건 → 뷰(card/list) 3단 분기. 조립 함수 본문에서 분리해 20줄 규칙을 지킨다. */
-function getRosterContent({ isLoading, results, view, onReset }: RosterContentParams) {
-  if (isLoading) return <RosterSkeleton />;
-  if (results.length === 0) return <RosterEmpty onReset={onReset} />;
-  return view === 'card' ? (
-    <RosterGrid players={results} />
-  ) : (
-    <RosterListView players={results} />
-  );
-}
 
 function PlayerListPage() {
   const roster = usePlayerListFilters(PLAYERS);
-  const content = getRosterContent({
-    isLoading: roster.isLoading,
-    results: roster.results,
-    view: roster.view,
-    onReset: roster.resetFilters,
-  });
 
   return (
     <main>
@@ -76,7 +48,12 @@ function PlayerListPage() {
           onRefresh={roster.refresh}
         />
         <ResultRow count={roster.results.length} view={roster.view} onViewChange={roster.setView} />
-        {content}
+        <RosterContent
+          isLoading={roster.isLoading}
+          results={roster.results}
+          view={roster.view}
+          onReset={roster.resetFilters}
+        />
       </Shell>
     </main>
   );

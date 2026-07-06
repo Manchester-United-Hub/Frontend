@@ -1,5 +1,6 @@
 export * from './FilterBarSection';
 export * from './ResultRow';
+export * from './RosterContent';
 export * from './RosterEmpty';
 export * from './RosterGrid';
 export * from './RosterHeadSection';
