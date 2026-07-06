@@ -1,6 +1,7 @@
 import { PlayerCard } from '@shared/ui';
 
-import { FLAG_EMOJI, playerDetailHref } from '../../model/mockData';
+import { FLAG_EMOJI } from '../../model/mockData';
+import { playerDetailHref } from '../../model/playerDetailHref';
 import type { PlayerListItem } from '../../model/types';
 
 /**

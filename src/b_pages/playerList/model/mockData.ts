@@ -4,30 +4,13 @@
  * Based on design reference players-data.js (18명 — 1군 12 + 레전드 6).
  * No imports from e_entities / d_features / app/api (standards: e_entities 실 API 호출 금지 —
  * 목업은 이 파일에만 둔다).
- *
- * 카드/행 전체 링크 목적지는 ADR-5 후속 조정(체크포인트 B rework) — 상세 라우트가
- * `/players/[playerId]/details` 동적 세그먼트로 재구조화되어, 고정 상수 대신 선수별
- * href를 만드는 헬퍼(`playerDetailHref`)로 교체했다. ui 레이어는 `player.id`를 넘겨 소비한다.
  */
-
-import type { Route } from 'next';
 
 import { ALL_FILTER_KEY } from './types';
 import type { FilterOption, PlayerListItem } from './types';
 
 /** 새로고침 로딩 시뮬레이션 지연(ms) — ADR-8. API 연결 시 react-query isFetching으로 교체. */
 export const REFRESH_DELAY_MS = 700;
-
-/** RosterSkeleton이 렌더할 스켈레톤 카드 개수 (players-list.jsx SkeletonGrid 기준). */
-export const SKELETON_CARD_COUNT = 10;
-
-/**
- * 선수별 상세 페이지 링크 생성 — ADR-5 후속 조정. 라우트는 `/players/[playerId]/details`
- * 동적 세그먼트(app/players/[playerId]/details/page.tsx)이며, 목업 단계이므로 `PlayerListItem.id`를
- * playerId로 그대로 사용한다. `next.config.ts`에 `typedRoutes`가 켜져 있지 않아 `Route`는
- * 사실상 string 별칭이라 별도 타입 단언 없이 반환한다.
- */
-export const playerDetailHref = (id: string): Route => `/players/${id}/details`;
 
 // ───────── Players ─────────
 

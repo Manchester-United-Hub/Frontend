@@ -13,7 +13,7 @@ import { render, cleanup, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { RosterListView } from '@pages/playerList/ui/RosterListView';
-import { playerDetailHref } from '@pages/playerList/model/mockData';
+import { playerDetailHref } from '@pages/playerList/model/playerDetailHref';
 import type { PlayerListItem } from '@pages/playerList/model/types';
 
 afterEach(cleanup);

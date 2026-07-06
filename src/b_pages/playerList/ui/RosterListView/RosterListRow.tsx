@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { Badge } from '@shared/ui';
 import { cn } from '@shared/utils';
 
-import { FLAG_EMOJI, playerDetailHref } from '../../model/mockData';
+import { FLAG_EMOJI } from '../../model/mockData';
+import { playerDetailHref } from '../../model/playerDetailHref';
 import type { PlayerListItem } from '../../model/types';
 import { ROSTER_ROW_GRID_CLASSNAME } from './RosterListView';
 
