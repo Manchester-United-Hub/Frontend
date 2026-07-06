@@ -1,6 +1,7 @@
 import type { ChangeEvent } from 'react';
 import { Search, X } from 'lucide-react';
 
+import { Button } from '@shared/ui';
 import { cn } from '@shared/utils';
 
 interface RosterSearchFieldProps {
@@ -39,14 +40,15 @@ function RosterSearchField({ value, onChange, className }: RosterSearchFieldProp
           className="min-w-0 flex-1 border-none bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
         />
         {value ? (
-          <button
-            type="button"
+          <Button
+            mode="icon"
+            variant="ghost"
             onClick={handleClear}
             aria-label="검색어 지우기"
-            className="inline-flex shrink-0 text-muted-foreground transition-colors hover:text-foreground"
+            className="h-auto w-auto shrink-0 p-0 text-muted-foreground hover:bg-transparent hover:text-foreground"
           >
             <X size={15} aria-hidden="true" />
-          </button>
+          </Button>
         ) : null}
       </div>
     </div>
