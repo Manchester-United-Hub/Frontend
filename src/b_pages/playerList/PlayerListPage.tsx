@@ -17,6 +17,7 @@
 import { Shell } from '@shared/ui';
 
 import { DECADES, PLAYERS, POSITIONS, SQUADS, usePlayerListFilters } from './model';
+import type { PlayerListItem } from './model';
 import {
   FilterBarSection,
   ResultRow,
@@ -24,8 +25,13 @@ import {
   RosterHeadSection,
 } from './ui';
 
-function PlayerListPage() {
-  const roster = usePlayerListFilters(PLAYERS);
+interface PlayerListPageProps {
+  /** 렌더할 선수 목록. 미지정 시 목업 데이터(PLAYERS). 추후 API 데이터를 주입하거나 테스트 fixture로 대체한다. */
+  players?: PlayerListItem[];
+}
+
+function PlayerListPage({ players = PLAYERS }: PlayerListPageProps = {}) {
+  const roster = usePlayerListFilters(players);
 
   return (
     <main>
