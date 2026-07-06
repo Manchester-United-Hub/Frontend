@@ -79,6 +79,17 @@ describe('usePlayerListFilters', () => {
     expect(result.current.isLoading).toBe(false);
   });
 
+  it('refresh — 이미 refreshTimeoutRef.current가 있는 경우 clearTimeout한다.', () => {
+    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+    const { result } = renderHook(() => usePlayerListFilters(players));
+
+    act(() => result.current.refresh()); // 1st: refreshTimeoutRef.current 설정
+    act(() => result.current.refresh()); // 2nd: 기존 ref 발견 → clearTimeout 발동
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+    clearTimeoutSpy.mockRestore();
+  });
+
   it('resetFilters — position/decade/squad/query를 모두 초기화한다', () => {
     const { result } = renderHook(() => usePlayerListFilters(players));
 
