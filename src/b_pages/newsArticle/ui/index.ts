@@ -1,5 +1,5 @@
 export { NewsHeadSection } from './NewsHeadSection';
 export { NewsContent } from './NewsContent';
-export { NewsGrid } from './NewsGrid';
+export { NewsList } from './NewsList';
 export { NewsSkeleton } from './NewsSkeleton';
-export { ArticleCard } from './ArticleCard';
+export { ArticleRow } from './ArticleRow';

@@ -43,7 +43,7 @@ describe('NewsContent', () => {
     expect(screen.getByText('표시할 기사가 없어요')).toBeInTheDocument();
   });
 
-  it('기사가 있으면 그리드를 렌더하고, 다음 페이지가 없으면 버튼을 숨긴다', () => {
+  it('기사가 있으면 카운트와 리스트를 렌더하고, 다음 페이지가 없으면 버튼을 숨긴다', () => {
     render(
       <NewsContent
         isLoading={false}
@@ -54,6 +54,8 @@ describe('NewsContent', () => {
       />,
     );
 
+    expect(screen.getByText('개의 기사', { exact: false })).toBeInTheDocument();
+    expect(screen.getByText(String(articles.length))).toBeInTheDocument();
     expect(screen.getByRole('list')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });

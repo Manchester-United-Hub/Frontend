@@ -3,7 +3,7 @@ import { Newspaper } from 'lucide-react';
 import { Button, StateBox } from '@shared/ui';
 
 import type { ArticleItem } from '../../model';
-import { NewsGrid } from '../NewsGrid';
+import { NewsList } from '../NewsList';
 import { NewsSkeleton } from '../NewsSkeleton';
 
 export interface NewsContentProps {
@@ -40,7 +40,10 @@ function NewsContent({
 
   return (
     <>
-      <NewsGrid articles={articles} />
+      <p className="text-sm text-muted-foreground">
+        <b className="text-foreground">{articles.length}</b>개의 기사
+      </p>
+      <NewsList articles={articles} />
       {hasNextPage ? (
         <div className="mt-7 flex justify-center">
           <Button variant="outline" onClick={onLoadMore} disabled={isFetchingNextPage}>
