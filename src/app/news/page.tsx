@@ -1,9 +1,9 @@
-import { NewsArticlePage } from '@pages/newsArticle';
+import { NewsPage } from '@pages/news';
 
 export default function News() {
   return (
     <>
-      <NewsArticlePage />
+      <NewsPage />
     </>
   );
 }
