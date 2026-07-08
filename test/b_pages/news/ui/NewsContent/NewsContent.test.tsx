@@ -60,6 +60,20 @@ describe('NewsContent', () => {
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
   });
 
+  it('다음 페이지가 남아 있으면 카운트를 숨긴다(부분 개수를 총계로 오인 방지)', () => {
+    render(
+      <NewsContent
+        isLoading={false}
+        newsItems={newsItems}
+        hasNextPage
+        isFetchingNextPage={false}
+        onLoadMore={noop}
+      />,
+    );
+
+    expect(screen.queryByText('개의 기사', { exact: false })).not.toBeInTheDocument();
+  });
+
   it('다음 페이지가 있으면 더 보기 버튼 클릭 시 콜백을 호출한다', async () => {
     const onLoadMore = vi.fn();
     const user = userEvent.setup();

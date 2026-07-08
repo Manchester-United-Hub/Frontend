@@ -40,9 +40,11 @@ function NewsContent({
 
   return (
     <>
-      <p className="text-sm text-muted-foreground">
-        <b className="text-foreground">{newsItems.length}</b>개의 기사
-      </p>
+      {hasNextPage ? null : (
+        <p className="text-sm text-muted-foreground">
+          <b className="text-foreground">{newsItems.length}</b>개의 기사
+        </p>
+      )}
       <NewsList newsItems={newsItems} />
       {hasNextPage ? (
         <div className="mt-7 flex justify-center">
