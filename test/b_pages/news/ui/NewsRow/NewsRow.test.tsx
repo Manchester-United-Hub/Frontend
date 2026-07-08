@@ -28,12 +28,12 @@ describe('NewsRow', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  it('본문 발췌를 20자로 잘라 렌더한다', () => {
+  it('본문을 한 줄로 clamp해 노출한다(전문 렌더, CSS로 말줄임)', () => {
     render(<NewsRow {...baseProps} />);
 
-    const excerpt = baseProps.description.slice(0, 20);
-    expect(screen.getByText(excerpt)).toBeInTheDocument();
-    expect(screen.queryByText(baseProps.description)).not.toBeInTheDocument();
+    const body = screen.getByText(baseProps.description);
+    expect(body).toBeInTheDocument();
+    expect(body).toHaveClass('line-clamp-1');
   });
 
   it('imageUrl이 있으면 썸네일로 사용한다', () => {

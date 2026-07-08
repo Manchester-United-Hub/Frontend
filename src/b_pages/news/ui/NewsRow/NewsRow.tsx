@@ -2,9 +2,6 @@ import type { SyntheticEvent } from 'react';
 
 import { cn, handleImageError } from '@shared/utils';
 
-/** 발췌 최대 길이 — description을 이 길이로 잘라 로우 본문에 노출한다. */
-const EXCERPT_MAX = 20;
-
 /** 썸네일 없거나 로딩 실패 시 사용할 기본 이미지(로컬 자산). */
 const DEFAULT_NEWS_IMAGE = '/images/news-default.svg';
 
@@ -28,7 +25,7 @@ export const THUMB_CLASSNAME = 'aspect-[4/3] w-[148px] flex-none max-[640px]:w-[
 
 export interface NewsRowProps {
   title: string;
-  /** 본문 일부 — 로우에서 최대 EXCERPT_MAX자로 잘라 노출한다. */
+  /** 본문 일부 — 로우에서 한 줄로 clamp해 말줄임 노출한다. */
   description: string;
   /** 기사 원문 링크(외부). 로우 전체가 이 링크로 연결된다. */
   link: string;
@@ -53,8 +50,6 @@ export interface NewsRowProps {
  * 제목이 인접 텍스트로 내용을 전달하므로 썸네일은 장식용(alt="")으로 둔다.
  */
 function NewsRow({ title, description, link, date, imageUrl, className }: NewsRowProps) {
-  const excerpt = description.slice(0, EXCERPT_MAX);
-
   return (
     <a
       href={link}
@@ -82,7 +77,9 @@ function NewsRow({ title, description, link, date, imageUrl, className }: NewsRo
         <h3 className="line-clamp-2 text-[17px] font-bold leading-[1.35] tracking-[-0.01em]">
           {title}
         </h3>
-        <p className="mt-1 text-sm leading-[1.5] text-muted-foreground">{excerpt}</p>
+        <p className="mt-1 line-clamp-1 text-sm leading-[1.5] text-muted-foreground">
+          {description}
+        </p>
       </div>
 
       <time className="flex-none whitespace-nowrap text-[13px] text-muted-foreground max-[640px]:hidden">
