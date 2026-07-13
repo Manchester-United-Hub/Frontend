@@ -1,0 +1,1 @@
+export { StandingsTab } from './StandingsTab';
