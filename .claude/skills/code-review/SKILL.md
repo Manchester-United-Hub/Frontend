@@ -39,6 +39,8 @@ Note all flagged lines for investigation — they are leads, not guaranteed bugs
 
 Work through `references/checklist.md` systematically. Apply each section only to files that are in scope. For unfamiliar patterns, consult `references/patterns.md`.
 
+The checklist includes a **프론트엔드 코드 품질** section covering the 4 criteria from [frontend-fundamentals](https://frontend-fundamentals.com/code-quality/code/): 가독성, 예측 가능성, 응집도, 결합도. Apply these to all frontend code changes.
+
 ### Step 4: Check Project Conventions
 
 This project is Next.js + TypeScript + Tailwind. Verify:
