@@ -102,6 +102,37 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - 모션: hover·애니메이션은 `motion-safe:`로 `prefers-reduced-motion`을 존중한다.
 - 표현형 컴포넌트(카드 등)는 도메인 타입(`e_entities`)을 import하지 않고 **자체 props 인터페이스**로 데이터를 받는다.
 
+## 코드 작성 컨벤션
+
+### 함수 선언 형태
+
+- 유틸·API·훅: **화살표 함수** (`const useX = () => …`)
+- 순수 로직 함수: **화살표 함수**
+- 컴포넌트: **함수 선언** (`function Navbar() { … }`)
+
+### 함수 분리 기준
+
+- **응집도·결합도** 기준으로 나눈다. 함께 바뀌는 것은 모으고, 관심사가 다르면 분리.
+- **최대한 순수 함수** 형태(입력→출력, 부수효과 없음).
+- 한 함수는 **하나의 관심사**만 다룬다.
+
+### 컴포넌트 내부
+
+- **인라인 핸들러 금지**: `onChange`·`onSubmit`·`onClick` 등에 화살표를 JSX에 직접 쓰지 말고 named 함수로 추출해 전달한다.
+- **Props Drilling 3단 이상**이면 Context API 등 전역 상태 관리로 전환을 제시한다(적합한 라이브러리가 있으면 사용).
+- **렌더링 최소화**: `useMemo`·`useCallback`·`React.memo`를 적절히 사용한다.
+
+### 클린 코드 원칙
+
+> 기반: [clean-code-typescript](https://738.github.io/clean-code-typescript/)
+
+- **단일 책임(SRP)**: 하나의 함수·클래스는 하나의 작업만 수행한다.
+- **의도 드러내는 이름**: 축약하지 말고 명확한 명사(`userAge`·`totalPrice`). 함수는 동작이므로 동사형(`getUser`·`calculateTotal`).
+- **불필요한 주석 금지**: 코드가 스스로 목적을 설명한다. 의미 없는 주석은 쓰지 않는다.
+- **매개변수 3개 이하**: 4개 이상이면 객체로 묶어 전달한다.
+- **매직 넘버·문자열 제거**: 상수로 선언한다.
+- **조기 리턴**: 깊은 `if` 중첩 대신 조건 불충족 시 즉시 `return`해 코드를 평평하게 유지한다.
+
 ## 테스트
 
 - 위치: `test/`가 `src/` 구조를 미러링(`test/f_shared/ui/...`). 콜로케이션 아님.
