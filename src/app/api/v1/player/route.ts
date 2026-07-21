@@ -11,7 +11,6 @@ export async function GET(request: NextRequest) {
 
   const query: PlayerListQueryDTO = {
     season: Number(searchParams.get('season')!),
-    position: searchParams.get('position') ?? undefined,
   };
 
   const result = await fetchPlayerList(query);

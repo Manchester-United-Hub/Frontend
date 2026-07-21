@@ -14,7 +14,7 @@ const validPlayer = {
 };
 
 describe('PlayerListQueryDTOSchema', () => {
-  it('position이 없어도 통과한다 (optional)', () => {
+  it('season만으로 통과한다', () => {
     expect(PlayerListQueryDTOSchema.safeParse({ season: 2024 }).success).toBe(true);
   });
   it('season이 문자열이면 실패한다', () => {

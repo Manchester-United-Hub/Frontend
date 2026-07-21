@@ -7,13 +7,13 @@ vi.mock('@shared/api', async (importOriginal) => {
   return { ...actual, serverFetcher: { get: vi.fn() } };
 });
 
-const validQuery = { season: 2024, position: 'FW' };
+const validQuery = { season: 2024 };
 
 describe('fetchPlayerList', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('/api/players 경로로 query 파라미터와 함께 GET 요청한다', async () => {
-    const mockRes = { ok: true, status: 200, json: vi.fn().mockResolvedValue({}) };
+    const mockRes = { ok: true, status: 200, json: vi.fn().mockResolvedValue([]) };
     vi.mocked(serverFetcher.get).mockResolvedValue(mockRes as unknown as Response);
 
     await fetchPlayerList(validQuery);
@@ -21,17 +21,8 @@ describe('fetchPlayerList', () => {
     expect(serverFetcher.get).toHaveBeenCalledWith('/api/players', validQuery);
   });
 
-  it('position 없이도 요청할 수 있다', async () => {
-    const mockRes = { ok: true, status: 200, json: vi.fn().mockResolvedValue({}) };
-    vi.mocked(serverFetcher.get).mockResolvedValue(mockRes as unknown as Response);
-
-    await fetchPlayerList({ season: 2024 });
-
-    expect(serverFetcher.get).toHaveBeenCalledWith('/api/players', { season: 2024 });
-  });
-
   it('응답을 ServerApiResult 형태로 반환한다', async () => {
-    const data = { players: [] };
+    const data: unknown[] = [];
     const mockRes = { ok: true, status: 200, json: vi.fn().mockResolvedValue(data) };
     vi.mocked(serverFetcher.get).mockResolvedValue(mockRes as unknown as Response);
 
