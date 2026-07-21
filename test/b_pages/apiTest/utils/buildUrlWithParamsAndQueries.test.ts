@@ -112,23 +112,23 @@ describe('buildUrlWithParamsAndQueries', () => {
   it('fields가 0개이면 path를 그대로 반환한다', () => {
     const endpoint = {
       name: 'Schedule',
-      path: '/api/v1/game/schedule',
+      path: '/api/v1/match/schedule',
       fields: [],
     };
 
     expect(buildUrlWithParamsAndQueries(endpoint, {})).toBe(
-      '/api/v1/game/schedule'
+      '/api/v1/match/schedule'
     );
   });
 
   it('values에 해당 키가 없으면 path param 플레이스홀더가 치환되지 않는다', () => {
     const endpoint = {
-      name: 'Game Detail',
-      path: '/api/v1/game/{fixtureId}/detail',
+      name: 'Match Detail',
+      path: '/api/v1/match/{matchId}/detail',
       fields: [
         {
-          name: 'fixtureId',
-          label: 'Fixture ID',
+          name: 'matchId',
+          label: 'Match ID',
           type: 'number' as const,
           paramType: 'path' as const,
         },
@@ -136,7 +136,7 @@ describe('buildUrlWithParamsAndQueries', () => {
     };
 
     expect(buildUrlWithParamsAndQueries(endpoint, {})).toBe(
-      '/api/v1/game/{fixtureId}/detail'
+      '/api/v1/match/{matchId}/detail'
     );
   });
 });

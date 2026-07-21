@@ -1,4 +1,4 @@
 export * from './types';
 export * from './mockData';
-export * from './filterFixtures';
-export * from './useFixtureFilters';
+export * from './filterMatches';
+export * from './useMatchFilters';

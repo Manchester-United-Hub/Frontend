@@ -11,7 +11,8 @@ const HIDE_SM = 'max-[620px]:hidden';
 const HIDE_MD = 'max-[980px]:hidden';
 
 /** 득실차 = gf - ga (파생, 렌더 중 계산 — architecture.decisions). */
-const formatGoalDiff = (goalDiff: number): string => (goalDiff > 0 ? `+${goalDiff}` : `${goalDiff}`);
+const formatGoalDiff = (goalDiff: number): string =>
+  goalDiff > 0 ? `+${goalDiff}` : `${goalDiff}`;
 
 const goalDiffColorClassName = (goalDiff: number): string => {
   if (goalDiff > 0) return 'text-win';
@@ -51,7 +52,14 @@ export function StandingsRow({ standing }: StandingsRowProps) {
       <td className={cn(CELL, 'text-left')}>
         <div className="flex items-center gap-2.5">
           <Crest code={standing.code} utd={standing.utd} />
-          <span className={cn('truncate', standing.utd ? 'font-bold' : 'font-medium')}>{standing.nm}</span>
+          <span
+            className={cn(
+              'truncate',
+              standing.utd ? 'font-bold' : 'font-medium'
+            )}
+          >
+            {standing.nm}
+          </span>
         </div>
       </td>
       <td className={CELL}>{standing.p}</td>
@@ -60,7 +68,9 @@ export function StandingsRow({ standing }: StandingsRowProps) {
       <td className={cn(CELL, HIDE_SM)}>{standing.l}</td>
       <td className={cn(CELL, HIDE_MD)}>{standing.gf}</td>
       <td className={cn(CELL, HIDE_MD)}>{standing.ga}</td>
-      <td className={cn(CELL, 'font-semibold', goalDiffColorClassName(goalDiff))}>
+      <td
+        className={cn(CELL, 'font-semibold', goalDiffColorClassName(goalDiff))}
+      >
         {formatGoalDiff(goalDiff)}
       </td>
       <td className={cn(CELL, HIDE_MD)}>
