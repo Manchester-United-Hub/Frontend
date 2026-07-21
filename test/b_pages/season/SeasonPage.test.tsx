@@ -3,7 +3,7 @@
  *
  * 검증 목적:
  * - 런타임 에러 없이 마운트, 히어로·요약 카드 렌더
- * - 초기 탭 = fixtures(일정 & 결과)
+ * - 초기 탭 = matches(일정 & 결과)
  * - 탭 접근성 계약: role=tablist/tab/tabpanel, aria-selected/aria-controls/aria-labelledby 짝
  * - 순위표 탭 전환 시 테이블 렌더
  * - 필터 적용 시 일정 패널 내 행 수가 줄어든다
@@ -26,15 +26,22 @@ describe('SeasonPage 스모크', () => {
 
   it('히어로(h1 "시즌")와 요약 카드 4개가 렌더된다', () => {
     render(<SeasonPage />);
-    expect(screen.getByRole('heading', { level: 1, name: '시즌' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('heading', { level: 1, name: '시즌' })
+    ).toBeInTheDocument();
     const summaryList = screen.getByRole('list', { name: '시즌 요약 정보' });
     expect(within(summaryList).getAllByRole('listitem')).toHaveLength(4);
   });
 
-  it('초기 탭은 fixtures — "일정 & 결과" 패널이 기본 렌더된다', () => {
+  it('초기 탭은 matches — "일정 & 결과" 패널이 기본 렌더된다', () => {
     render(<SeasonPage />);
-    expect(screen.getByRole('tab', { name: /일정/ })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('heading', { level: 2, name: '일정 & 결과' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /일정/ })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(
+      screen.getByRole('heading', { level: 2, name: '일정 & 결과' })
+    ).toBeInTheDocument();
   });
 
   it('tablist/tab 개수 = 2, tabpanel 1개만 렌더', () => {
@@ -85,7 +92,12 @@ describe('SeasonPage 서브탭 전환·필터', () => {
       await user.click(screen.getByRole('tab', { name }));
       expect(screen.getAllByRole('tabpanel')).toHaveLength(1);
     }
-    expect(screen.getByRole('tab', { name: /일정/ })).toHaveAttribute('aria-selected', 'true');
-    expect(screen.getByRole('heading', { level: 2, name: '일정 & 결과' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: /일정/ })).toHaveAttribute(
+      'aria-selected',
+      'true'
+    );
+    expect(
+      screen.getByRole('heading', { level: 2, name: '일정 & 결과' })
+    ).toBeInTheDocument();
   });
 });

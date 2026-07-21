@@ -93,11 +93,15 @@ describe('PlayerHeader — 9칸 정보 그리드', () => {
     expect(screen.getByText('국적')).toBeInTheDocument();
     expect(screen.getByText(bruno.nat)).toBeInTheDocument();
     expect(screen.getByText('생년월일')).toBeInTheDocument();
-    expect(screen.getByText(`${bruno.dob} (${bruno.age}세)`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${bruno.dob} (${bruno.age}세)`)
+    ).toBeInTheDocument();
     expect(screen.getByText('출생지')).toBeInTheDocument();
     expect(screen.getByText(bruno.birth)).toBeInTheDocument();
     expect(screen.getByText('신장 / 체중')).toBeInTheDocument();
-    expect(screen.getByText(`${bruno.height}cm · ${bruno.weight}kg`)).toBeInTheDocument();
+    expect(
+      screen.getByText(`${bruno.height}cm · ${bruno.weight}kg`)
+    ).toBeInTheDocument();
     expect(screen.getByText('주발')).toBeInTheDocument();
     expect(screen.getByText(bruno.foot)).toBeInTheDocument();
     expect(screen.getByText('입단')).toBeInTheDocument();
@@ -126,10 +130,10 @@ describe('BackLink', () => {
  * 레전드가 아닌" 조합과 "은퇴했지만 left(방출일) 기록이 없는" 조합은 실제
  * 데이터로는 도달 불가능한 분기다(PlayerPhoto의 `!legend && retired` 은퇴
  * 배지, PlayerInfoGrid의 `left ?? '-'` 폴백). 타입상 가능한 조합이므로
- * 합성 fixture로 분기 커버리지를 보강한다.
+ * 합성 match로 분기 커버리지를 보강한다.
  */
 const RETIRED_NON_LEGEND_NO_LEFT: PlayerDetail = {
-  id: 'qa-fixture-retired-non-legend',
+  id: 'qa-Match-retired-non-legend',
   num: 99,
   nm: '테스트 은퇴 선수',
   en: 'Test Retired Player',
@@ -160,7 +164,7 @@ const RETIRED_NON_LEGEND_NO_LEFT: PlayerDetail = {
   ovr: 50,
 };
 
-describe('PlayerHeader — 은퇴·비레전드·left=null 경계 조합(합성 fixture, 분기 커버리지)', () => {
+describe('PlayerHeader — 은퇴·비레전드·left=null 경계 조합(합성 Match, 분기 커버리지)', () => {
   it('PlayerPhoto: legend가 아니면서 은퇴면 "은퇴" 배지(레전드 배지 아님)가 렌더된다', () => {
     render(<PlayerHeader player={RETIRED_NON_LEGEND_NO_LEFT} />);
     expect(screen.getAllByText('은퇴').length).toBeGreaterThanOrEqual(1);

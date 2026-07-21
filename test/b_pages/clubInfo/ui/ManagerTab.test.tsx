@@ -21,7 +21,9 @@ describe('ManagerTab 승률 파생 계산', () => {
     render(<ManagerTab manager={manager} />);
     expect(manager.record).toEqual({ p: 38, w: 19, d: 9, l: 10 });
     expect(screen.getByText('50%')).toBeInTheDocument();
-    expect(screen.getByText('38경기 기준', { exact: false })).toBeInTheDocument();
+    expect(
+      screen.getByText('38경기 기준', { exact: false })
+    ).toBeInTheDocument();
   });
 
   it('P/W/D/L 4셀이 record 값 그대로 렌더된다', () => {
@@ -33,8 +35,8 @@ describe('ManagerTab 승률 파생 계산', () => {
   });
 
   it('경계값: p=0이면 NaN% 대신 대체 텍스트(—)가 렌더되고 크래시 없다', () => {
-    const zeroGames = { ...manager, record: { p: 0, w: 0, d: 0, l: 0 } };
-    expect(() => render(<ManagerTab manager={zeroGames} />)).not.toThrow();
+    const zeroMatchs = { ...manager, record: { p: 0, w: 0, d: 0, l: 0 } };
+    expect(() => render(<ManagerTab manager={zeroMatchs} />)).not.toThrow();
     expect(screen.getByText('—')).toBeInTheDocument();
     expect(screen.queryByText('NaN%')).not.toBeInTheDocument();
   });

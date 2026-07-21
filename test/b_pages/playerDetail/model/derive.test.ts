@@ -30,7 +30,7 @@ function sumSeasonRows(rows: ReturnType<typeof deriveSeasonRows>) {
 
 function findPlayer(id: string): PlayerDetail {
   const player = players.find((p) => p.id === id);
-  if (!player) throw new Error(`fixture player not found: ${id}`);
+  if (!player) throw new Error(`Match player not found: ${id}`);
   return player;
 }
 

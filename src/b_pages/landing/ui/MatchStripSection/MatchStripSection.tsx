@@ -41,7 +41,7 @@ const ERROR_BOX = (
 const SECTION_HEADER = (
   <div className="mb-6 flex items-end justify-between gap-4">
     <div>
-      <Eyebrow>Fixtures &amp; Results</Eyebrow>
+      <Eyebrow>Matches &amp; Results</Eyebrow>
       <h2
         id={HEADING_ID}
         className="mt-1.5 text-[28px] font-bold leading-[1.1] tracking-[-0.02em]"
@@ -72,7 +72,11 @@ export interface MatchStripSectionProps {
 }
 
 /** 최근 경기 + 다음 경기 스트립. status prop으로 상태를 분기한다. */
-export function MatchStripSection({ status = 'ready', recent, next }: MatchStripSectionProps) {
+export function MatchStripSection({
+  status = 'ready',
+  recent,
+  next,
+}: MatchStripSectionProps) {
   return (
     <section aria-labelledby={HEADING_ID} className="py-14 max-[620px]:py-11">
       <div className="mx-auto max-w-[1200px] px-6">
@@ -80,7 +84,9 @@ export function MatchStripSection({ status = 'ready', recent, next }: MatchStrip
         {status === 'loading' ? LOADING_GRID : null}
         {status === 'empty' ? EMPTY_BOX : null}
         {status === 'error' ? ERROR_BOX : null}
-        {status === 'ready' ? <MatchStripGrid recent={recent} next={next} /> : null}
+        {status === 'ready' ? (
+          <MatchStripGrid recent={recent} next={next} />
+        ) : null}
       </div>
     </section>
   );

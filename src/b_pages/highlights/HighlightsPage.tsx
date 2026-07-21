@@ -8,7 +8,7 @@
  * Nav/Footer는 루트 레이아웃이 전역으로 공급하므로 여기서 렌더하지 않는다(AD-1).
  *
  * 이 브랜치는 목데이터 UI다. source/pageSize/fetchDelayMs/showFeatured props는 훅으로 전달되며,
- * 테스트는 fixture를 주입하고, 추후 실 데이터 브랜치는 source를 실 훅으로 교체한다(AD-2).
+ * 테스트는 match를 주입하고, 추후 실 데이터 브랜치는 source를 실 훅으로 교체한다(AD-2).
  */
 
 import { Shell } from '@shared/ui';

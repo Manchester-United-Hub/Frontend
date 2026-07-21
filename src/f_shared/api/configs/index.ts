@@ -14,21 +14,51 @@ const API_PATH = {
   teamStatistics() {
     return '/api/team/statistics';
   },
-  team(teamId: number) {
+  team(teamId: number | string) {
     return `/api/teams/${teamId}`;
   },
   playerList() {
     return '/api/players';
   },
-  gameSchedule() {
-    return '/api/fixtures';
+  playerDetail(playerId: number | string) {
+    return `/api/players/${playerId}`;
   },
-  pastGameDetail(gameId: number) {
-    return `/api/fixtures/${gameId}/detail`;
+  matchSchedule() {
+    return '/api/matches';
   },
-  liveGameLineup(gameId: number) {
-    return `/api/fixtures/${gameId}/lineups`;
+  matchScheduleDetail(matchId: number | string) {
+    return `/api/matches/${matchId}`;
+  },
+  pastMatchDetail(matchId: number | string) {
+    return `/api/matches/${matchId}/detail`;
+  },
+  liveMatchLineup(matchId: number | string) {
+    return `/api/matches/${matchId}/lineups`;
   },
 };
 
-export { BASE_URL, FETCH_TIMEOUT_MICROSECOND, API_PATH };
+const BFF_PATH = {
+  matchSchedule() {
+    return '/api/v1/match/schedule';
+  },
+  liveMatchLineup(matchId: number | string) {
+    return `/api/v1/match/${matchId}/lineups`;
+  },
+  pastMatchLineup(matchId: number | string) {
+    return `/api/v1/match/${matchId}/detail`;
+  },
+  newsList() {
+    return '/api/v1/news';
+  },
+  playerList() {
+    return '/api/v1/player';
+  },
+  teamInfo(teamId: string | number) {
+    return `/api/v1/team/${teamId}`;
+  },
+  teamStatistics() {
+    return '/api/v1/team/statistics';
+  },
+};
+
+export { BASE_URL, FETCH_TIMEOUT_MICROSECOND, API_PATH, BFF_PATH };

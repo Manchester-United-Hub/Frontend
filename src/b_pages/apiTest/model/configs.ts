@@ -95,20 +95,20 @@ const CATEGORIES: CategoryDef[] = [
     ],
   },
   {
-    name: 'Game',
+    name: 'Match',
     endpoints: [
       {
         name: 'Schedule',
-        path: '/api/v1/game/schedule',
+        path: '/api/v1/match/schedule',
         fields: [],
       },
       {
-        name: 'Game Detail',
-        path: '/api/v1/game/{fixtureId}/detail',
+        name: 'Match Detail',
+        path: '/api/v1/match/{matchId}/detail',
         fields: [
           {
-            name: 'fixtureId',
-            label: 'Fixture ID',
+            name: 'matchId',
+            label: 'Match ID',
             type: 'number',
             required: true,
             placeholder: '12345',
@@ -118,11 +118,11 @@ const CATEGORIES: CategoryDef[] = [
       },
       {
         name: 'Lineups',
-        path: '/api/v1/game/{fixtureId}/lineups',
+        path: '/api/v1/match/{matchId}/lineups',
         fields: [
           {
-            name: 'fixtureId',
-            label: 'Fixture ID',
+            name: 'matchId',
+            label: 'Match ID',
             type: 'number',
             required: true,
             placeholder: '12345',

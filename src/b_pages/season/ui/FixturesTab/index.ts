@@ -1,1 +1,0 @@
-export { FixturesTab } from './FixturesTab';

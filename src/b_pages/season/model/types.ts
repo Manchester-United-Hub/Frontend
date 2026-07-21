@@ -5,7 +5,7 @@
  * Component props live under ui/{Section} — keep them separate (code-quality.md).
  *
  * Field names mirror the design source (`.state/design-ref.md` — season-data.js)
- * 1:1 where the source defines a shape (Fixture/Standing/SeasonSummaryCard). Short
+ * 1:1 where the source defines a shape (Match/Standing/SeasonSummaryCard). Short
  * keys (nm·p/w/d/l·gf/ga·pts·mv …) are kept verbatim from the source rather than
  * translated — see result-ST-01.md for the reconciliation note.
  *
@@ -85,37 +85,37 @@ export interface ZoneLegendItem {
   label: string;
 }
 
-// ───────── Fixtures (일정 & 결과) ─────────
+// ───────── Matchs (일정 & 결과) ─────────
 
-/** Competition a fixture belongs to — also the value set for `CompFilter` (minus `'all'`). */
+/** Competition a Match belongs to — also the value set for `CompFilter` (minus `'all'`). */
 export type Competition = '프리미어리그' | 'FA컵' | '챔피언스리그';
 
 /** Home/away/neutral venue side, used for the ha filter. */
-export type FixtureHa = 'home' | 'away' | 'neutral';
+export type MatchHa = 'home' | 'away' | 'neutral';
 
 /** `past` = played (score+result shown) · `next`/`upcoming` = not yet played (time/countdown shown). */
-export type FixtureStatus = 'past' | 'next' | 'upcoming';
+export type MatchStatus = 'past' | 'next' | 'upcoming';
 
-/** Match outcome from Manchester United's perspective — only present on `past` fixtures. */
-export type FixtureResult = 'W' | 'D' | 'L';
+/** Match outcome from Manchester United's perspective — only present on `past` Matchs. */
+export type MatchResult = 'W' | 'D' | 'L';
 
-/** One side of a fixture. Mirrors `Fixture.home`/`Fixture.away`. */
-export interface FixtureSide {
+/** One side of a Match. Mirrors `Match.home`/`Match.away`. */
+export interface MatchSide {
   code: string;
   nm: string;
-  /** Final score — present only when `Fixture.status === 'past'`. */
+  /** Final score — present only when `Match.status === 'past'`. */
   score?: number;
   /** True for the Manchester United side (renders emphasized crest). */
   utd?: boolean;
 }
 
 /**
- * A single fixture (13 total). Mirrors `FIXTURES[i]`.
+ * A single Match (13 total). Mirrors `MatchS[i]`.
  * `month` is the design source's display grouping label verbatim (e.g. the
  * first month of the season includes the year, "2025년 3월", later months
- * are bare, "4월"/"5월") — `filterFixtures` groups by this field as-is.
+ * are bare, "4월"/"5월") — `filterMatchs` groups by this field as-is.
  */
-export interface Fixture {
+export interface Match {
   id: string;
   /** Month grouping label, verbatim from the design source. */
   month: string;
@@ -126,34 +126,34 @@ export interface Fixture {
   comp: Competition;
   /** Round label, e.g. "27R", "8강", "16강 1차전". */
   round: string;
-  ha: FixtureHa;
-  home: FixtureSide;
-  away: FixtureSide;
-  status: FixtureStatus;
+  ha: MatchHa;
+  home: MatchSide;
+  away: MatchSide;
+  status: MatchStatus;
   /** Present only when `status === 'past'`. */
-  result?: FixtureResult;
-  /** Kickoff time display, e.g. "23:30 KST" — present only for future fixtures. */
+  result?: MatchResult;
+  /** Kickoff time display, e.g. "23:30 KST" — present only for future Matchs. */
   time?: string;
-  /** Countdown display, e.g. "D-3" — present only for the next upcoming fixture. */
+  /** Countdown display, e.g. "D-3" — present only for the next upcoming Match. */
   countdown?: string;
   venue: string;
 }
 
-/** Home/away filter value for the fixtures tab. */
+/** Home/away filter value for the Matchs tab. */
 export type HaFilter = 'all' | 'home' | 'away';
 
-/** Competition filter value for the fixtures tab. */
+/** Competition filter value for the Matchs tab. */
 export type CompFilter = 'all' | Competition;
 
-/** `filterFixtures` output — one entry per distinct `Fixture.month`, input order preserved. */
-export interface FixtureMonthGroup {
+/** `filterMatchs` output — one entry per distinct `Match.month`, input order preserved. */
+export interface MatchMonthGroup {
   month: string;
-  fixtures: Fixture[];
+  matches: Match[];
 }
 
 // ───────── Sub tabs ─────────
 
-export type SubTabId = 'fixtures' | 'table';
+export type SubTabId = 'matches' | 'table';
 
 /** Mirrors the season page's sub-tab nav (일정 & 결과 / 순위표), 2 total. */
 export interface SubTabMeta {

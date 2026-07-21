@@ -3,7 +3,7 @@
  *
  * 검증 목적:
  * - "API Test" 헤딩 렌더
- * - 카테고리 탭(News / Player / Team / Game) 4개 렌더
+ * - 카테고리 탭(News / Player / Team / Match) 4개 렌더
  * - 복수 endpoint 카테고리(News)는 첫 로드 시 중첩 endpoint 탭이 렌더됨
  * - 단일 endpoint 카테고리(Player) 클릭 시 EndpointPanel이 직접 렌더됨
  *
@@ -37,18 +37,20 @@ describe('ApiTest', () => {
     expect(container.textContent).toContain('API Test');
   });
 
-  it('카테고리 탭(News / Player / Team / Game) 4개가 렌더된다', () => {
+  it('카테고리 탭(News / Player / Team / Match) 4개가 렌더된다', () => {
     render(<ApiTest />);
     expect(screen.getByRole('tab', { name: 'News' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Player' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Team' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Game' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Match' })).toBeInTheDocument();
   });
 
   it('복수 endpoint 카테고리(News)는 기본 선택 시 중첩 endpoint 탭이 렌더된다', () => {
     render(<ApiTest />);
     // News 탭이 기본 선택 → News TabPanel 렌더 → 내부에 endpoint 탭(Recent News, News List)
-    expect(screen.getByRole('tab', { name: 'Recent News' })).toBeInTheDocument();
+    expect(
+      screen.getByRole('tab', { name: 'Recent News' })
+    ).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'News List' })).toBeInTheDocument();
   });
 

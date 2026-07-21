@@ -63,7 +63,7 @@ describe('TestApi 페이지 (통합)', () => {
     expect(screen.getByRole('tab', { name: 'News' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Player' })).toBeInTheDocument();
     expect(screen.getByRole('tab', { name: 'Team' })).toBeInTheDocument();
-    expect(screen.getByRole('tab', { name: 'Game' })).toBeInTheDocument();
+    expect(screen.getByRole('tab', { name: 'Match' })).toBeInTheDocument();
 
     // 실제 EndpointPanel 렌더 확인 — Request 버튼 존재
     expect(screen.getByRole('button', { name: 'Request' })).toBeInTheDocument();

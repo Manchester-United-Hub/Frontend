@@ -20,7 +20,7 @@ src/
   b_pages/     페이지 조합
   c_widgets/   위젯 (Navbar · Footer · News ...)
   d_features/  기능 단위
-  e_entities/  도메인 엔티티 (game · news · team · player — model · api)
+  e_entities/  도메인 엔티티 (match · news · team · player — model · api)
   f_shared/    공유 — ui(공통 컴포넌트) · api · utils · model
 ```
 
@@ -37,14 +37,14 @@ src/
 
 ## 스크립트
 
-| 명령 | 설명 |
-|------|------|
-| `pnpm dev` | 개발 서버 |
-| `pnpm build` | 프로덕션 빌드 |
-| `pnpm start` | 프로덕션 서버 |
-| `pnpm test` | 테스트 (vitest) |
-| `pnpm test:coverage` | 커버리지 |
-| `pnpm lint` | 린트 (ESLint) |
+| 명령                 | 설명            |
+| -------------------- | --------------- |
+| `pnpm dev`           | 개발 서버       |
+| `pnpm build`         | 프로덕션 빌드   |
+| `pnpm start`         | 프로덕션 서버   |
+| `pnpm test`          | 테스트 (vitest) |
+| `pnpm test:coverage` | 커버리지        |
+| `pnpm lint`          | 린트 (ESLint)   |
 
 ## 컨벤션
 

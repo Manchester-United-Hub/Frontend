@@ -4,19 +4,19 @@ import { useState, type ReactNode } from 'react';
 
 import type { SubTabId } from '../../model';
 import { subTabs } from '../../model';
-import { FixturesTab } from '../FixturesTab';
+import { MatchesTab } from '../MatchesTab';
 import { StandingsTab } from '../StandingsTab';
 import { SubTabNav } from '../SubTabNav';
 
-const DEFAULT_TAB_ID: SubTabId = 'fixtures';
+const DEFAULT_TAB_ID: SubTabId = 'matches';
 
 /**
- * 탭 id → 패널 콘텐츠 매핑(스위치 남발 금지). FixturesTab/StandingsTab 둘 다
+ * 탭 id → 패널 콘텐츠 매핑(스위치 남발 금지). MatchesTab/StandingsTab 둘 다
  * 정적 mockData만 소비하므로 컴포넌트 밖 모듈 스코프에서 한 번만 생성한다
  * (§code-conventions 2 — clubInfo ClubTabs의 TAB_PANELS 선례).
  */
 const TAB_PANELS: Record<SubTabId, ReactNode> = {
-  fixtures: <FixturesTab />,
+  matches: <MatchesTab />,
   table: <StandingsTab />,
 };
 
@@ -33,7 +33,12 @@ export function SeasonTabs() {
   return (
     <>
       <SubTabNav tabs={subTabs} activeId={activeId} onChange={setActiveId} />
-      <div id={`panel-${activeId}`} role="tabpanel" aria-labelledby={`tab-${activeId}`} tabIndex={0}>
+      <div
+        id={`panel-${activeId}`}
+        role="tabpanel"
+        aria-labelledby={`tab-${activeId}`}
+        tabIndex={0}
+      >
         {TAB_PANELS[activeId]}
       </div>
     </>

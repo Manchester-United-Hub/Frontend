@@ -6,7 +6,7 @@ import { Eyebrow } from '@shared/ui';
  */
 
 export interface PanelHeadProps {
-  /** 영문 라벨(예: "Fixtures & Results"). */
+  /** 영문 라벨(예: "Matches & Results"). */
   eyebrow: string;
   /** 국문 타이틀(예: "일정 & 결과"). */
   title: string;
@@ -18,15 +18,25 @@ export interface PanelHeadProps {
   headingId?: string;
 }
 
-export function PanelHead({ eyebrow, title, description, headingId }: PanelHeadProps) {
+export function PanelHead({
+  eyebrow,
+  title,
+  description,
+  headingId,
+}: PanelHeadProps) {
   return (
     <div className="mb-6">
       <Eyebrow>{eyebrow}</Eyebrow>
-      <h2 id={headingId} className="mt-1.5 text-[28px] font-bold leading-[1.1] tracking-[-0.02em]">
+      <h2
+        id={headingId}
+        className="mt-1.5 text-[28px] font-bold leading-[1.1] tracking-[-0.02em]"
+      >
         {title}
       </h2>
       {description ? (
-        <p className="mt-2 max-w-[620px] text-[15px] text-muted-foreground">{description}</p>
+        <p className="mt-2 max-w-155 text-[15px] text-muted-foreground">
+          {description}
+        </p>
       ) : null}
     </div>
   );

@@ -8,5 +8,5 @@ export { PanelHead } from './PanelHead';
 export type { PanelHeadProps } from './PanelHead';
 export { Crest } from './Crest';
 export type { CrestProps } from './Crest';
-export { FixturesTab } from './FixturesTab';
+export { MatchesTab } from './MatchesTab';
 export { StandingsTab } from './StandingsTab';
