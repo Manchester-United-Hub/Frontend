@@ -3,7 +3,7 @@ import { MapPin } from 'lucide-react';
 import { Badge, ResultBadge } from '@shared/ui';
 import { cn } from '@shared/utils';
 
-import type { Match } from '../../model';
+import type { Match } from '@entities/matches/model';
 import { Crest } from '../Crest';
 
 const UPCOMING_FALLBACK_LABEL = '예정';
@@ -51,7 +51,11 @@ export function MatchRow({ match }: MatchRowProps) {
         >
           {match.home.nm}
         </span>
-        <Crest code={match.home.code} utd={match.home.utd} />
+        <Crest
+          teamLogoUrl={match.home.teamLogoUrl}
+          code={match.home.code}
+          utd={match.home.utd}
+        />
       </div>
 
       <div className="flex flex-col items-center gap-1">
@@ -77,7 +81,11 @@ export function MatchRow({ match }: MatchRowProps) {
       </div>
 
       <div className="flex min-w-0 items-center justify-start gap-2">
-        <Crest code={match.away.code} utd={match.away.utd} />
+        <Crest
+          teamLogoUrl={match.away.teamLogoUrl}
+          code={match.away.code}
+          utd={match.away.utd}
+        />
         <span
           className={cn(
             'truncate text-sm max-[620px]:text-xs',

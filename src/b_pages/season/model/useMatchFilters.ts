@@ -11,7 +11,8 @@
 import { useMemo, useState } from 'react';
 
 import { filterMatches } from './filterMatches';
-import type { CompFilter, Match, MatchMonthGroup, HaFilter } from './types';
+import type { CompFilter, Match, HaFilter } from '@entities/matches/model';
+import { MatchMonthGroup } from './types';
 
 const DEFAULT_HA: HaFilter = 'all';
 const DEFAULT_COMP: CompFilter = 'all';

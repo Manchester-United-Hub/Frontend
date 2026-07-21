@@ -1,4 +1,4 @@
-import type { MatchMonthGroup } from '../../model';
+import { MatchMonthGroup } from '@pages/season/model';
 import { MatchRow } from './MatchRow';
 
 export interface MonthGroupProps {

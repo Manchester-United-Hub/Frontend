@@ -11,8 +11,9 @@
 
 import { describe, it, expect } from 'vitest';
 
-import { filterMatches } from '@pages/season/model/filterMatches';
-import type { Match, FilterMatchesCriteria } from '@pages/season/model';
+import { filterMatches, type FilterMatchesCriteria } from '@pages/season/model';
+import { Match } from '@entities/matches/model';
+import { matches } from './mockData';
 
 const buildCriteria = (
   overrides: Partial<FilterMatchesCriteria> = {}
@@ -21,79 +22,6 @@ const buildCriteria = (
   comp: 'all',
   ...overrides,
 });
-
-const matches: Match[] = [
-  {
-    id: 'f1',
-    month: 'M1',
-    date: '3/1',
-    dow: '토',
-    comp: '프리미어리그',
-    round: '27R',
-    ha: 'home',
-    home: { code: 'MUN', nm: '맨체스터 유나이티드', score: 3, utd: true },
-    away: { code: 'EVE', nm: '에버턴', score: 0 },
-    status: 'past',
-    result: 'W',
-    venue: '올드 트래포드',
-  },
-  {
-    id: 'f2',
-    month: 'M1',
-    date: '3/8',
-    dow: '토',
-    comp: 'FA컵',
-    round: '8강',
-    ha: 'away',
-    home: { code: 'BHA', nm: '브라이턴', score: 1 },
-    away: { code: 'MUN', nm: '맨체스터 유나이티드', score: 2, utd: true },
-    status: 'past',
-    result: 'W',
-    venue: '아멕스 스타디움',
-  },
-  {
-    id: 'f3',
-    month: 'M2',
-    date: '3/29',
-    dow: '토',
-    comp: '챔피언스리그',
-    round: '16강1차',
-    ha: 'home',
-    home: { code: 'MUN', nm: '맨체스터 유나이티드', score: 1, utd: true },
-    away: { code: 'RMA', nm: '레알 마드리드', score: 1 },
-    status: 'past',
-    result: 'D',
-    venue: '올드 트래포드',
-  },
-  {
-    id: 'f4',
-    month: 'M2',
-    date: '4/5',
-    dow: '토',
-    comp: '프리미어리그',
-    round: '30R',
-    ha: 'away',
-    home: { code: 'NEW', nm: '뉴캐슬', score: 1 },
-    away: { code: 'MUN', nm: '맨체스터 유나이티드', score: 2, utd: true },
-    status: 'past',
-    result: 'W',
-    venue: '세인트 제임스 파크',
-  },
-  {
-    id: 'f5',
-    month: 'M3',
-    date: '5/31',
-    dow: '토',
-    comp: 'FA컵',
-    round: '결승',
-    ha: 'neutral',
-    home: { code: 'MUN', nm: '맨체스터 유나이티드', utd: true },
-    away: { code: 'MCI', nm: '맨체스터 시티' },
-    status: 'upcoming',
-    time: '01:00 KST',
-    venue: '웸블리 스타디움',
-  },
-];
 
 describe('filterMatches', () => {
   it('전체(all/all) — 모든 일정을 월별로 그룹핑해 반환한다', () => {

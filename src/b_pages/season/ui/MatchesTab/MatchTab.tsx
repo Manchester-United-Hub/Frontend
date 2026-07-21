@@ -4,12 +4,8 @@ import { CalendarX } from 'lucide-react';
 
 import { Shell, StateBox } from '@shared/ui';
 
-import {
-  matches,
-  useMatchFilters,
-  type CompFilter,
-  type HaFilter,
-} from '../../model';
+import { matches, useMatchFilters } from '../../model';
+import type { CompFilter, HaFilter } from '@entities/matches/model';
 import { PanelHead } from '../PanelHead';
 import { FilterPills } from './MatchPills';
 import { MonthGroup } from './MonthGroup';

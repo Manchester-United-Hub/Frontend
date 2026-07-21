@@ -9,8 +9,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { MonthGroup } from '@pages/season/ui/MatchesTab/MonthGroup';
-import { matches } from '@pages/season/model';
-import type { MatchMonthGroup } from '@pages/season/model';
+import { matches, MatchMonthGroup } from '@pages/season/model';
 
 afterEach(cleanup);
 
