@@ -3,7 +3,6 @@ import { DateStringType } from '@shared/model';
 
 const PlayerListQueryDTOSchema = z.object({
   season: z.number(),
-  position: z.string().optional(),
 });
 
 const PlayerDTOSchema = z.object({
@@ -18,8 +17,6 @@ const PlayerDTOSchema = z.object({
   photo: z.string(),
 });
 
-const PlayerListDTOSchema = z.object({
-  players: z.array(PlayerDTOSchema),
-});
+const PlayerListDTOSchema = z.array(PlayerDTOSchema);
 
 export { PlayerListQueryDTOSchema, PlayerDTOSchema, PlayerListDTOSchema };
