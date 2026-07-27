@@ -21,7 +21,7 @@ describe('useMatchFilters', () => {
     expect(result.current.comp).toBe('all');
     expect(
       result.current.groups.flatMap((g) => g.matches.map((f) => f.id))
-    ).toEqual(['f1', 'f2', 'f3']);
+    ).toEqual(['f1', 'f2', 'f3', 'f4', 'f5']);
     expect(result.current.isEmpty).toBe(false);
   });
 
@@ -45,7 +45,7 @@ describe('useMatchFilters', () => {
     expect(result.current.comp).toBe('FA컵');
     expect(
       result.current.groups.flatMap((g) => g.matches.map((f) => f.id))
-    ).toEqual(['f2']);
+    ).toEqual(['f2', 'f5']);
   });
 
   it('ha/comp 결합 결과가 없으면 groups=[]이고 isEmpty=true가 된다', () => {

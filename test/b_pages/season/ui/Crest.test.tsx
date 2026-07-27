@@ -6,7 +6,7 @@
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { Crest } from '@pages/season/ui/Crest';
@@ -46,5 +46,19 @@ describe('Crest', () => {
       />
     );
     expect(container.querySelector('span')).toHaveClass('custom-crest');
+  });
+
+  it('이미지 로드에 실패하면 팀 코드로 폴백한다', () => {
+    render(
+      <Crest
+        teamLogoUrl="https://media.api-sports.io/football/teams/33.png"
+        code="MUN"
+      />
+    );
+
+    fireEvent.error(screen.getByAltText('팀 로고'));
+
+    expect(screen.getByText('MUN')).toBeInTheDocument();
+    expect(screen.queryByAltText('팀 로고')).not.toBeInTheDocument();
   });
 });
