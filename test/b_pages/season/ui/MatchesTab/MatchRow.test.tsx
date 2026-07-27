@@ -55,6 +55,13 @@ describe('MatchRow', () => {
     expect(screen.getByText('–')).toBeInTheDocument();
   });
 
+  it('past 경기인데 result가 없으면 결과 배지를 렌더하지 않는다', () => {
+    const base = matches.find((f) => f.status === 'past')!;
+    render(<MatchRow match={{ ...base, result: undefined }} />);
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+  });
+
   it('맨유 측(utd) 팀명은 굵게(font-bold) 렌더된다', () => {
     const Match = matches.find((f) => f.status === 'past')!;
     render(<MatchRow match={Match} />);

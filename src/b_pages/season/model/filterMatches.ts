@@ -10,7 +10,8 @@
  * 입력→출력만 있는 순수 함수 — 부수효과 없음. 단위 테스트 대상.
  */
 
-import type { CompFilter, Match, MatchMonthGroup, HaFilter } from './types';
+import type { CompFilter, Match, HaFilter } from '@entities/matches/model';
+import { MatchMonthGroup } from './types';
 
 interface FilterMatchesCriteria {
   ha: HaFilter;

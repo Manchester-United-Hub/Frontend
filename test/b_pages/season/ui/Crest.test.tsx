@@ -1,12 +1,12 @@
 /**
  * Crest 전용 테스트 — 컴포넌트 1:테스트 1 미러링(code-conventions §6).
  *
- * 검증 목적: 팀 코드 렌더, utd 강조(빨강 배경) vs 기본(muted 배경) 시각 분기,
- * 장식 요소이므로 aria-hidden.
+ * 검증 목적: teamLogoUrl 이미지 렌더, 장식 요소이므로 wrapper aria-hidden,
+ * className 병합(호출자 우선).
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { Crest } from '@pages/season/ui/Crest';
@@ -14,19 +14,51 @@ import { Crest } from '@pages/season/ui/Crest';
 afterEach(cleanup);
 
 describe('Crest', () => {
-  it('팀 코드를 렌더하고 aria-hidden(장식 요소)이다', () => {
-    render(<Crest code="MUN" />);
-    const crest = screen.getByText('MUN');
-    expect(crest).toHaveAttribute('aria-hidden', 'true');
+  it('teamLogoUrl 이미지를 렌더한다', () => {
+    render(
+      <Crest
+        teamLogoUrl="https://media.api-sports.io/football/teams/33.png"
+        code="MUN"
+      />
+    );
+    expect(screen.getByAltText('팀 로고')).toBeInTheDocument();
   });
 
-  it('utd=true면 united-red 배경·흰 글자 클래스를 갖는다', () => {
-    render(<Crest code="MUN" utd />);
-    expect(screen.getByText('MUN')).toHaveClass('bg-united-red', 'text-white');
+  it('장식 요소이므로 wrapper가 aria-hidden이다', () => {
+    const { container } = render(
+      <Crest
+        teamLogoUrl="https://media.api-sports.io/football/teams/33.png"
+        code="MUN"
+      />
+    );
+    expect(container.querySelector('span')).toHaveAttribute(
+      'aria-hidden',
+      'true'
+    );
   });
 
-  it('utd 미지정(기본)이면 muted 배경 클래스를 갖는다', () => {
-    render(<Crest code="LIV" />);
-    expect(screen.getByText('LIV')).toHaveClass('bg-muted');
+  it('className을 호출자 우선으로 병합한다', () => {
+    const { container } = render(
+      <Crest
+        teamLogoUrl="https://media.api-sports.io/football/teams/33.png"
+        code="MUN"
+        className="custom-crest"
+      />
+    );
+    expect(container.querySelector('span')).toHaveClass('custom-crest');
+  });
+
+  it('이미지 로드에 실패하면 팀 코드로 폴백한다', () => {
+    render(
+      <Crest
+        teamLogoUrl="https://media.api-sports.io/football/teams/33.png"
+        code="MUN"
+      />
+    );
+
+    fireEvent.error(screen.getByAltText('팀 로고'));
+
+    expect(screen.getByText('MUN')).toBeInTheDocument();
+    expect(screen.queryByAltText('팀 로고')).not.toBeInTheDocument();
   });
 });

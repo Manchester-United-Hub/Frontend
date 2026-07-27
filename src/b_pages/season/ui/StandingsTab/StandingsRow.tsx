@@ -51,7 +51,11 @@ export function StandingsRow({ standing }: StandingsRowProps) {
       </td>
       <td className={cn(CELL, 'text-left')}>
         <div className="flex items-center gap-2.5">
-          <Crest code={standing.code} utd={standing.utd} />
+          <Crest
+            teamLogoUrl={standing.teamLogoUrl}
+            code={standing.code}
+            utd={standing.utd}
+          />
           <span
             className={cn(
               'truncate',

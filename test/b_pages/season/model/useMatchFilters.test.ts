@@ -10,53 +10,8 @@
 import { describe, it, expect } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
-import { useMatchFilters } from '@pages/season/model/useMatchFilters';
-import type { Match } from '@pages/season/model';
-
-const matches: Match[] = [
-  {
-    id: 'f1',
-    month: 'M1',
-    date: '3/1',
-    dow: '토',
-    comp: '프리미어리그',
-    round: '27R',
-    ha: 'home',
-    home: { code: 'MUN', nm: '맨체스터 유나이티드', score: 3, utd: true },
-    away: { code: 'EVE', nm: '에버턴', score: 0 },
-    status: 'past',
-    result: 'W',
-    venue: '올드 트래포드',
-  },
-  {
-    id: 'f2',
-    month: 'M1',
-    date: '3/8',
-    dow: '토',
-    comp: 'FA컵',
-    round: '8강',
-    ha: 'away',
-    home: { code: 'BHA', nm: '브라이턴', score: 1 },
-    away: { code: 'MUN', nm: '맨체스터 유나이티드', score: 2, utd: true },
-    status: 'past',
-    result: 'W',
-    venue: '아멕스 스타디움',
-  },
-  {
-    id: 'f3',
-    month: 'M2',
-    date: '3/29',
-    dow: '토',
-    comp: '챔피언스리그',
-    round: '16강1차',
-    ha: 'home',
-    home: { code: 'MUN', nm: '맨체스터 유나이티드', score: 1, utd: true },
-    away: { code: 'RMA', nm: '레알 마드리드', score: 1 },
-    status: 'past',
-    result: 'D',
-    venue: '올드 트래포드',
-  },
-];
+import { useMatchFilters } from '@pages/season/model';
+import { matches } from './mockData';
 
 describe('useMatchFilters', () => {
   it('초기값 — ha/comp는 all, groups는 전체 일정을 월별로 그룹핑, isEmpty=false', () => {
@@ -66,7 +21,7 @@ describe('useMatchFilters', () => {
     expect(result.current.comp).toBe('all');
     expect(
       result.current.groups.flatMap((g) => g.matches.map((f) => f.id))
-    ).toEqual(['f1', 'f2', 'f3']);
+    ).toEqual(['f1', 'f2', 'f3', 'f4', 'f5']);
     expect(result.current.isEmpty).toBe(false);
   });
 
@@ -90,7 +45,7 @@ describe('useMatchFilters', () => {
     expect(result.current.comp).toBe('FA컵');
     expect(
       result.current.groups.flatMap((g) => g.matches.map((f) => f.id))
-    ).toEqual(['f2']);
+    ).toEqual(['f2', 'f5']);
   });
 
   it('ha/comp 결합 결과가 없으면 groups=[]이고 isEmpty=true가 된다', () => {

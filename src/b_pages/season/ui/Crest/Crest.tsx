@@ -1,5 +1,7 @@
+'use client';
 import { cn } from '@shared/utils';
 import Image from 'next/image';
+import { useState } from 'react';
 
 /**
  * Crest — 팀 코드 원형 배지(30px). 일정(MatchRow)·순위표(StandingsRow) team-cell이
@@ -13,12 +15,17 @@ import Image from 'next/image';
 
 export interface CrestProps {
   /** 3~4자 팀 코드, 예: "MUN". */
+  teamLogoUrl: string;
   code: string;
   className?: string;
   utd?: boolean;
 }
 
-export function Crest({ code, className, utd }: CrestProps) {
+export function Crest({ teamLogoUrl, code, className, utd }: CrestProps) {
+  const [hasError, setHasError] = useState<boolean>(false);
+  const handleError = () => {
+    setHasError(true);
+  };
   return (
     <span
       aria-hidden="true"
@@ -30,7 +37,18 @@ export function Crest({ code, className, utd }: CrestProps) {
         className
       )}
     >
-      {code}
+      {hasError ? (
+        code
+      ) : (
+        <Image
+          alt="팀 로고"
+          src={teamLogoUrl}
+          width={30}
+          height={30}
+          loading="lazy"
+          onError={handleError}
+        />
+      )}
     </span>
   );
 }
