@@ -1,5 +1,10 @@
-import { MatchScheduleDTO } from '@entities/matches/model';
-import { Match, MatchHa } from '../model';
+import {
+  MatchScheduleDTO,
+  MatchScheduleListDTO,
+} from '@entities/matches/model';
+import { Match, MatchHa, MatchResult } from '../model';
+
+const MANCHESTER_UNITED_TEAM_ID = 33;
 
 const DAY_CONV = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -49,45 +54,119 @@ const PL_TEAM_CODE: Record<string, string> = {
   'Wolverhampton Wanderers': 'WOL',
 };
 
-const convertMatchesDTO2DAO = (matchesDTO: MatchScheduleDTO[]): Match[] => {
-  const checkHaInMatch = (match: MatchScheduleDTO): MatchHa => {
-    if (match.homeTeam.teamId === 33) {
-      return 'home';
-    }
-    if (match.awayTeam.teamId === 33) {
-      return 'away';
-    }
-    return 'neutral';
-  };
-  const matchesDAO: Match[] = matchesDTO.map((match) => {
+const DAY_MS = 86_400_000;
+
+const calculateDaysUntil = (kickoff: Date, now: Date): number => {
+  const kickoffMs = kickoff.getTime();
+  return Math.max(0, Math.ceil((kickoffMs - now.getTime()) / DAY_MS));
+};
+
+const checkHaInMatch = (match: MatchScheduleDTO): MatchHa => {
+  if (match.homeTeam.teamId === MANCHESTER_UNITED_TEAM_ID) {
+    return 'home';
+  }
+  if (match.awayTeam.teamId === MANCHESTER_UNITED_TEAM_ID) {
+    return 'away';
+  }
+  return 'neutral';
+};
+
+const formatKickoffTime = (matchDate: Date): string => {
+  const hours = matchDate.getHours().toString().padStart(2, '0');
+  const minutes = matchDate.getMinutes().toString().padStart(2, '0');
+  return `${hours}:${minutes}`;
+};
+
+const calculateUnitedResult = (
+  match: MatchScheduleDTO,
+  ha: MatchHa
+): MatchResult | undefined => {
+  const { home: homeScore, away: awayScore } = match.score;
+  if (homeScore == null || awayScore == null || ha === 'neutral') {
+    return undefined;
+  }
+  if (homeScore === awayScore) {
+    return 'D';
+  }
+  const unitedWon =
+    (ha === 'home' && homeScore > awayScore) ||
+    (ha === 'away' && awayScore > homeScore);
+  return unitedWon ? 'W' : 'L';
+};
+
+const convertMatchesDTO2DAO = ({
+  pastMatches,
+  upcomingMatches,
+}: MatchScheduleListDTO): Match[] => {
+  const now = new Date(Date.now());
+  const matchesDAO: Match[] = [];
+  pastMatches.map((match) => {
     const matchDate = new Date(match.date);
+    const ha = checkHaInMatch(match);
 
     const convertedMatch: Match = {
       id: match.matchId.toString(),
       month: `${matchDate.getFullYear()}년 ${matchDate.getMonth() + 1}월`,
       date: `${matchDate.getMonth() + 1}/${matchDate.getDate()}`,
-      dow: DAY_CONV[matchDate.getDay()],
-      comp: '프리미어리그', // @TODO : 추후 리그 내용 포함하기
-      round: '0R',
-      ha: checkHaInMatch(match),
+      dow: DAY_CONV[matchDate.getDay()], // day of week
+      ha,
       home: {
         teamLogoUrl: match.homeTeam.logo,
         code: PL_TEAM_CODE[match.homeTeam.name],
         nm: PL_TEAM_KOREAN_NAME[match.homeTeam.name] ?? match.homeTeam.name,
         score: match.score.home ?? undefined,
+        utd: match.homeTeam.teamId === MANCHESTER_UNITED_TEAM_ID,
       },
       away: {
         teamLogoUrl: match.awayTeam.logo,
         code: PL_TEAM_CODE[match.awayTeam.name],
         nm: PL_TEAM_KOREAN_NAME[match.awayTeam.name] ?? match.awayTeam.name,
         score: match.score.away ?? undefined,
+        utd: match.awayTeam.teamId === MANCHESTER_UNITED_TEAM_ID,
       },
       status: 'past',
-      result: 'D',
+      result: calculateUnitedResult(match, ha),
+      time: formatKickoffTime(matchDate),
       venue: match.venue.name,
+      kickoff: match.date,
     };
+    matchesDAO.push(convertedMatch);
     return convertedMatch;
   });
+
+  upcomingMatches.map((match, idx) => {
+    const matchDate = new Date(match.date);
+    const ha = checkHaInMatch(match);
+
+    const convertedMatch: Match = {
+      id: match.matchId.toString(),
+      month: `${matchDate.getFullYear()}년 ${matchDate.getMonth() + 1}월`,
+      date: `${matchDate.getMonth() + 1}/${matchDate.getDate()}`,
+      dow: DAY_CONV[matchDate.getDay()], // day of week
+      ha,
+      home: {
+        teamLogoUrl: match.homeTeam.logo,
+        code: PL_TEAM_CODE[match.homeTeam.name],
+        nm: PL_TEAM_KOREAN_NAME[match.homeTeam.name] ?? match.homeTeam.name,
+        utd: match.homeTeam.teamId === MANCHESTER_UNITED_TEAM_ID,
+      },
+      away: {
+        teamLogoUrl: match.awayTeam.logo,
+        code: PL_TEAM_CODE[match.awayTeam.name],
+        nm: PL_TEAM_KOREAN_NAME[match.awayTeam.name] ?? match.awayTeam.name,
+        utd: match.awayTeam.teamId === MANCHESTER_UNITED_TEAM_ID,
+      },
+      status: idx === 0 ? 'next' : 'upcoming',
+      time: formatKickoffTime(matchDate),
+      venue: match.venue.name,
+      kickoff: match.date,
+      countdown:
+        idx === 0 ? `D-${calculateDaysUntil(matchDate, now)}` : undefined,
+    };
+    matchesDAO.push(convertedMatch);
+    return convertedMatch;
+  });
+
   return matchesDAO;
 };
 

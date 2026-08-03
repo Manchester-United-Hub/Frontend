@@ -10,9 +10,87 @@ import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { MatchRow } from '@pages/season/ui/MatchesTab/MatchRow';
-import { matches } from '@pages/season/model';
+import type { Match } from '@entities/matches/model';
 
 afterEach(cleanup);
+
+const matches: Match[] = [
+  {
+    id: 'p1',
+    month: 'M1',
+    date: '3/1',
+    dow: '토',
+    comp: '프리미어리그',
+    round: '27R',
+    ha: 'home',
+    home: {
+      teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+      code: 'MUN',
+      nm: '맨체스터 유나이티드',
+      score: 3,
+      utd: true,
+    },
+    away: {
+      teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+      code: 'EVE',
+      nm: '에버턴',
+      score: 0,
+    },
+    status: 'past',
+    result: 'W',
+    venue: '올드 트래포드',
+    kickoff: '2025-03-01T15:00',
+  },
+  {
+    id: 'n1',
+    month: 'M2',
+    date: '4/12',
+    dow: '토',
+    comp: '프리미어리그',
+    round: '32R',
+    ha: 'home',
+    home: {
+      teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+      code: 'MUN',
+      nm: '맨체스터 유나이티드',
+      utd: true,
+    },
+    away: {
+      teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+      code: 'LIV',
+      nm: '리버풀',
+    },
+    status: 'next',
+    time: '20:00',
+    countdown: 'D-3',
+    venue: '올드 트래포드',
+    kickoff: '2025-04-12T20:00',
+  },
+  {
+    id: 'u1',
+    month: 'M3',
+    date: '5/31',
+    dow: '토',
+    comp: 'FA컵',
+    round: '결승',
+    ha: 'neutral',
+    home: {
+      teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+      code: 'MUN',
+      nm: '맨체스터 유나이티드',
+      utd: true,
+    },
+    away: {
+      teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+      code: 'MCI',
+      nm: '맨체스터 시티',
+    },
+    status: 'upcoming',
+    time: '01:00 KST',
+    venue: '웸블리 스타디움',
+    kickoff: '2025-05-31T01:00',
+  },
+];
 
 describe('MatchRow', () => {
   it('past 경기는 스코어와 결과 배지(role=img)를 렌더한다', () => {

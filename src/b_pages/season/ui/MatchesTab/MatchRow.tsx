@@ -1,24 +1,19 @@
 import { MapPin } from 'lucide-react';
 
-import { Badge, ResultBadge } from '@shared/ui';
+import type { Match } from '@entities/matches/model';
+
+import { ResultBadge } from '@shared/ui';
 import { cn } from '@shared/utils';
 
-import type { Match } from '@entities/matches/model';
 import { Crest } from '../Crest';
 
 const UPCOMING_FALLBACK_LABEL = '예정';
-/** 스코어 구분자 겸, 점수가 아직 없는 past 경기의 대체 표기. */
 const SCORE_SEPARATOR = '–';
 
 export interface MatchRowProps {
   match: Match;
 }
 
-/**
- * MatchRow — 일정 1행. design-ref `.fx-row`(6열 grid: 날짜·대회·홈팀·스코어·원정팀·경기장)를
- * 재현한다. ≤980px에서 대회·경기장 열을 숨기고 4열로 축약, ≤620px에서 폰트를 축소한다.
- * 팀 크레스트는 두 탭이 공유하는 `../Crest`(30px 원형)를 사용한다.
- */
 export function MatchRow({ match }: MatchRowProps) {
   const isPast = match.status === 'past';
   const hasScore = match.home.score != null && match.away.score != null;
@@ -26,20 +21,15 @@ export function MatchRow({ match }: MatchRowProps) {
   return (
     <div
       className={cn(
-        'grid min-h-[66px] grid-cols-[86px_122px_1fr_92px_1fr_132px] items-center gap-3.5 border-b border-border px-4.5 py-3 transition-colors hover:bg-accent',
+        'grid min-h-16.5 grid-cols-[86px_1fr_92px_1fr_132px] items-center gap-3.5 border-b border-border px-4.5 py-3 transition-colors hover:bg-accent',
         'max-[980px]:grid-cols-[72px_1fr_88px_1fr]'
       )}
     >
-      <div className="flex flex-col">
+      <div className="flex flex-col justify-center items-center">
         <span className="text-sm font-bold text-foreground max-[620px]:text-[13px]">
           {match.date}
         </span>
         <span className="text-xs text-muted-foreground">{match.dow}</span>
-      </div>
-
-      <div className="flex flex-col gap-0.5 max-[980px]:hidden">
-        <Badge variant="soft">{match.comp}</Badge>
-        <span className="text-[11px] text-muted-foreground">{match.round}</span>
       </div>
 
       <div className="flex min-w-0 items-center justify-end gap-2">

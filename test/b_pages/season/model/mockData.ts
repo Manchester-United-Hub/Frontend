@@ -6,8 +6,6 @@ export const matches: Match[] = [
     month: 'M1',
     date: '3/1',
     dow: '토',
-    comp: '프리미어리그',
-    round: '27R',
     ha: 'home',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
@@ -25,14 +23,13 @@ export const matches: Match[] = [
     status: 'past',
     result: 'W',
     venue: '올드 트래포드',
+    kickoff: '2025-03-01T15:00',
   },
   {
     id: 'f2',
     month: 'M1',
     date: '3/8',
     dow: '토',
-    comp: 'FA컵',
-    round: '8강',
     ha: 'away',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
@@ -50,14 +47,13 @@ export const matches: Match[] = [
     status: 'past',
     result: 'W',
     venue: '아멕스 스타디움',
+    kickoff: '2025-03-08T20:00',
   },
   {
     id: 'f3',
     month: 'M2',
     date: '3/29',
     dow: '토',
-    comp: '챔피언스리그',
-    round: '16강1차',
     ha: 'home',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
@@ -75,14 +71,13 @@ export const matches: Match[] = [
     status: 'past',
     result: 'D',
     venue: '올드 트래포드',
+    kickoff: '2025-03-29T20:00',
   },
   {
     id: 'f4',
     month: 'M2',
     date: '4/5',
     dow: '토',
-    comp: '프리미어리그',
-    round: '30R',
     ha: 'away',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
@@ -100,14 +95,13 @@ export const matches: Match[] = [
     status: 'past',
     result: 'W',
     venue: '세인트 제임스 파크',
+    kickoff: '2025-04-05T15:00',
   },
   {
     id: 'f5',
     month: 'M3',
     date: '5/31',
     dow: '토',
-    comp: 'FA컵',
-    round: '결승',
     ha: 'neutral',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
@@ -123,5 +117,6 @@ export const matches: Match[] = [
     status: 'upcoming',
     time: '01:00 KST',
     venue: '웸블리 스타디움',
+    kickoff: '2025-05-31T01:00',
   },
 ];

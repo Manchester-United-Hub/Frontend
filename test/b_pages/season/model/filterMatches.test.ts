@@ -1,14 +1,3 @@
-/**
- * filterMatches 단위 테스트 (ST-01, 이슈 #29)
- *
- * 검증 목적:
- * - 홈/원정(ha) 필터가 단독으로 정확히 동작한다
- * - 대회(comp) 필터가 단독으로 정확히 동작한다
- * - 두 필터가 AND로 결합된다
- * - 조건에 맞는 일정이 없으면 빈 배열을 반환한다
- * - 월별 그룹핑이 입력 순서를 보존하며, 그룹당 경기 수가 정확하다
- */
-
 import { describe, it, expect } from 'vitest';
 
 import { filterMatches, type FilterMatchesCriteria } from '@pages/season/model';
@@ -19,7 +8,6 @@ const buildCriteria = (
   overrides: Partial<FilterMatchesCriteria> = {}
 ): FilterMatchesCriteria => ({
   ha: 'all',
-  comp: 'all',
   ...overrides,
 });
 
@@ -49,28 +37,10 @@ describe('filterMatches', () => {
     ]);
   });
 
-  it('대회별(comp=FA컵) — 지정한 대회만 반환한다', () => {
-    const groups = filterMatches(matches, buildCriteria({ comp: 'FA컵' }));
-
-    expect(groups.flatMap((g) => g.matches.map((f) => f.id))).toEqual([
-      'f2',
-      'f5',
-    ]);
-  });
-
-  it('복합 필터(ha=home, comp=챔피언스리그) — AND로 결합된다', () => {
-    const groups = filterMatches(
-      matches,
-      buildCriteria({ ha: 'home', comp: '챔피언스리그' })
-    );
-
-    expect(groups.flatMap((g) => g.matches.map((f) => f.id))).toEqual(['f3']);
-  });
-
   it('조건에 맞는 일정이 없으면 빈 배열을 반환한다', () => {
     const groups = filterMatches(
-      matches,
-      buildCriteria({ ha: 'home', comp: 'FA컵' })
+      matches.filter((match) => match.ha !== 'home'),
+      buildCriteria({ ha: 'home' })
     );
 
     expect(groups).toEqual([]);

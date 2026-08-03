@@ -1,61 +1,113 @@
 /**
- * MatchesTab 통합 테스트 — QA 시나리오(플랜 "SeasonTabs 탭 전환·필터 적용 시
- * 행 수 변화·대회필터로 빈상태 도달").
+ * MatchesTab 통합 테스트 — 실 API 흐름(로딩/에러/빈상태/성공) 검증.
+ * `@entities/matches/api`의 `getMatchScheduleList`를 vi.mock하고
+ * QueryClientProvider로 감싸 렌더한다(EndPointPanel.test.tsx 패턴, T-6).
  *
  * 검증 목적:
- * - 초기 렌더 = 전체 13경기
- * - 홈/대회 필터 적용 시 해당 조건에 맞는 경기 수만큼만 렌더
- * - 결과가 없는 필터 조합(홈 + FA컵)이면 빈 상태(StateBox)가 렌더된다
+ * - 로딩 중에는 MatchesSkeleton(role=status)이 렌더된다
+ * - 에러 시 StateBox(role=alert)와 안내 문구가 렌더된다
+ * - 성공 + 빈 배열이면 기존 빈 상태 문구가 렌더된다
+ * - 성공 + 데이터면 홈 필터 적용 시 행 수가 줄어든다
  */
 
-import { afterEach, describe, expect, it } from 'vitest';
-import { cleanup, render, screen } from '@testing-library/react';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { MatchesTab } from '@pages/season/ui/MatchesTab';
-import { matches } from '@pages/season/model';
+import { getMatchScheduleList } from '@entities/matches/api';
+import type { Match } from '@entities/matches/model';
+import { matches } from '../../model/mockData';
 
-afterEach(cleanup);
+vi.mock('@entities/matches/api', () => ({
+  getMatchScheduleList: vi.fn(),
+}));
+
+// --- 헬퍼 ---
+
+function renderMatchesTab() {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false, gcTime: 0 } },
+  });
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <MatchesTab />
+    </QueryClientProvider>
+  );
+}
+
+const successResponse = (data: Match[]) => ({
+  success: true as const,
+  data,
+  error: null,
+});
+
+const errorResponse = {
+  success: false as const,
+  data: null,
+  error: { code: 'BFF_ERROR', message: '경기 일정을 불러오지 못했어요' },
+};
 
 const rowCount = () => screen.getAllByRole('listitem').length;
 
+// --- 생명주기 ---
+
+afterEach(() => {
+  cleanup();
+  vi.clearAllMocks();
+});
+
+// --- 테스트 ---
+
 describe('MatchesTab', () => {
-  it('초기 렌더 시 전체 경기를 모두 렌더한다(필터=전체)', () => {
-    render(<MatchesTab />);
-    expect(rowCount()).toBe(matches.length);
+  it('로딩 중에는 스켈레톤(role=status)이 렌더된다', () => {
+    vi.mocked(getMatchScheduleList).mockReturnValue(new Promise(() => {}));
+
+    renderMatchesTab();
+
+    expect(screen.getByRole('status')).toBeInTheDocument();
   });
 
-  it('홈 필터를 선택하면 홈경기 수만큼만 렌더된다', async () => {
-    const user = userEvent.setup();
-    render(<MatchesTab />);
+  it('에러 응답이면 StateBox(role=alert)와 안내 문구가 렌더된다', async () => {
+    vi.mocked(getMatchScheduleList).mockResolvedValue(errorResponse);
 
-    await user.click(screen.getByRole('button', { name: '홈' }));
+    renderMatchesTab();
 
-    const homeCount = matches.filter((f) => f.ha === 'home').length;
-    expect(rowCount()).toBe(homeCount);
-  });
-
-  it('대회 필터(FA컵)를 선택하면 FA컵 경기 수만큼만 렌더된다', async () => {
-    const user = userEvent.setup();
-    render(<MatchesTab />);
-
-    await user.click(screen.getByRole('button', { name: 'FA컵' }));
-
-    const faCupCount = matches.filter((f) => f.comp === 'FA컵').length;
-    expect(rowCount()).toBe(faCupCount);
-  });
-
-  it('홈 + FA컵처럼 결과가 없는 필터 조합이면 빈 상태(StateBox)가 렌더된다', async () => {
-    const user = userEvent.setup();
-    render(<MatchesTab />);
-
-    await user.click(screen.getByRole('button', { name: '홈' }));
-    await user.click(screen.getByRole('button', { name: 'FA컵' }));
-
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toBeInTheDocument();
+    });
     expect(
-      screen.getByRole('heading', { name: '조건에 맞는 경기가 없어요' })
+      screen.getByRole('heading', { name: '경기 일정을 불러오지 못했어요' })
     ).toBeInTheDocument();
+    expect(screen.getByText('잠시 후 다시 시도해주세요.')).toBeInTheDocument();
+  });
+
+  it('성공 + 빈 배열이면 기존 빈 상태 문구가 렌더된다', async () => {
+    vi.mocked(getMatchScheduleList).mockResolvedValue(successResponse([]));
+
+    renderMatchesTab();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole('heading', { name: '조건에 맞는 경기가 없어요' })
+      ).toBeInTheDocument();
+    });
     expect(screen.queryAllByRole('listitem')).toHaveLength(0);
+  });
+
+  it('성공 + 데이터면 초기 전체 렌더 후 홈 필터로 행 수가 줄어든다', async () => {
+    vi.mocked(getMatchScheduleList).mockResolvedValue(successResponse(matches));
+    const user = userEvent.setup();
+
+    renderMatchesTab();
+
+    await waitFor(() => expect(rowCount()).toBe(matches.length));
+
+    await user.click(screen.getByRole('button', { name: '홈' }));
+
+    const homeCount = matches.filter((match) => match.ha === 'home').length;
+    await waitFor(() => expect(rowCount()).toBe(homeCount));
   });
 });
