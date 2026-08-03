@@ -6,7 +6,7 @@
  * - 날짜 파생 필드(month·date·dow) 포맷
  * - 팀 한글명·팀 코드 매핑과 미매핑 팀 폴백
  * - score null → undefined 변환
- * - 고정 필드(comp·round·status·result)·venue 전달, 빈 배열 처리
+ * - 고정 필드(comp·round)·status placeholder·result 계산(스코어·ha 기준)·utd·time·kickoff·venue 전달, 빈 배열 처리
  */
 
 import { describe, it, expect } from 'vitest';
@@ -41,7 +41,10 @@ const createMatchDTO = (
 });
 
 const convertOne = (overrides: Partial<MatchScheduleDTO> = {}) =>
-  convertMatchesDTO2DAO([createMatchDTO(overrides)])[0];
+  convertMatchesDTO2DAO({
+    pastMatches: [createMatchDTO(overrides)],
+    upcomingMatches: [],
+  })[0];
 
 describe('convertMatchesDTO2DAO — ha 판정', () => {
   it('맨유가 홈팀이면 ha가 home이다', () => {
@@ -192,26 +195,152 @@ describe('convertMatchesDTO2DAO — 그 외 필드·목록', () => {
     expect(convertOne().venue).toBe('올드 트래포드');
   });
 
-  it('comp·round·status·result를 고정값으로 채운다', () => {
+  it('빈 배열을 넣으면 빈 배열을 반환한다', () => {
+    expect(
+      convertMatchesDTO2DAO({ pastMatches: [], upcomingMatches: [] })
+    ).toEqual([]);
+  });
+
+  it('여러 경기를 시간 순서대로 배열한다.', () => {
+    const matches = convertMatchesDTO2DAO({
+      pastMatches: [
+        createMatchDTO({ date: '2026-08-02T00:00:00' }),
+        createMatchDTO({ date: '2026-12-03T00:00:00' }),
+      ],
+      upcomingMatches: [
+        createMatchDTO({ date: '2027-02-03T00:00:02' }),
+        createMatchDTO({ date: '2027-02-03T00:00:01' }),
+      ],
+    });
+
+    expect(matches).toHaveLength(4);
+    expect(matches.map((match) => match.kickoff)).toEqual([
+      '2026-08-02T00:00:00',
+      '2026-12-03T00:00:00',
+      '2027-02-03T00:00:01',
+      '2027-02-03T00:00:02',
+    ]);
+  });
+});
+
+describe('convertMatchesDTO2DAO — time', () => {
+  it('date의 시:분을 HH:mm 형식으로 채운다', () => {
+    expect(convertOne({ date: '2025-05-11T20:05' }).time).toBe('20:05');
+  });
+
+  it('한 자리 시·분에 0을 채운다', () => {
+    expect(convertOne({ date: '2025-05-11T09:07' }).time).toBe('09:07');
+  });
+});
+
+describe('convertMatchesDTO2DAO — kickoff', () => {
+  it('date 원본을 그대로 kickoff에 전달한다', () => {
+    expect(convertOne({ date: '2025-05-11T20:00' }).kickoff).toBe(
+      '2025-05-11T20:00'
+    );
+  });
+});
+
+describe('convertMatchesDTO2DAO — utd', () => {
+  it('맨유가 홈팀이면 home.utd가 true, away.utd가 false다', () => {
     const match = convertOne();
 
-    expect(match.comp).toBe('프리미어리그');
-    expect(match.round).toBe('0R');
-    expect(match.status).toBe('past');
+    expect(match.home.utd).toBe(true);
+    expect(match.away.utd).toBe(false);
+  });
+
+  it('맨유가 원정팀이면 away.utd가 true, home.utd가 false다', () => {
+    const match = convertOne({
+      homeTeam: {
+        teamId: EVERTON_TEAM_ID,
+        name: 'Everton',
+        logo: 'https://example.com/eve.png',
+        winner: false,
+      },
+      awayTeam: {
+        teamId: MANCHESTER_UNITED_TEAM_ID,
+        name: 'Manchester United',
+        logo: 'https://example.com/mun.png',
+        winner: true,
+      },
+    });
+
+    expect(match.home.utd).toBe(false);
+    expect(match.away.utd).toBe(true);
+  });
+});
+
+describe('convertMatchesDTO2DAO — result(맨유 관점, 스코어 확정 + non-neutral일 때만)', () => {
+  it('맨유(홈)가 이기면 W다', () => {
+    const match = convertOne({ score: { home: 2, away: 1 } });
+
+    expect(match.ha).toBe('home');
+    expect(match.result).toBe('W');
+  });
+
+  it('맨유(원정)가 이기면 W다', () => {
+    const match = convertOne({
+      homeTeam: {
+        teamId: EVERTON_TEAM_ID,
+        name: 'Everton',
+        logo: 'https://example.com/eve.png',
+        winner: false,
+      },
+      awayTeam: {
+        teamId: MANCHESTER_UNITED_TEAM_ID,
+        name: 'Manchester United',
+        logo: 'https://example.com/mun.png',
+        winner: true,
+      },
+      score: { home: 0, away: 3 },
+    });
+
+    expect(match.ha).toBe('away');
+    expect(match.result).toBe('W');
+  });
+
+  it('맨유가 지면 L이다', () => {
+    const match = convertOne({ score: { home: 0, away: 1 } });
+
+    expect(match.result).toBe('L');
+  });
+
+  it('스코어가 같으면 D다', () => {
+    const match = convertOne({ score: { home: 1, away: 1 } });
+
     expect(match.result).toBe('D');
   });
 
-  it('빈 배열을 넣으면 빈 배열을 반환한다', () => {
-    expect(convertMatchesDTO2DAO([])).toEqual([]);
+  it('neutral(맨유 미참여) 경기는 스코어가 확정돼도 result가 undefined다', () => {
+    const match = convertOne({
+      homeTeam: {
+        teamId: ARSENAL_TEAM_ID,
+        name: 'Arsenal',
+        logo: 'https://example.com/ars.png',
+        winner: false,
+      },
+      awayTeam: {
+        teamId: EVERTON_TEAM_ID,
+        name: 'Everton',
+        logo: 'https://example.com/eve.png',
+        winner: true,
+      },
+      score: { home: 1, away: 2 },
+    });
+
+    expect(match.ha).toBe('neutral');
+    expect(match.result).toBeUndefined();
   });
 
-  it('여러 경기를 입력 순서대로 변환한다', () => {
-    const matches = convertMatchesDTO2DAO([
-      createMatchDTO({ matchId: 1 }),
-      createMatchDTO({ matchId: 2 }),
-    ]);
+  it('스코어가 미확정(양쪽 null)이면 result가 undefined다', () => {
+    const match = convertOne({ score: { home: null, away: null } });
 
-    expect(matches).toHaveLength(2);
-    expect(matches.map((match) => match.id)).toEqual(['1', '2']);
+    expect(match.result).toBeUndefined();
+  });
+
+  it('스코어가 한쪽만 확정이어도 result가 undefined다', () => {
+    const match = convertOne({ score: { home: 2, away: null } });
+
+    expect(match.result).toBeUndefined();
   });
 });

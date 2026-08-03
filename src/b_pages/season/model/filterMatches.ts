@@ -1,7 +1,8 @@
 /**
  * filterMatches — 일정 필터링 + 월별 그룹핑 순수 함수 (ST-01, 이슈 #29).
  *
- * - 홈/원정(ha)·대회(comp) 필터를 AND로 결합한다 ('all'은 항상 통과).
+ * - 홈/원정(ha) 필터를 적용한다 ('all'은 항상 통과). 대회(comp) 필터는 API에 대회
+ *   필드가 없어 제거되었다(D-3/T-3).
  * - 필터링된 결과를 `Match.month`로 그룹핑한다. month가 처음 등장한 순서로
  *   그룹을 만들고(입력 순서 보존), 같은 month는 비연속으로 흩어져 있어도 하나의
  *   그룹에 모은다 — 실 API(getMatchScheduleList)가 비정렬 배열을 줘도 중복 그룹이
@@ -10,19 +11,15 @@
  * 입력→출력만 있는 순수 함수 — 부수효과 없음. 단위 테스트 대상.
  */
 
-import type { CompFilter, Match, HaFilter } from '@entities/matches/model';
+import type { Match, HaFilter } from '@entities/matches/model';
 import { MatchMonthGroup } from './types';
 
 interface FilterMatchesCriteria {
   ha: HaFilter;
-  comp: CompFilter;
 }
 
 const matchesHa = (Match: Match, ha: HaFilter): boolean =>
   ha === 'all' || Match.ha === ha;
-
-const matchesComp = (Match: Match, comp: CompFilter): boolean =>
-  comp === 'all' || Match.comp === comp;
 
 const groupByMonth = (matches: Match[]): MatchMonthGroup[] => {
   const groupsByMonth = new Map<string, MatchMonthGroup>();
@@ -43,10 +40,7 @@ const filterMatches = (
   matches: Match[],
   criteria: FilterMatchesCriteria
 ): MatchMonthGroup[] => {
-  const filtered = matches.filter(
-    (Match) =>
-      matchesHa(Match, criteria.ha) && matchesComp(Match, criteria.comp)
-  );
+  const filtered = matches.filter((Match) => matchesHa(Match, criteria.ha));
 
   return groupByMonth(filtered);
 };

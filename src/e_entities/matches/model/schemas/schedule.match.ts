@@ -1,6 +1,10 @@
 import z from 'zod';
 import { DateStringType } from '@shared/model';
 
+const MatchScheduleParamsSchema = z.object({
+  season: z.string(),
+});
+
 // 경기
 const VenueDTOSchema = z.object({
   name: z.string(),
@@ -30,6 +34,11 @@ const MatchScheduleDTOSchema = z.object({
 
 const MatchScheduleListDTOSchema = z.array(MatchScheduleDTOSchema);
 
+const TotalMatchScheduleDTOSchema = z.object({
+  pastMatches: MatchScheduleListDTOSchema,
+  upcomingMatches: MatchScheduleListDTOSchema,
+});
+
 const MatchDetailsQueryDTOSchema = z.object({
   matchId: z.number(),
 });
@@ -37,7 +46,8 @@ const MatchDetailsQueryDTOSchema = z.object({
 export {
   MatchDetailsQueryDTOSchema,
   MatchScheduleDTOSchema,
-  MatchScheduleListDTOSchema,
+  MatchScheduleParamsSchema,
+  TotalMatchScheduleDTOSchema,
   ScoreDTOSchema,
   TeamDTOSchema,
   VenueDTOSchema,

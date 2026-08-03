@@ -9,10 +9,13 @@ export type MatchScheduleDTO = z.infer<
   typeof scheduleSchema.MatchScheduleDTOSchema
 >;
 export type MatchScheduleListDTO = z.infer<
-  typeof scheduleSchema.MatchScheduleListDTOSchema
+  typeof scheduleSchema.TotalMatchScheduleDTOSchema
 >;
 export type MatchDetailsQueryDTO = z.infer<
   typeof scheduleSchema.MatchDetailsQueryDTOSchema
+>;
+export type MatchScheduleParams = z.infer<
+  typeof scheduleSchema.MatchScheduleParamsSchema
 >;
 
 // 경기 라인업
@@ -49,8 +52,6 @@ export interface Match {
   month: string;
   date: string;
   dow: string;
-  comp: Competition;
-  round: string;
   ha: MatchHa;
   home: MatchSide;
   away: MatchSide;
@@ -59,6 +60,6 @@ export interface Match {
   time?: string;
   countdown?: string;
   venue: string;
+  kickoff: string;
 }
 export type HaFilter = 'all' | 'home' | 'away';
-export type CompFilter = 'all' | Competition;
