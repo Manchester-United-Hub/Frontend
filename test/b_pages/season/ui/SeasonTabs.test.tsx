@@ -1,10 +1,15 @@
 /**
  * SeasonTabs 전용 테스트 — 컴포넌트 1:테스트 1 미러링(code-conventions §6).
  *
- * D-15/ST-5: `@entities/matches/api`의 `getMatchScheduleList`를 vi.mock하고
+ * ST-5: `@entities/matches/api`의 `getMatchScheduleList`를 vi.mock하고
  * QueryClientProvider로 감싸 렌더한다(SeasonPage.test.tsx/MatchTab.test.tsx와 동일
  * 패턴) — SeasonTabs → MatchesTab → useMatchFilters → useMatchScheduleList →
  * useQuery 경로가 실 비동기 데이터를 소비하기 때문(SeasonPage.test.tsx와 근본 원인 동일).
+ *
+ * ST-A2: 순위표 탭은 SeasonTabs → StandingsTab → usePLRankList →
+ * `@entities/rank/api`의 `fetchPremierLeagueRankList`를 소비하므로 동일한 이유로
+ * 함께 vi.mock한다. `matches`는 공유 `../model/mockData`에서 가져오고, `standings`는
+ * 이 파일 전용 inline 상수로 둔다(rank 계층은 기존 matches 관례대로 파일별 inline fixture).
  *
  * 검증 목적: 기본 활성 탭(matches), 탭 전환(일정↔순위표), 접근성 계약
  * (id="tab-{id}"/aria-controls ↔ id="panel-{id}"/aria-labelledby), 탭 전환 시
@@ -19,11 +24,40 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { SeasonTabs } from '@pages/season/ui/SeasonTabs';
 import { getMatchScheduleList } from '@entities/matches/api';
+import { fetchPremierLeagueRankList } from '@entities/rank/api';
+import type { Standing } from '@entities/rank/model';
 import { matches } from '../model/mockData';
 
 vi.mock('@entities/matches/api', () => ({
   getMatchScheduleList: vi.fn(),
 }));
+
+vi.mock('@entities/rank/api', () => ({
+  fetchPremierLeagueRankList: vi.fn(),
+}));
+
+const standings: Standing[] = [
+  {
+    teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+    pos: 1,
+    code: 'MUN',
+    nm: '맨체스터 유나이티드',
+    p: 30,
+    w: 22,
+    d: 4,
+    l: 4,
+    gf: 60,
+    ga: 25,
+    pts: 70,
+    form: ['W', 'W', 'D', 'W', 'L'],
+    mv: 'same',
+    zone: 'ucl',
+    diff: 35,
+    utd: true,
+  },
+];
+
+const season = '2026-27';
 
 // --- 헬퍼 ---
 
@@ -33,7 +67,7 @@ function renderSeasonTabs() {
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <SeasonTabs />
+      <SeasonTabs season={season} />
     </QueryClientProvider>
   );
 }
@@ -50,6 +84,11 @@ beforeEach(() => {
   vi.mocked(getMatchScheduleList).mockResolvedValue({
     success: true,
     data: matches,
+    error: null,
+  });
+  vi.mocked(fetchPremierLeagueRankList).mockResolvedValue({
+    success: true,
+    data: standings,
     error: null,
   });
 });
@@ -88,6 +127,8 @@ describe('SeasonTabs', () => {
     expect(
       screen.getByRole('heading', { level: 2, name: '순위표' })
     ).toBeInTheDocument();
+
+    await waitForMatchesLoaded();
     expect(screen.getByRole('table')).toBeInTheDocument();
   });
 

@@ -6,6 +6,12 @@
  * SeasonPage → SeasonTabs → MatchesTab → useMatchFilters → useMatchScheduleList
  * → useQuery 경로가 실 비동기 데이터를 소비하기 때문.
  *
+ * ST-A2: 순위표 탭은 SeasonTabs → StandingsTab → usePLRankList →
+ * `@entities/rank/api`의 `fetchPremierLeagueRankList`를 소비하므로 동일한 이유로
+ * 함께 vi.mock한다(architecture.standards — API 모킹 경계는 엔티티 client 계층).
+ * `matches`는 공유 `./model/mockData`에서 가져오고, `standings`는 이 파일 전용
+ * inline 상수로 둔다(rank 계층은 기존 matches 관례대로 파일별 inline fixture).
+ *
  * 검증 목적:
  * - 런타임 에러 없이 마운트, 히어로·요약 카드 렌더
  * - 초기 탭 = matches(일정 & 결과)
@@ -22,11 +28,38 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { SeasonPage } from '@pages/season';
 import { getMatchScheduleList } from '@entities/matches/api';
+import { fetchPremierLeagueRankList } from '@entities/rank/api';
+import type { Standing } from '@entities/rank/model';
 import { matches } from './model/mockData';
 
 vi.mock('@entities/matches/api', () => ({
   getMatchScheduleList: vi.fn(),
 }));
+
+vi.mock('@entities/rank/api', () => ({
+  fetchPremierLeagueRankList: vi.fn(),
+}));
+
+const standings: Standing[] = [
+  {
+    teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
+    pos: 1,
+    code: 'MUN',
+    nm: '맨체스터 유나이티드',
+    p: 30,
+    w: 22,
+    d: 4,
+    l: 4,
+    gf: 60,
+    ga: 25,
+    pts: 70,
+    form: ['W', 'W', 'D', 'W', 'L'],
+    mv: 'same',
+    zone: 'ucl',
+    diff: 35,
+    utd: true,
+  },
+];
 
 // --- 헬퍼 ---
 
@@ -53,6 +86,11 @@ beforeEach(() => {
   vi.mocked(getMatchScheduleList).mockResolvedValue({
     success: true,
     data: matches,
+    error: null,
+  });
+  vi.mocked(fetchPremierLeagueRankList).mockResolvedValue({
+    success: true,
+    data: standings,
     error: null,
   });
 });
@@ -117,6 +155,8 @@ describe('SeasonPage 서브탭 전환·필터', () => {
     const panel = screen.getByRole('tabpanel');
     expect(panel).toHaveAttribute('id', 'panel-table');
     expect(panel).toHaveAttribute('aria-labelledby', 'tab-table');
+
+    await waitForMatchesLoaded();
     expect(screen.getByRole('table')).toBeInTheDocument();
   });
 

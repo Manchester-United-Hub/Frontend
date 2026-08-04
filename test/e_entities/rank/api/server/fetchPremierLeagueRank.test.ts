@@ -1,17 +1,36 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { serverFetcher } from '@shared/api';
-import { fetchMatchScheduleList } from '@entities/matches/api/server/matchScheduleList';
+import { API_PATH, serverFetcher } from '@shared/api';
+import { getPremierLeagueRank } from '@entities/rank/api/server/fetchPremierLeagueRank';
 
 vi.mock('@shared/api', async (importOriginal) => {
   const actual = await importOriginal<typeof import('@shared/api')>();
   return { ...actual, serverFetcher: { get: vi.fn() } };
 });
 
-describe('fetchMatchScheduleList', () => {
+describe('getPremierLeagueRank', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('응답을 ServerApiResult 형태로 반환한다', async () => {
-    const data = { pastMatches: [], upcomingMatches: [] };
+    const data = {
+      season: '2025-26',
+      ranks: [
+        {
+          rank: 1,
+          teamId: 33,
+          teamName: 'Manchester United',
+          teamLogo: 'https://example.com/mun.png',
+          points: 70,
+          played: 30,
+          win: 22,
+          draw: 4,
+          lose: 4,
+          goalsFor: 60,
+          goalsAgainst: 25,
+          goalsDiff: 35,
+          form: 'WWDWL',
+        },
+      ],
+    };
     const mockRes = {
       ok: true,
       status: 200,
@@ -21,8 +40,9 @@ describe('fetchMatchScheduleList', () => {
       mockRes as unknown as Response
     );
 
-    const result = await fetchMatchScheduleList({ season: '2026-27' });
+    const result = await getPremierLeagueRank();
 
+    expect(serverFetcher.get).toHaveBeenCalledWith(API_PATH.plRank());
     expect(result.isSuccess).toBe(true);
     expect(result.status).toBe(200);
     expect(result.data).toEqual(data);
@@ -39,7 +59,7 @@ describe('fetchMatchScheduleList', () => {
       mockRes as unknown as Response
     );
 
-    const result = await fetchMatchScheduleList({ season: '2026-27' });
+    const result = await getPremierLeagueRank();
 
     expect(result.isSuccess).toBe(false);
     expect(result.status).toBe(500);

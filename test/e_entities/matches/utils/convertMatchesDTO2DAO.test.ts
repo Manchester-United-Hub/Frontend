@@ -130,13 +130,13 @@ describe('convertMatchesDTO2DAO — 팀 정보 매핑', () => {
     const match = convertOne({
       awayTeam: {
         teamId: 99,
-        name: 'Sunderland',
-        logo: 'https://example.com/sun.png',
+        name: 'Burnley',
+        logo: 'https://example.com/bur.png',
         winner: false,
       },
     });
 
-    expect(match.away.nm).toBe('Sunderland');
+    expect(match.away.nm).toBe('Burnley');
   });
 
   it('API-Sports 팀명("FC" 접미 없음)을 팀 코드로 바꾼다', () => {
