@@ -23,6 +23,9 @@ const API_PATH = {
   playerDetail(playerId: number | string) {
     return `/api/players/${playerId}`;
   },
+  playerStatistics(playerId: number | string) {
+    return `/api/player-details/${playerId}`;
+  },
   matchSchedule() {
     return '/api/matches';
   },
@@ -52,6 +55,12 @@ const BFF_PATH = {
   },
   playerList() {
     return '/api/v1/player';
+  },
+  playerProfile(playerId: number | string) {
+    return `/api/v1/player/${playerId}`;
+  },
+  playerStatistics(playerId: number | string) {
+    return `/api/v1/player-details/${playerId}`;
   },
   teamInfo(teamId: string | number) {
     return `/api/v1/team/${teamId}`;
