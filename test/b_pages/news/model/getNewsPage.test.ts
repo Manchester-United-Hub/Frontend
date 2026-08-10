@@ -5,7 +5,7 @@ import {
   makeInitialNewsQuery,
   NEWS_PAGE_SIZE,
   NO_MORE_CURSOR_ID,
-} from '@pages/news/model';
+} from './newsFeed';
 import type { NewsItem } from '@pages/news/model';
 
 const makeItems = (count: number): NewsItem[] =>
