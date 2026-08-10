@@ -46,12 +46,12 @@ export function Crest({ teamLogoUrl, code, className, utd }: CrestProps) {
     <span
       aria-hidden="true"
       className={cn(
-        'grid h-7.5 w-7.5 flex-none place-items-center rounded-full border-gray-400 text-[11px] font-extrabold content-center object-scale-down',
+        'grid h-7.5 w-7.5 flex-none place-items-center rounded-full border-gray-400 text-[11px] font-extrabold content-center',
         className
       )}
     >
       <Image
-        className="w-full h-auto"
+        className="max-w-6 max-h-7.5 w-full h-auto"
         alt="팀 로고"
         src={teamLogoUrl}
         width={600}
