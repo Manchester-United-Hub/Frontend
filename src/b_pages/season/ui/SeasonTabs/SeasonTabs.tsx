@@ -10,14 +10,17 @@ import { SubTabNav } from '../SubTabNav';
 
 const DEFAULT_TAB_ID: SubTabId = 'matches';
 
-const TAB_PANELS: Record<SubTabId, ReactNode> = {
-  matches: <MatchesTab />,
-  table: <StandingsTab />,
-};
+interface SeasonTabsPops {
+  season: string;
+}
 
-export function SeasonTabs() {
+export function SeasonTabs({ season }: SeasonTabsPops) {
   const [activeId, setActiveId] = useState<SubTabId>(DEFAULT_TAB_ID);
 
+  const TAB_PANELS: Record<SubTabId, ReactNode> = {
+    matches: <MatchesTab season={season} />,
+    table: <StandingsTab season={season} />,
+  };
   return (
     <>
       <SubTabNav tabs={subTabs} activeId={activeId} onChange={setActiveId} />

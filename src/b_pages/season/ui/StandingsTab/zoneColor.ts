@@ -1,4 +1,4 @@
-import type { StandingZone } from '../../model';
+import { StandingZone } from '@entities/rank/model';
 
 /**
  * 존(zone) 색 매핑 — 사전 결정 (테크리드 지시사항, plan.md).

@@ -20,13 +20,15 @@ const HA_OPTIONS: { value: HaFilter; label: string }[] = [
   { value: 'away', label: '원정' },
 ];
 
-const PANEL_DESCRIPTION =
-  '2025/26 시즌 프리미어리그·FA컵·챔피언스리그 일정과 결과를 확인하세요.';
 const EMPTY_ICON = <CalendarX size={22} aria-hidden="true" />;
 const ERROR_ICON = <AlertTriangle size={22} aria-hidden="true" />;
 
-export function MatchesTab() {
+interface MatchsTabProps {
+  season: string;
+}
+export function MatchesTab({ season }: MatchsTabProps) {
   const { ha, setHa, groups, isEmpty, isLoading, error } = useMatchFilters();
+  const PANEL_DESCRIPTION = `${season} 시즌 프리미어리그·FA컵·챔피언스리그 일정과 결과를 확인하세요.`;
 
   // 4갈래 분기를 위→아래로 읽히게 if/else로 표현한다(중첩 삼항 대신 — T-4).
   let body: ReactNode;

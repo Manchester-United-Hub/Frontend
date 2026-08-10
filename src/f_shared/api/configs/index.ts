@@ -35,6 +35,12 @@ const API_PATH = {
   liveMatchLineup(matchId: number | string) {
     return `/api/matches/${matchId}/lineups`;
   },
+  plRank() {
+    return '/api/rank/premier-league';
+  },
+  plRankDetail(detail: 'topscorers' | 'topassists') {
+    return `/api/rank/premier-league/${detail}`;
+  },
 };
 
 const BFF_PATH = {
@@ -58,6 +64,9 @@ const BFF_PATH = {
   },
   teamStatistics() {
     return '/api/v1/team/statistics';
+  },
+  premierLeagueRank() {
+    return `/api/v1/rank/pl`;
   },
 };
 
