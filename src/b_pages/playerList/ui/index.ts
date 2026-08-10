@@ -2,6 +2,7 @@ export * from './FilterBarSection';
 export * from './ResultRow';
 export * from './RosterContent';
 export * from './RosterEmpty';
+export * from './RosterErrorState';
 export * from './RosterGrid';
 export * from './RosterHeadSection';
 export * from './RosterListView';
