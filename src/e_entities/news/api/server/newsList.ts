@@ -8,9 +8,17 @@ const fetchNewsList = async (
   const response = await serverFetcher.get(API_PATH.newsList(), params);
   const data = await response.json();
   if (response.ok) {
-    return { isSuccess: true, status: response.status, data: data as NewsListDTO };
+    return {
+      isSuccess: true,
+      status: response.status,
+      data: data as NewsListDTO,
+    };
   }
-  return { isSuccess: false, status: response.status, data: data as ApiErrorResponse };
+  return {
+    isSuccess: false,
+    status: response.status,
+    data: data as ApiErrorResponse,
+  };
 };
 
 export { fetchNewsList };
