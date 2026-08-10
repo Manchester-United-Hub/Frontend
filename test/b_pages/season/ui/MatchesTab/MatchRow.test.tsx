@@ -20,8 +20,6 @@ const matches: Match[] = [
     month: 'M1',
     date: '3/1',
     dow: '토',
-    comp: '프리미어리그',
-    round: '27R',
     ha: 'home',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
@@ -46,8 +44,6 @@ const matches: Match[] = [
     month: 'M2',
     date: '4/12',
     dow: '토',
-    comp: '프리미어리그',
-    round: '32R',
     ha: 'home',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
@@ -71,8 +67,6 @@ const matches: Match[] = [
     month: 'M3',
     date: '5/31',
     dow: '토',
-    comp: 'FA컵',
-    round: '결승',
     ha: 'neutral',
     home: {
       teamLogoUrl: 'https://media.api-sports.io/football/teams/33.png',
