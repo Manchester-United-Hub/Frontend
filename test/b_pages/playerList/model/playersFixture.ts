@@ -1,18 +1,13 @@
 /**
- * Player list page mock data (ST-2).
+ * 선수 목록 테스트 fixture (원래 ST-2의 production mock data, PL-2로 실 API 연결 후
+ * 사용자 지시에 따라 test/ 아래로 이관됨 — D-10 갱신: "삭제·이동 없이 fixture 주석만" 대신
+ * 테스트 전용 데이터는 test/ 폴더에서 관리한다).
  *
- * Based on design reference players-data.js (18명 — 1군 12 + 레전드 6).
- * No imports from e_entities / d_features / app/api (standards: e_entities 실 API 호출 금지 —
- * 목업은 이 파일에만 둔다).
+ * 디자인 레퍼런스 players-data.js 기반(18명 — 1군 12 + 레전드 6). vitest의 include 패턴이
+ * `*.{test,spec}.{ts,tsx}`만 수집하므로 이 파일은 테스트 스위트로 오인 수집되지 않는다.
  */
 
-import { ALL_FILTER_KEY } from './types';
-import type { FilterOption, PlayerListItem } from './types';
-
-/** 새로고침 로딩 시뮬레이션 지연(ms) — ADR-8. API 연결 시 react-query isFetching으로 교체. */
-export const REFRESH_DELAY_MS = 700;
-
-// ───────── Players ─────────
+import type { PlayerListItem } from '@pages/playerList/model/types';
 
 export const PLAYERS: PlayerListItem[] = [
   // ---------- current first team ----------
@@ -235,46 +230,3 @@ export const PLAYERS: PlayerListItem[] = [
     squad: '레전드',
   },
 ];
-
-// ───────── Filter options ─────────
-
-export const POSITIONS: FilterOption[] = [
-  { key: ALL_FILTER_KEY, label: '전체' },
-  { key: 'GK', label: '골키퍼 · GK' },
-  { key: 'DF', label: '수비수 · DF' },
-  { key: 'MF', label: '미드필더 · MF' },
-  { key: 'FW', label: '공격수 · FW' },
-];
-
-/** 활약연도(decade) — filterPlayers의 decade 매칭 규칙(ADR-6)과 key를 공유한다. */
-export const DECADES: FilterOption[] = [
-  { key: ALL_FILTER_KEY, label: '전체 연도' },
-  { key: '2020', label: '2020년대' },
-  { key: '2010', label: '2010년대' },
-  { key: '2000', label: '2000년대' },
-  { key: '1990', label: '1990년대' },
-];
-
-export const SQUADS: FilterOption[] = [
-  { key: ALL_FILTER_KEY, label: '전체 스쿼드' },
-  { key: '1군', label: '1군' },
-  { key: '레전드', label: '레전드' },
-];
-
-// ───────── Flags ─────────
-
-/**
- * flagCode → emoji 매핑 (ADR-4). 국가명 텍스트가 접근성을 담당하므로 이 값은 소비처에서
- * aria-hidden으로 렌더한다. 웨일스(wa)는 국가가 아닌 subdivision emoji를 사용.
- */
-export const FLAG_EMOJI: Record<string, string> = {
-  pt: '🇵🇹',
-  gb: '🇬🇧',
-  dk: '🇩🇰',
-  ar: '🇦🇷',
-  cm: '🇨🇲',
-  nl: '🇳🇱',
-  br: '🇧🇷',
-  fr: '🇫🇷',
-  wa: '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
-};

@@ -1,6 +1,6 @@
 import { PlayerCard } from '@shared/ui';
 
-import { FLAG_EMOJI } from '../../model/mockData';
+import { FLAG_EMOJI } from '../../model/flagEmoji';
 import { playerDetailHref } from '../../model/playerDetailHref';
 import type { PlayerListItem } from '../../model/types';
 
@@ -24,12 +24,16 @@ function RosterGrid({ players }: RosterGridProps) {
           <PlayerCard
             name={player.name}
             nameEn={player.nameEn}
-            position={player.position}
+            position={player.position ?? '-'}
             status={player.status}
             meta={player.years}
             number={player.number}
             nationality={player.nationality}
-            flag={<span aria-hidden="true">{FLAG_EMOJI[player.flagCode]}</span>}
+            // flag 슬롯 자체는 항상 렌더한다 — PlayerCard의 hasNationality가 flag 유무로
+            // 국적 행 전체를 게이트하므로(f_shared, 수정 금지), slot을 undefined로 비우면
+            // 글리프가 없는 flagCode:undefined 선수(전원)의 국적이 카드뷰에서 통째로 사라진다
+            // (리뷰 H-2). 글리프만 조건부로 비운다.
+            flag={<span aria-hidden="true">{player.flagCode ? FLAG_EMOJI[player.flagCode] : ''}</span>}
             href={playerDetailHref(player.id)}
             className="h-full"
           />

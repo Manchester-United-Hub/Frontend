@@ -11,12 +11,18 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { filterPlayers } from './filterPlayers';
-import { REFRESH_DELAY_MS } from './mockData';
 import { ALL_FILTER_KEY } from './types';
 import type { PlayerListItem, RosterView } from './types';
 
 const DEFAULT_QUERY = '';
 const DEFAULT_VIEW: RosterView = 'card';
+
+/**
+ * 새로고침 로딩 시뮬레이션 지연(ms) — ADR-8. 이 훅의 유일한 소비처라 여기 co-locate한다
+ * (목데이터 이관 작업으로 위치만 옮김, 동작 무변경). 가짜 지연을 react-query `isFetching`
+ * 기반으로 대체하는 리팩터링은 후속 과제(issues-draft.md Issue 3, code-review M-2).
+ */
+export const REFRESH_DELAY_MS = 700;
 
 interface UsePlayerListFiltersResult {
   position: string;

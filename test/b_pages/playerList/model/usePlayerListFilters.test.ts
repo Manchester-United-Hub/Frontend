@@ -12,8 +12,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
-import { usePlayerListFilters } from '@pages/playerList/model/usePlayerListFilters';
-import { REFRESH_DELAY_MS } from '@pages/playerList/model/mockData';
+import { REFRESH_DELAY_MS, usePlayerListFilters } from '@pages/playerList/model/usePlayerListFilters';
 import { ALL_FILTER_KEY } from '@pages/playerList/model/types';
 import type { PlayerListItem } from '@pages/playerList/model/types';
 

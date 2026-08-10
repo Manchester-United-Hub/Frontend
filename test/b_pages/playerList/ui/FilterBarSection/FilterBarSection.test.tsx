@@ -3,6 +3,7 @@
  *
  * 검증 목적:
  * - FilterSelect 3개(포지션/활약연도/스쿼드) 렌더 + 선택 시 각 onXChange 호출
+ * - decadeOptions/squadOptions가 없으면(undefined·빈 배열) 해당 셀렉트를 렌더하지 않는다(리뷰 H-3)
  * - RosterSearchField(ADR-1): aria-label·placeholder, 타이핑 시 onQueryChange 호출,
  *   값이 있을 때만 clear(X) 버튼이 나타나고 클릭 시 onQueryChange('') 호출
  * - 새로고침 버튼 클릭 시 onRefresh 호출
@@ -78,6 +79,43 @@ describe('FilterBarSection', () => {
     expect(screen.getByRole('button', { name: '포지션' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '활약연도' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: '스쿼드' })).toBeInTheDocument();
+  });
+
+  it('decadeOptions/squadOptions를 넘기지 않으면 해당 셀렉트를 렌더하지 않는다(리뷰 H-3)', () => {
+    render(
+      <FilterBarSection
+        criteria={BASE_CRITERIA}
+        positionOptions={POSITIONS}
+        onPositionChange={vi.fn()}
+        onDecadeChange={vi.fn()}
+        onSquadChange={vi.fn()}
+        onQueryChange={vi.fn()}
+        onRefresh={vi.fn()}
+      />,
+    );
+
+    expect(screen.getByRole('button', { name: '포지션' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '활약연도' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '스쿼드' })).not.toBeInTheDocument();
+  });
+
+  it('decadeOptions/squadOptions가 빈 배열이어도 해당 셀렉트를 렌더하지 않는다(리뷰 H-3)', () => {
+    render(
+      <FilterBarSection
+        criteria={BASE_CRITERIA}
+        positionOptions={POSITIONS}
+        decadeOptions={[]}
+        squadOptions={[]}
+        onPositionChange={vi.fn()}
+        onDecadeChange={vi.fn()}
+        onSquadChange={vi.fn()}
+        onQueryChange={vi.fn()}
+        onRefresh={vi.fn()}
+      />,
+    );
+
+    expect(screen.queryByRole('button', { name: '활약연도' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: '스쿼드' })).not.toBeInTheDocument();
   });
 
   it('포지션 옵션 선택 시 onPositionChange가 key로 호출된다', async () => {
