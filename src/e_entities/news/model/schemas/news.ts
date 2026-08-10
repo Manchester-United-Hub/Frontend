@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { DateStringType } from '@shared/model';
 
 const NewsQuerySchema = z.object({
-  cursorAt: DateStringType['yyyy-MM-ddTHH:mm'],
+  cursorAt: DateStringType['yyyy-MM-ddTHH:mm:ss'],
   cursorId: z.coerce.number().int().positive(),
   size: z.coerce.number().int().positive(),
 });

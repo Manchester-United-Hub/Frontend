@@ -7,7 +7,7 @@ const MatchScheduleParamsSchema = z.object({
 
 // 경기
 const VenueDTOSchema = z.object({
-  name: z.string(),
+  name: z.string().nullable(),
   city: z.string(),
 });
 
@@ -15,17 +15,19 @@ const TeamDTOSchema = z.object({
   teamId: z.number(),
   name: z.string(),
   logo: z.httpUrl(),
-  winner: z.boolean(),
+  winner: z.boolean().nullable(),
 });
 
-const ScoreDTOSchema = z.object({
-  home: z.number().nullable(),
-  away: z.number().nullable(),
-});
+const ScoreDTOSchema = z
+  .object({
+    home: z.number().nullable(),
+    away: z.number().nullable(),
+  })
+  .nullable();
 
 const MatchScheduleDTOSchema = z.object({
   matchId: z.number(),
-  date: DateStringType['yyyy-MM-ddTHH:mm'],
+  date: DateStringType['yyyy-MM-ddTHH:mm:ss'],
   venue: VenueDTOSchema,
   homeTeam: TeamDTOSchema,
   awayTeam: TeamDTOSchema,
@@ -48,6 +50,7 @@ export {
   MatchScheduleDTOSchema,
   MatchScheduleParamsSchema,
   TotalMatchScheduleDTOSchema,
+  MatchScheduleListDTOSchema,
   ScoreDTOSchema,
   TeamDTOSchema,
   VenueDTOSchema,

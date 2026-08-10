@@ -2,57 +2,12 @@ import {
   MatchScheduleDTO,
   MatchScheduleListDTO,
 } from '@entities/matches/model';
+import { PL_TEAM_CODE, PL_TEAM_KOREAN_NAME } from '@shared/configs';
 import { Match, MatchHa, MatchResult } from '../model';
 
 const MANCHESTER_UNITED_TEAM_ID = 33;
 
 const DAY_CONV = ['일', '월', '화', '수', '목', '금', '토'];
-
-const PL_TEAM_KOREAN_NAME: Record<string, string> = {
-  Arsenal: '아스널',
-  'Aston Villa': '애스턴 빌라',
-  Bournemouth: '본머스',
-  Brentford: '브렌트퍼드',
-  'Brighton & Hove Albion': '브라이튼 앤 호브 알비온',
-  Chelsea: '첼시',
-  'Crystal Palace': '크리스털 팰리스',
-  Everton: '에버턴',
-  Fulham: '풀럼',
-  'Ipswich Town': '입스위치 타운',
-  'Leicester City': '레스터 시티',
-  Liverpool: '리버풀',
-  'Manchester City': '맨체스터 시티',
-  'Manchester United': '맨체스터 유나이티드',
-  'Newcastle United': '뉴캐슬 유나이티드',
-  'Nottingham Forest': '노팅엄 포레스트',
-  Southampton: '사우샘프턴',
-  'Tottenham Hotspur': '토트넘 홋스퍼',
-  'West Ham United': '웨스트햄 유나이티드',
-  'Wolverhampton Wanderers': '울버햄튼 원더러스',
-};
-
-const PL_TEAM_CODE: Record<string, string> = {
-  Arsenal: 'ARS',
-  'Aston Villa': 'AVL',
-  'AFC Bournemouth': 'BOU',
-  Brentford: 'BRE',
-  'Brighton & Hove Albion': 'BHA',
-  Chelsea: 'CHE',
-  'Crystal Palace': 'CRY',
-  Everton: 'EVE',
-  Fulham: 'FUL',
-  'Ipswich Town': 'IPS',
-  'Leicester City': 'LEI',
-  Liverpool: 'LIV',
-  'Manchester City': 'MCI',
-  'Manchester United': 'MUN',
-  'Newcastle United': 'NEW',
-  'Nottingham Forest': 'NFO',
-  Southampton: 'SOU',
-  'Tottenham Hotspur': 'TOT',
-  'West Ham United': 'WHU',
-  'Wolverhampton Wanderers': 'WOL',
-};
 
 const DAY_MS = 86_400_000;
 
@@ -81,9 +36,12 @@ const calculateUnitedResult = (
   match: MatchScheduleDTO,
   ha: MatchHa
 ): MatchResult | undefined => {
+  if (!match.score) {
+    return;
+  }
   const { home: homeScore, away: awayScore } = match.score;
   if (homeScore == null || awayScore == null || ha === 'neutral') {
-    return undefined;
+    return;
   }
   if (homeScore === awayScore) {
     return 'D';
@@ -114,20 +72,20 @@ const convertMatchesDTO2DAO = ({
         teamLogoUrl: match.homeTeam.logo,
         code: PL_TEAM_CODE[match.homeTeam.name],
         nm: PL_TEAM_KOREAN_NAME[match.homeTeam.name] ?? match.homeTeam.name,
-        score: match.score.home ?? undefined,
+        score: match.score?.home ?? undefined,
         utd: match.homeTeam.teamId === MANCHESTER_UNITED_TEAM_ID,
       },
       away: {
         teamLogoUrl: match.awayTeam.logo,
         code: PL_TEAM_CODE[match.awayTeam.name],
         nm: PL_TEAM_KOREAN_NAME[match.awayTeam.name] ?? match.awayTeam.name,
-        score: match.score.away ?? undefined,
+        score: match.score?.away ?? undefined,
         utd: match.awayTeam.teamId === MANCHESTER_UNITED_TEAM_ID,
       },
       status: 'past',
       result: calculateUnitedResult(match, ha),
       time: formatKickoffTime(matchDate),
-      venue: match.venue.name,
+      venue: match.venue.name ?? match.venue.city,
       kickoff: match.date,
     };
     matchesDAO.push(convertedMatch);
@@ -158,13 +116,19 @@ const convertMatchesDTO2DAO = ({
       },
       status: idx === 0 ? 'next' : 'upcoming',
       time: formatKickoffTime(matchDate),
-      venue: match.venue.name,
+      venue: match.venue.name ?? match.venue.city,
       kickoff: match.date,
       countdown:
         idx === 0 ? `D-${calculateDaysUntil(matchDate, now)}` : undefined,
     };
     matchesDAO.push(convertedMatch);
     return convertedMatch;
+  });
+
+  matchesDAO.sort((a, b) => {
+    const aDate = new Date(a.kickoff);
+    const bDate = new Date(b.kickoff);
+    return aDate.getTime() - bDate.getTime();
   });
 
   return matchesDAO;
