@@ -43,6 +43,57 @@ describe('NewsContent', () => {
     expect(screen.getByText('표시할 기사가 없어요')).toBeInTheDocument();
   });
 
+  it('에러 상태이면 에러 컴포넌트를 렌더한다', () => {
+    render(
+      <NewsContent
+        isLoading={false}
+        isError
+        newsItems={[]}
+        hasNextPage={false}
+        isFetchingNextPage={false}
+        onLoadMore={noop}
+      />,
+    );
+
+    expect(screen.getByRole('alert')).toBeInTheDocument();
+    expect(screen.getByText('기사를 불러오지 못했어요')).toBeInTheDocument();
+    expect(screen.queryByRole('list')).not.toBeInTheDocument();
+  });
+
+  it('onRetry가 전달되면 에러 상태에 재시도 버튼을 패스스루한다(M-1)', async () => {
+    const onRetry = vi.fn();
+    const user = userEvent.setup();
+    render(
+      <NewsContent
+        isLoading={false}
+        isError
+        newsItems={[]}
+        hasNextPage={false}
+        isFetchingNextPage={false}
+        onLoadMore={noop}
+        onRetry={onRetry}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '다시 시도' }));
+    expect(onRetry).toHaveBeenCalledTimes(1);
+  });
+
+  it('로딩 중이면 에러 상태보다 스켈레톤을 우선 렌더한다', () => {
+    render(
+      <NewsContent
+        isLoading
+        isError
+        newsItems={[]}
+        hasNextPage={false}
+        isFetchingNextPage={false}
+        onLoadMore={noop}
+      />,
+    );
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
   it('기사가 있으면 카운트와 리스트를 렌더하고, 다음 페이지가 없으면 버튼을 숨긴다', () => {
     render(
       <NewsContent

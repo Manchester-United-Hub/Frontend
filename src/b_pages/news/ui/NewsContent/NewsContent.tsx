@@ -3,26 +3,35 @@ import { Newspaper } from 'lucide-react';
 import { Button, StateBox } from '@shared/ui';
 
 import type { NewsItem } from '../../model';
+import { NewsErrorState } from '../NewsErrorState';
 import { NewsList } from '../NewsList';
 import { NewsSkeleton } from '../NewsSkeleton';
 
 export interface NewsContentProps {
   isLoading: boolean;
+  /** 목록 조회 실패 여부. 로딩보다 후순위로 분기한다. */
+  isError?: boolean;
   newsItems: NewsItem[];
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   onLoadMore: () => void;
+  /** 에러 상태 재시도 액션(M-1). 없으면 NewsErrorState가 재시도 버튼을 렌더하지 않는다. */
+  onRetry?: () => void;
 }
 
-/** 로딩 → 0건 → 리스트(+더 보기) 3단 분기 렌더 영역. */
+/** 로딩 → 에러 → 0건 → 리스트(+더 보기) 4단 분기 렌더 영역. */
 function NewsContent({
   isLoading,
+  isError = false,
   newsItems,
   hasNextPage,
   isFetchingNextPage,
   onLoadMore,
+  onRetry,
 }: NewsContentProps) {
   if (isLoading) return <NewsSkeleton />;
+
+  if (isError) return <NewsErrorState onRetry={onRetry} />;
 
   if (newsItems.length === 0) {
     return (
