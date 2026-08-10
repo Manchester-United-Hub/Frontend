@@ -1,13 +1,13 @@
 import { seasonSummaryCards } from './model';
 import { SeasonHeader, SeasonTabs, SummaryCards } from './ui';
 
-/** SeasonPage — 시즌 페이지 조립(main > Header + SummaryCards + Tabs). clubInfo `ClubPage`를 그대로 미러링했다(plan.md). */
+const SEASON = '2026-27';
 export function SeasonPage() {
   return (
     <main>
-      <SeasonHeader />
+      <SeasonHeader season={SEASON} />
       <SummaryCards summaryCards={seasonSummaryCards} />
-      <SeasonTabs />
+      <SeasonTabs season={SEASON} />
     </main>
   );
 }

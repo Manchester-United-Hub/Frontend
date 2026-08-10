@@ -1,21 +1,57 @@
-import { Shell } from '@shared/ui';
+import { ReactNode } from 'react';
+import { AlertTriangle } from 'lucide-react';
 
-import { standings } from '../../model';
+import { usePLRankList } from '@features/rank/api';
+import { Shell, StateBox } from '@shared/ui';
+
 import { PanelHead } from '../PanelHead';
 import { StandingsTable } from './StandingsTable';
 import { ZoneLegend } from './ZoneLegend';
+import { StandingSkeleton } from './StandingSkeleton';
 
-const PANEL_DESCRIPTION = '2025/26 시즌 프리미어리그 20개 클럽의 순위와 최근 5경기 폼을 확인하세요.';
+const ERROR_ICON = <AlertTriangle size={22} aria-hidden="true" />;
 
-/** StandingsTab — 순위표 탭. 정적 mock 데이터만 소비하는 서버 컴포넌트(상태 없음). */
-export function StandingsTab() {
+interface StandingsTabProps {
+  season: string;
+}
+
+export function StandingsTab({ season }: StandingsTabProps) {
+  const PANEL_DESCRIPTION = `${season} 시즌 프리미어리그 20개 클럽의 순위와 최근 5경기 폼을 확인하세요.`;
+  const { isLoading, data, error } = usePLRankList();
+
+  let body: ReactNode;
+
+  if (isLoading) {
+    body = <StandingSkeleton />;
+  } else if (error || !data) {
+    body = (
+      <StateBox
+        className="min-h-80"
+        variant="error"
+        icon={ERROR_ICON}
+        title="시즌 순위표를 불러오지 못했어요"
+        description="잠시 후 다시 시도해주세요."
+      />
+    );
+  } else {
+    body = (
+      <>
+        <StandingsTable season="" standings={data} />
+        <div className="mt-5">
+          <ZoneLegend />
+        </div>
+      </>
+    );
+  }
+
   return (
     <Shell className="pb-16 pt-10">
-      <PanelHead eyebrow="League Table" title="순위표" description={PANEL_DESCRIPTION} />
-      <StandingsTable standings={standings} />
-      <div className="mt-5">
-        <ZoneLegend />
-      </div>
+      <PanelHead
+        eyebrow="League Table"
+        title="순위표"
+        description={PANEL_DESCRIPTION}
+      />
+      {body}
     </Shell>
   );
 }

@@ -1,6 +1,5 @@
+import { FormResult } from '@entities/rank/model';
 import { cn } from '@shared/utils';
-
-import type { FormResult } from '../../model';
 
 /**
  * FormPills — 최근 5경기 결과(W/D/L) 미니 배지 5개. design-ref `.fp`(19x19,
@@ -31,7 +30,11 @@ export interface FormPillsProps {
 
 export function FormPills({ form, className }: FormPillsProps) {
   return (
-    <ul role="list" aria-label="최근 5경기 결과" className={cn('flex items-center gap-1', className)}>
+    <ul
+      role="list"
+      aria-label="최근 5경기 결과"
+      className={cn('flex items-center gap-1', className)}
+    >
       {form.map((result, index) => (
         <li key={`${result}-${index}`}>
           <span
