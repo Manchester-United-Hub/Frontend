@@ -19,6 +19,8 @@ const matchesQueries = {
     queryOptions({
       queryKey: matchesKeys.schedules(),
       queryFn: fetchMatchSchedules,
+      staleTime: 1000 * 60 * 5,
+      gcTime: 300,
     }),
 };
 

@@ -5,6 +5,7 @@ import { fetchMatchScheduleList } from '@entities/matches/api/server';
 import { convertMatchesDTO2DAO } from '@entities/matches/utils';
 
 export const dynamic = 'auto';
+export const revalidate = 60;
 
 const NOW = new Date(Date.now());
 
