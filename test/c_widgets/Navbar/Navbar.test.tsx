@@ -5,7 +5,7 @@
  * - <header> 시맨틱 엘리먼트 렌더
  * - <nav aria-label="주요 메뉴"> 시맨틱 존재
  * - 메뉴 5개 한글 레이블 렌더 (시즌·선수·구단·하이라이트·기사)
- * - 메뉴 5개 영문 레이블 렌더 (Season·Players·Club·Highlights·Articles)
+ * - 메뉴 5개 영문 레이블 렌더 (Season·Players·Club·Highlights·NEWS)
  * - href 값은 미래 라우트 예정 경로 — 404 여부는 검증하지 않음 (ADR-7)
  *
  * ⚠️ Nav는 app/layout 전역 소관. LandingPage 내부에 포함되지 않으므로
@@ -61,10 +61,10 @@ describe('Navbar 위젯', () => {
     });
   });
 
-  it('메뉴 5개 영문 레이블 렌더 (Season·Players·Club·Highlights·Articles)', () => {
+  it('메뉴 5개 영문 레이블 렌더 (Season·Players·Club·Highlights·NEWS)', () => {
     const { container } = render(<Navbar />);
     const text = container.textContent ?? '';
-    ['Season', 'Players', 'Club', 'Highlights', 'Articles'].forEach((label) => {
+    ['Season', 'Players', 'Club', 'Highlights', 'NEWS'].forEach((label) => {
       expect(text).toContain(label);
     });
   });
@@ -79,6 +79,6 @@ describe('Navbar 위젯', () => {
     expect(hrefs).toContain('/players');
     expect(hrefs).toContain('/club');
     expect(hrefs).toContain('/highlights');
-    expect(hrefs).toContain('/articles');
+    expect(hrefs).toContain('/news');
   });
 });
