@@ -41,6 +41,9 @@ const API_PATH = {
   plRankDetail(detail: 'topscorers' | 'topassists') {
     return `/api/rank/premier-league/${detail}`;
   },
+  currentSeason() {
+    return `/api/seasons/current`;
+  },
 };
 
 const BFF_PATH = {
@@ -67,6 +70,9 @@ const BFF_PATH = {
   },
   premierLeagueRank() {
     return `/api/v1/rank/pl`;
+  },
+  currentSeason() {
+    return `/api/v1/season`;
   },
 };
 

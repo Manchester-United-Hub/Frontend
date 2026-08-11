@@ -1,13 +1,16 @@
 import { seasonSummaryCards } from './model';
 import { SeasonHeader, SeasonTabs, SummaryCards } from './ui';
 
-const SEASON = '2026-27';
-export function SeasonPage() {
+interface SeasonPageProps {
+  season: string;
+}
+
+export function SeasonPage({ season }: SeasonPageProps) {
   return (
     <main>
-      <SeasonHeader season={SEASON} />
+      <SeasonHeader season={season} />
       <SummaryCards summaryCards={seasonSummaryCards} />
-      <SeasonTabs season={SEASON} />
+      <SeasonTabs season={season} />
     </main>
   );
 }

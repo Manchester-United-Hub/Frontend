@@ -12,6 +12,9 @@
  * `matches`는 공유 `./model/mockData`에서 가져오고, `standings`는 이 파일 전용
  * inline 상수로 둔다(rank 계층은 기존 matches 관례대로 파일별 inline fixture).
  *
+ * season-ssr: 현재 시즌은 SSR(`app/season/page.tsx`)에서 조회해 `season` prop으로
+ * 내려온다. `SeasonPage`는 순수 조립 컴포넌트라 currentSeason 관련 모킹은 불필요하다.
+ *
  * 검증 목적:
  * - 런타임 에러 없이 마운트, 히어로·요약 카드 렌더
  * - 초기 탭 = matches(일정 & 결과)
@@ -63,13 +66,15 @@ const standings: Standing[] = [
 
 // --- 헬퍼 ---
 
+const TEST_SEASON = '2025-26';
+
 function renderSeasonPage() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false, gcTime: 0 } },
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <SeasonPage />
+      <SeasonPage season={TEST_SEASON} />
     </QueryClientProvider>
   );
 }
