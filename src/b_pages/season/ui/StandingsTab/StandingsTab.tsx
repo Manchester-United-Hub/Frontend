@@ -36,7 +36,7 @@ export function StandingsTab({ season }: StandingsTabProps) {
   } else {
     body = (
       <>
-        <StandingsTable season="" standings={data} />
+        <StandingsTable season={season} standings={data} />
         <div className="mt-5">
           <ZoneLegend />
         </div>
