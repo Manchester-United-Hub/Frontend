@@ -11,6 +11,7 @@
  * 연결 후에는 e_entities 클라이언트 함수(getNewsList)를 vi.mock으로 대체해 테스트한다.
  */
 
+import { DEFAULT_NEWS_PAGE_SIZE } from '@features/news/api';
 import { Shell } from '@shared/ui';
 
 import { useNewsFeed } from './model';
@@ -25,7 +26,7 @@ function NewsPage() {
     isFetchingNextPage,
     fetchNextPage,
     refetch,
-  } = useNewsFeed({ pageSize: 10 });
+  } = useNewsFeed({ pageSize: DEFAULT_NEWS_PAGE_SIZE });
 
   return (
     <main>
