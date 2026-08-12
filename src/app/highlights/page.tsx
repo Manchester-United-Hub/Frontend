@@ -1,9 +1,9 @@
-import { HighlightsPage } from '@pages/highlights';
+import { HighlightsComingSoon } from './_components/HighlightsComingSoon';
 
 export default function Highlights() {
   return (
     <>
-      <HighlightsPage />
+      <HighlightsComingSoon />
     </>
   );
 }
