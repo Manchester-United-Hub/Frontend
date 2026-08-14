@@ -1,11 +1,18 @@
 /**
- * 뉴스 기사 목데이터 (#36, UI 목 전용).
+ * 뉴스 기사 목데이터 — 테스트 fixture (#36, 이관: 사용자 지시로 D-10 변경).
  *
- * 순수 데이터만 소유한다. 화면 전달(커서 페이지네이션) 로직은 `newsFeed.ts`에 있다(리뷰 #4).
- * 추후 다른 브랜치에서 이 목 소스를 실 API로 교체한다.
+ * 순수 데이터만 소유한다. 화면 전달(커서 페이지네이션) 로직은 같은 디렉터리의 `newsFeed.ts`에
+ * 있다(리뷰 #4).
+ *
+ * production 사용처가 전혀 없어(실 데이터는 `useNewsInfiniteList` 연결로 대체됨, NW-3/D-9)
+ * `src/b_pages/news/model/`에서 `test/b_pages/news/model/` 아래로 이관했다 — 기존 D-10
+ * ("삭제·이동 없이 fixture 주석만")과 달리 이번엔 실제 이동이다. `newsFeed.ts`(→
+ * `getNewsPage.test.ts`)만 계속 소비한다.
+ *
+ * `NewsItem`은 프로덕션 타입이므로 `src`에 그대로 두고 `@pages/news/model`에서 가져온다.
  */
 
-import type { NewsItem } from './types';
+import type { NewsItem } from '@pages/news/model';
 
 /** 썸네일 있는 기사용 — 결정적 목 이미지(추후 실 피드 이미지로 대체). */
 const mockImage = (seed: string): string => `https://picsum.photos/seed/${seed}/640/360`;

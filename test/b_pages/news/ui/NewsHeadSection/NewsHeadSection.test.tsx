@@ -11,6 +11,6 @@ describe('NewsHeadSection', () => {
     render(<NewsHeadSection />);
 
     expect(screen.getByRole('heading', { level: 1, name: '기사' })).toBeInTheDocument();
-    expect(screen.getByText('News & Analysis')).toBeInTheDocument();
+    expect(screen.getByText('News')).toBeInTheDocument();
   });
 });

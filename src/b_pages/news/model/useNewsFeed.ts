@@ -1,86 +1,60 @@
 'use client';
 
 /**
- * useNewsFeed — 뉴스 커서 피드 상태 훅 (#36, UI 목 전용).
+ * useNewsFeed — 뉴스 커서 피드 상태 훅 (#36 → NW-3/D-9, react-query 어댑터로 교체).
  *
- * 최초 로딩(isLoading) → 결과 리스트 → '더 보기'(isFetchingNextPage) 상태를 관리한다.
- * 데이터는 목 소스(getNewsPage)에서 오지만, 반환 계약·커서 흐름은 실제 API와 동일하므로
- * 추후 다른 브랜치에서 source만 실 데이터 훅으로 교체하면 된다.
- *
- * 로딩 지연(delayMs)은 스켈레톤·'더 보기' UI를 실제처럼 보이게 하는 시뮬레이션이다.
- * 언마운트 시 clearTimeout으로 setState 누수를 막는다.
+ * 기존에는 setTimeout 기반 동기 mock 상태머신(newsFeed.ts, 현재 test/b_pages/news/model/로
+ * 이관된 테스트 fixture)이었으나, 이제 d_features/news의
+ * useNewsInfiniteList(react-query useInfiniteQuery)를 감싸는 얇은 어댑터다(AD-5).
+ * 캐싱·재시도·중복요청 방지는 react-query에 위임하고, 훅 이름과 UseNewsFeedResult 반환
+ * 계약(+isError)만 그대로 유지해 NewsPage.tsx·하위 UI 컴포넌트의 diff를 최소화한다.
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo } from 'react';
 
-import { getNewsPage, makeInitialNewsQuery, NEWS_PAGE_SIZE, NO_MORE_CURSOR_ID } from './newsFeed';
-import type { NewsListSource } from './newsFeed';
-import type { NewsItem, NewsQuery, UseNewsFeedResult } from './types';
+import { useNewsInfiniteList } from '@features/news/api';
 
-/** 목 로딩 지연(ms). 테스트는 delayMs를 낮춰 결정적으로 만든다. */
-export const NEWS_FETCH_DELAY_MS = 400;
+import type { NewsItem, UseNewsFeedResult } from './types';
 
 interface UseNewsFeedOptions {
-  /** 페이지 소스. 기본은 목데이터. 테스트/실 데이터가 주입한다. */
-  source?: NewsListSource;
   pageSize?: number;
-  delayMs?: number;
 }
 
 const useNewsFeed = ({
-  source = getNewsPage,
-  pageSize = NEWS_PAGE_SIZE,
-  delayMs = NEWS_FETCH_DELAY_MS,
+  pageSize,
 }: UseNewsFeedOptions = {}): UseNewsFeedResult => {
-  const cursorRef = useRef<NewsQuery>(makeInitialNewsQuery(pageSize));
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const [newsItems, setNewsItems] = useState<NewsItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFetchingNextPage, setIsFetchingNextPage] = useState(false);
-  const [hasNextPage, setHasNextPage] = useState(false);
+  const {
+    data,
+    isLoading,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+    refetch,
+  } = useNewsInfiniteList(pageSize);
 
-  const runFetch = useCallback(
-    (mode: 'initial' | 'next') => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (mode === 'initial') setIsLoading(true);
-      else setIsFetchingNextPage(true);
-
-      timeoutRef.current = setTimeout(() => {
-        const page = source(cursorRef.current);
-        cursorRef.current = {
-          cursorAt: page.nextCursorAt,
-          cursorId: page.nextCursorId,
-          size: cursorRef.current.size,
-        };
-        setHasNextPage(page.nextCursorId !== NO_MORE_CURSOR_ID);
-        setNewsItems((prev) => (mode === 'initial' ? page.newsList : [...prev, ...page.newsList]));
-        if (mode === 'initial') setIsLoading(false);
-        else setIsFetchingNextPage(false);
-      }, delayMs);
-    },
-    [source, delayMs],
+  // M-2(review-NW.md): 렌더마다 새 배열·새 함수가 생기면 기존 useCallback 최적화가 소실된다.
+  // data가 바뀔 때만 newsItems를 재계산하고, 핸들러는 안정된 identity로 노출한다.
+  const newsItems: NewsItem[] = useMemo(
+    () => data?.pages.flatMap((page) => page.newsList) ?? [],
+    [data]
   );
+  const handleFetchNextPage = useCallback(() => {
+    fetchNextPage();
+  }, [fetchNextPage]);
+  const handleRefetch = useCallback(() => {
+    refetch();
+  }, [refetch]);
 
-  // runFetch를 ref로 보관해, 최초 로딩 effect가 재구독 없이 최신 함수를 참조하게 한다(code-conventions §3).
-  const runFetchRef = useRef(runFetch);
-  useEffect(() => {
-    runFetchRef.current = runFetch;
-  }, [runFetch]);
-
-  // 최초 1회 로딩 — 마운트 시에만 실행한다.
-  useEffect(() => {
-    runFetchRef.current('initial');
-    return () => {
-      if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    };
-  }, []);
-
-  const fetchNextPage = useCallback(() => {
-    if (isLoading || isFetchingNextPage || !hasNextPage) return;
-    runFetch('next');
-  }, [isLoading, isFetchingNextPage, hasNextPage, runFetch]);
-
-  return { newsItems, isLoading, hasNextPage, isFetchingNextPage, fetchNextPage };
+  return {
+    newsItems,
+    isLoading,
+    isError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage: handleFetchNextPage,
+    refetch: handleRefetch,
+  };
 };
 
 export { useNewsFeed };
