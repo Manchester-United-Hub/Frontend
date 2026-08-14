@@ -1,1 +1,1 @@
-export { NewsContent, type NewsContentProps } from './NewsContent';
+export { NewsContent } from './NewsContent';
