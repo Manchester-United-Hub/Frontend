@@ -1,3 +1,12 @@
+/**
+ * fetchPremierLeagueRankList 단위 테스트.
+ *
+ * 검증 목적:
+ * - season 없이 호출하면 clientFetcher.get이 (path, undefined) 2-인자로 불린다 (레거시 하위호환)
+ * - season을 넘기면 실제 BFF 요청 쿼리에 season이 실린다 (D-4)
+ * - json()의 반환값을 그대로 반환한다
+ */
+
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { clientFetcher } from '@shared/api';
 import { fetchPremierLeagueRankList } from '@entities/rank/api/client/premierLeagueRank';
@@ -20,7 +29,25 @@ describe('fetchPremierLeagueRankList', () => {
 
     await fetchPremierLeagueRankList();
 
-    expect(clientFetcher.get).toHaveBeenCalledWith('/api/v1/rank/pl');
+    expect(clientFetcher.get).toHaveBeenCalledWith(
+      '/api/v1/rank/pl',
+      undefined
+    );
+  });
+
+  it('season을 넘기면 BFF 요청 쿼리에 season이 실린다 (D-4)', async () => {
+    const mockRes = {
+      json: vi.fn().mockResolvedValue([]),
+    };
+    vi.mocked(clientFetcher.get).mockResolvedValue(
+      mockRes as unknown as Response
+    );
+
+    await fetchPremierLeagueRankList({ season: 2026 });
+
+    expect(clientFetcher.get).toHaveBeenCalledWith('/api/v1/rank/pl', {
+      season: 2026,
+    });
   });
 
   it('json()의 반환값을 그대로 반환한다', async () => {

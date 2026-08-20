@@ -13,7 +13,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { convertPLRankDTO2DAO } from '@entities/rank/utils';
-import type { PLRankDTO, PLRankTeamDTO } from '@entities/rank/model';
+import type { PLRankDTO, PLRankTeamDTO } from '@entities/rank/types';
 
 const MANCHESTER_UNITED_TEAM_ID = 33;
 const OTHER_TEAM_ID = 1;
