@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { DateStringType } from '@shared/model';
 
 const NewsQuerySchema = z.object({
-  cursorAt: DateStringType['yyyy-MM-ddTHH:mm:ss'],
+  cursorAt: DateStringType['yyyy-MM-ddTHH:mm'],
   cursorId: z.coerce.number().int().positive(),
   size: z.coerce.number().int().positive(),
 });
@@ -18,7 +18,7 @@ const NewsDTOSchema = z.object({
 
 const NewsListDTOSchema = z.object({
   newsList: z.array(NewsDTOSchema),
-  nextCursorAt: DateStringType['yyyy-MM-ddTHH:mm:ss'],
+  nextCursorAt: DateStringType['yyyy-MM-ddTHH:mm'],
   nextCursorId: z.number(),
 });
 
