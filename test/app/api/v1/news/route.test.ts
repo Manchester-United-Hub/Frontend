@@ -48,11 +48,11 @@ describe('GET /api/v1/news', () => {
 
       const { GET } = await import('@app/api/v1/news/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/news?cursorAt=2024-01-15T20:00:00&cursorId=1&size=10'
+        'http://localhost/api/v1/news?cursorAt=2024-01-15T20:00&cursorId=1&size=10'
       );
       await GET(request);
 
-      expect(fetchNewsList).toHaveBeenCalledOnce();
+      expect(fetchNewsList).toHaveBeenCalledWith({ cursorAt: '2024-01-15T20:00', cursorId: 1, size: 10 });
       expect(fetchRecentNews).not.toHaveBeenCalled();
     });
 
@@ -61,7 +61,7 @@ describe('GET /api/v1/news', () => {
 
       const { GET } = await import('@app/api/v1/news/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/news?cursorAt=2024-01-15T20:00:00&cursorId=1&size=10'
+        'http://localhost/api/v1/news?cursorAt=2024-01-15T20:00&cursorId=1&size=10'
       );
       const response = await GET(request);
 
