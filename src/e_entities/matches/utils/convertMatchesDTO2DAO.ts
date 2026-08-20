@@ -1,9 +1,9 @@
 import {
   MatchScheduleDTO,
   MatchScheduleListDTO,
-} from '@entities/matches/model';
+} from '@entities/matches/types';
 import { PL_TEAM_CODE, PL_TEAM_KOREAN_NAME } from '@shared/configs';
-import { Match, MatchHa, MatchResult } from '../model';
+import { Match, MatchHa, MatchResult } from '../types';
 
 const MANCHESTER_UNITED_TEAM_ID = 33;
 
