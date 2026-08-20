@@ -7,8 +7,8 @@ import type { SeasonSummaryCard } from '../../model';
 import { SummaryCard } from './SummaryCard';
 
 // ── 아이콘 매핑 (모듈 스코프 — icon name → lucide ReactNode) ──────────────
-// season-data.js SEASON_SUMMARY[].icon 문자열(BarChart3·Star·Target·Trophy)을
-// lucide 아이콘으로 치환. clubInfo SummaryCards 선례를 따름.
+// toSeasonSummaryCards가 내려주는 icon 문자열(BarChart3·Star·Target·Trophy)을
+// lucide 아이콘으로 치환. 이름 체계는 clubInfo SummaryCards 선례를 따른다.
 
 const ICON_SIZE = 19;
 

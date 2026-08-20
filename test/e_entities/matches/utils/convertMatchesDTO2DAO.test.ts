@@ -12,7 +12,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { convertMatchesDTO2DAO } from '@entities/matches/utils';
-import type { MatchScheduleDTO } from '@entities/matches/model';
+import type { MatchScheduleDTO } from '@entities/matches/types';
 
 const MANCHESTER_UNITED_TEAM_ID = 33;
 const EVERTON_TEAM_ID = 45;

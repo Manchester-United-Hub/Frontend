@@ -1,7 +1,6 @@
 import { BilingualLabel, Shell } from '@shared/ui';
 import { cn } from '@shared/utils';
-
-import type { SubTabId, SubTabMeta } from '../../model';
+import { SubTabId, SubTabMeta } from './configs';
 
 interface SubTabProps {
   tab: SubTabMeta;
@@ -30,7 +29,12 @@ function SubTab({ tab, isActive, onChange }: SubTabProps) {
           "text-united-red after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:rounded-sm after:bg-united-red after:content-['']"
       )}
     >
-      <BilingualLabel kr={tab.kr} en={tab.en} className="gap-px" enClassName="opacity-80" />
+      <BilingualLabel
+        kr={tab.kr}
+        en={tab.en}
+        className="gap-px"
+        enClassName="opacity-80"
+      />
     </button>
   );
 }
@@ -59,10 +63,15 @@ export function SubTabNav({ tabs, activeId, onChange }: SubTabNavProps) {
         <div
           role="tablist"
           aria-label="시즌 하위 탭"
-          className="flex items-stretch gap-10 overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden *:first:ml-auto *:last:mr-auto max-[820px]:gap-1.5"
+          className="flex items-stretch gap-10 overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain scrollbar-width:none [&::-webkit-scrollbar]:hidden *:first:ml-auto *:last:mr-auto max-[820px]:gap-1.5"
         >
           {tabs.map((tab) => (
-            <SubTab key={tab.id} tab={tab} isActive={tab.id === activeId} onChange={onChange} />
+            <SubTab
+              key={tab.id}
+              tab={tab}
+              isActive={tab.id === activeId}
+              onChange={onChange}
+            />
           ))}
         </div>
       </Shell>

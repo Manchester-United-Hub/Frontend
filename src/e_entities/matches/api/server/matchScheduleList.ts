@@ -2,7 +2,7 @@ import {
   MatchScheduleListDTO,
   MatchScheduleParams,
   scheduleSchema,
-} from '@entities/matches/model';
+} from '@entities/matches/types';
 
 import { API_PATH, serverFetcher } from '@shared/api';
 import { ServerApiResult, toServerApiResult } from '@shared/model';

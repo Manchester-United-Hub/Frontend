@@ -1,4 +1,7 @@
 import { Eyebrow, Shell } from '@shared/ui';
+import type { SeasonStatus } from '@entities/seasonInfo/utils';
+
+import { SeasonStatusTag } from '../SeasonStatusTag';
 
 const SEASON_HEADER_HEADING_ID = 'season-header-heading';
 
@@ -11,15 +14,19 @@ const SEASON_HEADER_HEADING_ID = 'season-header-heading';
 
 interface SeasonHeaderProps {
   season: string;
+  status: SeasonStatus;
 }
-export function SeasonHeader({ season }: SeasonHeaderProps) {
+export function SeasonHeader({ season, status }: SeasonHeaderProps) {
   return (
     <section
       aria-labelledby={SEASON_HEADER_HEADING_ID}
       className="border-b border-border"
     >
       <Shell className="pb-8 pt-12">
-        <Eyebrow>{season} Premier League</Eyebrow>
+        <div className="flex flex-wrap items-center gap-2">
+          <Eyebrow>{season} Premier League</Eyebrow>
+          <SeasonStatusTag status={status} />
+        </div>
         <h1
           id={SEASON_HEADER_HEADING_ID}
           className="mt-2 text-[34px] font-extrabold leading-[1.1] tracking-[-0.025em] text-foreground max-[620px]:text-[28px]"

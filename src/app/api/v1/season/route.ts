@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 
-import { getCurrentSeason } from '@entities/season/api/server';
+import { getCurrentSeason } from '@entities/seasonInfo/api/server';
 import { toBffResponse } from '@shared/model';
 
 export async function GET() {
@@ -11,6 +11,7 @@ export async function GET() {
         status,
       });
     }
+    console.warn('SeasonInfoError: check your data,', data);
     return NextResponse.json(toBffResponse({ isSuccess, data, status }), {
       status,
     });

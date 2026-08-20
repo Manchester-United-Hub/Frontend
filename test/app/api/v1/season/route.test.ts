@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { getCurrentSeason } from '@entities/season/api/server';
+import { getCurrentSeason } from '@entities/seasonInfo/api/server';
 
-vi.mock('@entities/season/api/server', () => ({
+vi.mock('@entities/seasonInfo/api/server', () => ({
   getCurrentSeason: vi.fn(),
 }));
 
