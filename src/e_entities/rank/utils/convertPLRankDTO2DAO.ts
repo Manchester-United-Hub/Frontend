@@ -4,7 +4,7 @@ import {
   PLRankTeamDTO,
   Standing,
   StandingZone,
-} from '@entities/rank/model';
+} from '@entities/rank/types';
 
 import { PL_TEAM_CODE, PL_TEAM_KOREAN_NAME } from '@shared/configs';
 
