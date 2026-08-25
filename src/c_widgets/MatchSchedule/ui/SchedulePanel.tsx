@@ -3,7 +3,7 @@ import { connection } from 'next/server';
 import { AlertTriangle } from 'lucide-react';
 
 import { MatchesTab } from '@features/matches/ui';
-import { getSchedule } from '@features/matches/api';
+import { getSchedule } from '@entities/matches/api/server';
 import { Shell, StateBox } from '@shared/ui';
 
 const ERROR_ICON = <AlertTriangle size={22} aria-hidden="true" />;

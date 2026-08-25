@@ -62,7 +62,7 @@ describe('filterMatches', () => {
   });
 
   it('비연속 동월 — 같은 month가 흩어진 비정렬 입력도 하나의 그룹으로 모은다', () => {
-    // 실 API(getMatchScheduleList)가 정렬을 보장하지 않는 경우를 방어한다.
+    // 실 API(getSchedule)가 정렬을 보장하지 않는 경우를 방어한다.
     const unsorted: Match[] = [matches[0], matches[2], matches[1]]; // M1, M2, M1
 
     const groups = filterMatches(unsorted, buildCriteria());

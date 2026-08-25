@@ -24,14 +24,14 @@ import { connection } from 'next/server';
 
 import { SchedulePanel } from '@widgets/MatchSchedule/ui';
 import { MatchesTab } from '@features/matches/ui';
-import { getSchedule } from '@features/matches/api';
+import { getSchedule } from '@entities/matches/api/server';
 import type { Match } from '@entities/matches/types';
 
 vi.mock('next/server', () => ({
   connection: vi.fn(() => Promise.resolve()),
 }));
 
-vi.mock('@features/matches/api', () => ({
+vi.mock('@entities/matches/api/server', () => ({
   getSchedule: vi.fn(),
 }));
 

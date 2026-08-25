@@ -18,13 +18,13 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { getSchedule } from '@features/matches/api';
-import { fetchMatchScheduleList } from '@entities/matches/api/server';
+import { getSchedule } from '@entities/matches/api/server/getSchedule';
+import { fetchMatchScheduleList } from '@entities/matches/api/server/matchScheduleList';
 import { convertMatchesDTO2DAO } from '@entities/matches/utils';
 import type { MatchScheduleListDTO } from '@entities/matches/types';
 import type { ServerApiResult } from '@shared/model';
 
-vi.mock('@entities/matches/api/server', () => ({
+vi.mock('@entities/matches/api/server/matchScheduleList', () => ({
   fetchMatchScheduleList: vi.fn(),
 }));
 
