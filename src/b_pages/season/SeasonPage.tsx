@@ -1,14 +1,12 @@
 import { Suspense } from 'react';
 
-import { getSeasonInfo } from '@features/seasonInfo/api';
-import { StandingSkeleton } from '@widgets/Standing/ui';
-import { MatchesSkeleton } from '@widgets/MatchSchedule/ui';
+import { getSeasonInfo } from '@entities/seasonInfo/api/server';
+import { StandingsPanel, StandingSkeleton } from '@widgets/Standing/ui';
+import { MatchesSkeleton, SchedulePanel } from '@widgets/MatchSchedule/ui';
 
 import {
-  SchedulePanel,
   SeasonHeader,
   SeasonTabs,
-  StandingsPanel,
   SummaryCardsSkeleton,
   SummaryPanel,
 } from './ui';
