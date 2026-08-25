@@ -14,6 +14,12 @@ interface FilterPillOption<T extends string> {
   label: string;
 }
 
+interface FilterPillButtonProps<T extends string> {
+  option: FilterPillOption<T>;
+  isActive: boolean;
+  onChange: (value: T) => void;
+}
+
 function FilterPillButton<T extends string>({
   option,
   isActive,
@@ -36,12 +42,6 @@ function FilterPillButton<T extends string>({
       {option.label}
     </button>
   );
-}
-
-interface FilterPillButtonProps<T extends string> {
-  option: FilterPillOption<T>;
-  isActive: boolean;
-  onChange: (value: T) => void;
 }
 
 export interface FilterPillsProps<T extends string> {

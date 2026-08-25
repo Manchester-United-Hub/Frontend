@@ -10,8 +10,7 @@ import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/vitest';
 
-import { SubTabNav } from '@pages/season/ui/SubTabNav';
-import { subTabs } from '@pages/season/ui/SubTabNav/configs';
+import { SubTabNav, subTabs } from '@pages/season/ui';
 
 afterEach(cleanup);
 

@@ -3,7 +3,7 @@ import { BarChart3, LayoutGrid, Star, Target, Trophy } from 'lucide-react';
 
 import { Shell } from '@shared/ui';
 
-import type { SeasonSummaryCard } from '../../model';
+import type { SeasonSummaryCard } from '@pages/season/model';
 import { SummaryCard } from './SummaryCard';
 
 // ── 아이콘 매핑 (모듈 스코프 — icon name → lucide ReactNode) ──────────────
