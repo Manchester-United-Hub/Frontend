@@ -1,7 +1,7 @@
 import {
   MatchDetailsQueryDTO,
   PastMatchDetailDTO,
-} from '@entities/matches/model';
+} from '@entities/matches/types';
 import { API_PATH, serverFetcher } from '@shared/api';
 import { ApiErrorResponse, ServerApiResult } from '@shared/model';
 

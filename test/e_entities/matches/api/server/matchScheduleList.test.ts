@@ -11,7 +11,7 @@ describe('fetchMatchScheduleList', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('응답을 ServerApiResult 형태로 반환한다', async () => {
-    const data = [{ matchId: 1 }];
+    const data = { pastMatches: [], upcomingMatches: [] };
     const mockRes = {
       ok: true,
       status: 200,
@@ -21,7 +21,7 @@ describe('fetchMatchScheduleList', () => {
       mockRes as unknown as Response
     );
 
-    const result = await fetchMatchScheduleList();
+    const result = await fetchMatchScheduleList({ season: '2026-27' });
 
     expect(result.isSuccess).toBe(true);
     expect(result.status).toBe(200);
@@ -39,7 +39,7 @@ describe('fetchMatchScheduleList', () => {
       mockRes as unknown as Response
     );
 
-    const result = await fetchMatchScheduleList();
+    const result = await fetchMatchScheduleList({ season: '2026-27' });
 
     expect(result.isSuccess).toBe(false);
     expect(result.status).toBe(500);
