@@ -13,7 +13,14 @@ export default defineConfig({
       provider: 'v8',
       enabled: true,
       include: ['src/**/*.{ts,tsx}'],
-      exclude: ['**/index.ts', 'configs/**', 'types/**', 'assets/**'],
+      exclude: [
+        '**/index.ts',
+        'configs/**',
+        'types/**',
+        'assets/**',
+        '**/*.schema.ts',
+        '**/schemas/**',
+      ],
     },
   },
   resolve: {

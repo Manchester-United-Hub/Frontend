@@ -1,1 +1,0 @@
-export { MatchesTab } from './MatchTab';

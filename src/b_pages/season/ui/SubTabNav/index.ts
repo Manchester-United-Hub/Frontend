@@ -1,2 +1,2 @@
-export { SubTabNav } from './SubTabNav';
-export type { SubTabNavProps } from './SubTabNav';
+export * from './SubTabNav';
+export * from './configs';

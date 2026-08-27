@@ -3,7 +3,7 @@ import type { BffApiResponse } from '@shared/model';
 import type {
   MatchDetailsQueryDTO,
   LiveMatchLineupDTO,
-} from '@entities/matches/model';
+} from '@entities/matches/types';
 
 const getLiveMatchLineup = async ({
   matchId,

@@ -52,7 +52,7 @@ describe('GET /api/v1/news', () => {
       );
       await GET(request);
 
-      expect(fetchNewsList).toHaveBeenCalledOnce();
+      expect(fetchNewsList).toHaveBeenCalledWith({ cursorAt: '2024-01-15T20:00', cursorId: 1, size: 10 });
       expect(fetchRecentNews).not.toHaveBeenCalled();
     });
 

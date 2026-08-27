@@ -138,6 +138,11 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - 위치: `test/`가 `src/` 구조를 미러링(`test/f_shared/ui/...`). 콜로케이션 아님.
 - vitest globals 미사용 → `describe/it/expect`를 `vitest`에서 명시 import. 컴포넌트 테스트는 파일에서 `@testing-library/jest-dom/vitest`를 import해 matcher 등록.
 - 컴포넌트별 렌더·variant·접근성(role·aria)·엣지 케이스를 커버한다.
+- 미러 규칙(2형태): `src/{path}/{Name}.{ts,tsx}` → `test/{path}/{Name}.test.{ts,tsx}`. 실체를 가진 배럴 모듈 `src/{path}/{Name}/index.ts`는 디렉토리명으로 미러해 `test/{path}/{Name}.test.ts`(예: `src/f_shared/api/configs/index.ts` ↔ `test/f_shared/api/configs.test.ts`). `index.test.ts` 패턴은 쓰지 않는다.
+- `configs.ts`·`types.ts`·`type.ts`·`{slice}/configs/**`·`{slice}/types/**`·`**/schemas/**`는 미러 요구 대상이 아니며 신규 테스트를 작성하지 않는다(타입 선언·상수 테이블 테스트는 동어반복이 되고, 기대값을 만들려고 그 상수를 import하는 순간 상수 자체가 검증되지 않는다). `vitest.config.ts`의 `coverage.exclude`도 같은 방향이다.
+- "컴포넌트 1 : 테스트 파일 1"은 한 테스트 파일이 여러 컴포넌트의 테스트 스위트를 소유하지 않는다는 뜻이다. 피검체가 아닌 컴포넌트를 기대값 오라클로 렌더해 등가성을 비교하는 것은 위반이 아니다(예: `StandingSkeleton.test.tsx`가 `StandingsTable`·`StandingsTab`을 오라클로 쓰는 경우 — 각각 자기 테스트 파일을 따로 소유한다).
+- 테스트를 약화시켜 통과시키지 않는다. 단언 완화·기대값을 실제 출력에 맞춰 덮어쓰기·케이스 삭제 금지. 원인이 src에 있으면 src를 고친다.
+- 미러 정합성 검증: `find test -name '*.test.ts' -o -name '*.test.tsx' | while read t; do rel=${t#test/}; base=${rel%.test.ts}; base=${base%.test.tsx}; ok=0; for c in "src/$base.ts" "src/$base.tsx" "src/$base/index.ts" "src/$base/index.tsx"; do [ -f "$c" ] && ok=1 && break; done; [ $ok -eq 0 ] && echo "ORPHAN: $t"; done`
 
 ## 커밋
 

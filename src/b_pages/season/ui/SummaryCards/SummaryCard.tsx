@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import { BilingualLabel, Card } from '@shared/ui';
 
 /**
- * Single stat card for the season summary grid (리그 순위·승점·득실차·잔여 대회).
+ * Single stat card for the season summary grid (리그 순위·승점·득실차·전적).
  * clubInfo `ui/SummaryCards/SummaryCard`를 그대로 미러링했다(plan.md).
  */
 export interface SummaryCardProps {
