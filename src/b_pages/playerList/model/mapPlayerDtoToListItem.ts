@@ -10,23 +10,36 @@ import type { PlyaerDTO } from '@entities/player/model';
 
 import type { PlayerListItem, PlayerPosition, PlayerSquad, PlayerStatus } from './types';
 
-/** 실측 응답(result-PL-2.md) 기준 4종만 매핑 — 그 외(대소문자 변형 포함)는 전부 undefined. */
+/** 실측 응답 기준 5종만 매핑 — 그 외(대소문자 변형 포함)는 전부 undefined. */
 const API_POSITION_TO_CODE: Record<string, PlayerPosition> = {
   Goalkeeper: 'GK',
   Defender: 'DF',
   Midfielder: 'MF',
   Attacker: 'FW',
+  Forward: 'FW',
 };
 
-/** 실측 4종 외 값(null 포함)은 전부 undefined — 임의 코드 배정 금지(추측 금지 원칙, decision-1.md). */
+/** 실측 5종 외 값(null 포함)은 전부 undefined — 임의 코드 배정 금지(추측 금지 원칙, decision-1.md). */
 const mapApiPositionToCode = (position: string | null): PlayerPosition | undefined =>
   position === null ? undefined : API_POSITION_TO_CODE[position];
 
 /** `/api/players`는 현재 스쿼드만 반환하므로 항상 현역·1군으로 고정한다(D-6). */
 const DEFAULT_STATUS: PlayerStatus = 'active';
 const DEFAULT_SQUAD: PlayerSquad = '1군';
-/** DTO에 대응 필드가 없어 빈 문자열 — RosterGrid의 meta 자리에 빈 텍스트로 노출된다(알려진 디그레이드). */
-const DEFAULT_YEARS = '';
+
+/** 시안의 활약연도 표기와 같은 en dash. filterPlayers는 앞 4자리를 시작연도로 읽는다. */
+const SEASON_RANGE_SEPARATOR = '–';
+
+/** DTO의 seasons(출전 시즌 시작연도 목록)를 "2020–2025" 형태의 활약연도로 압축한다. */
+const formatSeasonRange = (seasons: number[]): string => {
+  if (seasons.length === 0) return '';
+
+  const firstSeason = Math.min(...seasons);
+  const lastSeason = Math.max(...seasons);
+  if (firstSeason === lastSeason) return String(firstSeason);
+
+  return `${firstSeason}${SEASON_RANGE_SEPARATOR}${lastSeason}`;
+};
 
 const mapPlayerDtoToListItem = (dto: PlyaerDTO): PlayerListItem => ({
   id: String(dto.id),
@@ -34,11 +47,11 @@ const mapPlayerDtoToListItem = (dto: PlyaerDTO): PlayerListItem => ({
   name: dto.name,
   nameEn: dto.name,
   position: mapApiPositionToCode(dto.position),
-  nationality: dto.nationality,
+  nationality: dto.nationality ?? undefined,
   flagCode: undefined,
-  years: DEFAULT_YEARS,
+  years: formatSeasonRange(dto.seasons),
   status: DEFAULT_STATUS,
   squad: DEFAULT_SQUAD,
 });
 
-export { mapPlayerDtoToListItem, mapApiPositionToCode };
+export { mapPlayerDtoToListItem, mapApiPositionToCode, formatSeasonRange };

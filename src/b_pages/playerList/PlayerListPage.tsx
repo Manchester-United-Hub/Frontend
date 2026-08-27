@@ -3,7 +3,8 @@
 /**
  * PlayerListPage — 선수 목록 페이지 조립 (ST-4, PL-2로 실 API 연결·decision-1.md D-31).
  *
- * usePlayerList(d_features/player)로 받은 `PyaerListDTO`를 mapPlayerDtoToListItem으로 변환해
+ * usePlayerList(d_features/player)로 받은 `PyaerListDTO`(페이지 봉투)의 `players`를
+ * mapPlayerDtoToListItem으로 변환해
  * usePlayerListFilters(클라이언트 필터/검색/뷰 상태, ST-2)에 흘려보낸다. BffApiResponse 언랩은
  * 이 페이지에서 직접 처리한다(playerQueries.ts의 list는 미수정 — sharedLayerOwnership 참조).
  *
@@ -27,6 +28,7 @@
 import { useMemo } from 'react';
 
 import { usePlayerList } from '@features/player/api';
+import { MAX_PAGE_SIZE } from '@entities/player/model';
 import { Shell } from '@shared/ui';
 
 import { POSITIONS, mapPlayerDtoToListItem, usePlayerListFilters } from './model';
@@ -37,13 +39,18 @@ import {
   RosterHeadSection,
 } from './ui';
 
-/** `/api/players`가 요구하는 필수 시즌 쿼리 — 다른 페이지와 동일 가정(D-13, 페이지 로컬 상수). */
+/** `/api/players`의 season은 선택 파라미터지만 이 페이지는 현 시즌 스쿼드만 노출한다(D-13, 페이지 로컬 상수). */
 const CURRENT_SEASON = 2025;
+/** 페이지네이션 UI가 없으므로 계약 상한(size=100)으로 한 시즌 스쿼드를 한 번에 받는다. */
+const PLAYER_LIST_PAGE_SIZE = MAX_PAGE_SIZE;
 
 function PlayerListPage() {
-  const { data, isLoading, isError, refetch } = usePlayerList({ season: CURRENT_SEASON });
+  const { data, isLoading, isError, refetch } = usePlayerList({
+    season: CURRENT_SEASON,
+    size: PLAYER_LIST_PAGE_SIZE,
+  });
   const players = useMemo(
-    () => (data?.success ? data.data.map(mapPlayerDtoToListItem) : []),
+    () => (data?.success ? data.data.players.map(mapPlayerDtoToListItem) : []),
     [data],
   );
   const roster = usePlayerListFilters(players);

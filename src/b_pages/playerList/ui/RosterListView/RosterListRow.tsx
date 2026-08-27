@@ -38,7 +38,7 @@ function RosterListRow({ player }: RosterListRowProps) {
         {player.flagCode ? (
           <span aria-hidden="true">{FLAG_EMOJI[player.flagCode]}</span>
         ) : null}
-        {player.nationality}
+        {player.nationality ?? '-'}
       </span>
       <span className="text-sm text-muted-foreground">{player.years}</span>
       <span className="inline-flex items-center gap-1.5 text-xs text-muted-foreground">

@@ -7,7 +7,7 @@
  * PlayerListItem / FilterOption / usePlayerListFilters follow the
  * architecture.interfaceContracts in plan.json — ST-3A/ST-3B/ST-4 consume these.
  *
- * PL-2(decision-1.md D-31): number/position/flagCode는 실 API 갭 때문에 옵셔널로 완화됐다.
+ * PL-2(decision-1.md D-31): number/position/nationality/flagCode는 실 API 갭 때문에 옵셔널이다.
  * 이 파일 자체는 여전히 e_entities를 import하지 않는다 — DTO→PlayerListItem 변환은
  * mapPlayerDtoToListItem.ts(페이지 로컬 컨버터)가 전담한다.
  */
@@ -25,9 +25,11 @@ export type RosterView = 'card' | 'list';
 /**
  * interfaceContracts.PlayerListItem 계약.
  *
- * number/position/flagCode는 옵셔널 — 실 API(`/api/players`)가 채우지 못하는 선수가 있다
- * (PL-2, decision-1.md D-31: 44명 중 10명이 number/position을 null로 반환, flagCode는 애초에
- * API에 대응 필드가 없어 로컬 매핑을 신설하지 않음). 소비처(RosterGrid 등)는 `?? '-'` 폴백으로 방어한다.
+ * number/position/nationality/flagCode는 옵셔널 — 실 API(`/api/players`)가 채우지 못하는 선수가
+ * 있다(SeasonPlayerResponse에서 해당 필드가 null로 내려온다. flagCode는 애초에 API에 대응 필드가
+ * 없어 로컬 매핑을 신설하지 않음). 소비처(RosterGrid 등)는 `?? '-'` 폴백으로 방어한다.
+ *
+ * years는 DTO의 `seasons`(출전 시즌 시작연도 목록)를 압축한 활약연도다.
  */
 export interface PlayerListItem {
   id: string;
@@ -35,7 +37,7 @@ export interface PlayerListItem {
   name: string;
   nameEn: string;
   position?: PlayerPosition;
-  nationality: string;
+  nationality?: string;
   flagCode?: string;
   years: string;
   status: PlayerStatus;

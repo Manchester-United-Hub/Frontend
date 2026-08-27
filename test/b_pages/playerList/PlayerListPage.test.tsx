@@ -6,13 +6,14 @@
  * (PLAYERS 목데이터는 테스트 fixture로 격하, AD-6).
  *
  * 검증 목적:
- * - 초기 렌더: usePlayerList 성공 응답이 mapPlayerDtoToListItem을 거쳐 카드뷰로 표시
+ * - 초기 렌더: usePlayerList 성공 응답(페이지 봉투)의 players가 mapPlayerDtoToListItem을
+ *   거쳐 카드뷰로 표시
  * - 포지션 필터: FilterSelect 선택 시 결과가 좁혀진다
  * - 검색 0건: RosterEmpty가 뜨고 '필터 초기화' 클릭 시 전체 필터가 리셋된다
  * - 뷰 토글: 카드뷰 ↔ 리스트뷰 전환
  * - 로딩: isLoading이면 스켈레톤(listitem 없음)
  * - 에러: isError면 RosterErrorState, '다시 시도' 클릭 시 refetch 호출
- * - number/position이 null인 선수(B2)도 제외되지 않고 '-'로 표시된다
+ * - number/position/nationality가 null인 선수(B2)도 제외되지 않고 '-'로 표시된다
  * - 새로고침 버튼: 로컬 스켈레톤 연출(usePlayerListFilters.refresh)과 refetch를 함께 트리거한다
  *
  * ⚠️ 아키텍처 주의: PlayerListPage = <main> + RosterHeadSection + Shell(FilterBar/ResultRow/결과).
@@ -27,6 +28,7 @@ import React from 'react';
 
 import { usePlayerList } from '@features/player/api';
 import type { PlyaerDTO } from '@entities/player/model';
+import { buildPlayerListDTO } from '@test/fixtures/players';
 
 vi.mock('@features/player/api', () => ({ usePlayerList: vi.fn() }));
 
@@ -74,6 +76,7 @@ const TEST_DTOS: PlyaerDTO[] = [
     number: 24,
     position: 'Goalkeeper',
     photo: '',
+    seasons: [2023, 2024, 2025],
   },
   {
     id: 8,
@@ -85,6 +88,7 @@ const TEST_DTOS: PlyaerDTO[] = [
     number: 8,
     position: 'Midfielder',
     photo: '',
+    seasons: [2020, 2021, 2022, 2023, 2024, 2025],
   },
   {
     id: 10,
@@ -96,6 +100,7 @@ const TEST_DTOS: PlyaerDTO[] = [
     number: 10,
     position: 'Attacker',
     photo: '',
+    seasons: [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
   },
   {
     id: 6,
@@ -107,6 +112,7 @@ const TEST_DTOS: PlyaerDTO[] = [
     number: 6,
     position: 'Defender',
     photo: '',
+    seasons: [2022, 2023, 2024, 2025],
   },
 ];
 
@@ -125,7 +131,10 @@ const buildQueryResult = (overrides: {
   }) as unknown as ReturnType<typeof usePlayerList>;
 
 const successResult = (dtos: PlyaerDTO[], refetch?: () => void) =>
-  buildQueryResult({ data: { success: true, data: dtos, error: null }, refetch });
+  buildQueryResult({
+    data: { success: true, data: buildPlayerListDTO(dtos), error: null },
+    refetch,
+  });
 
 beforeEach(() => {
   mockedUsePlayerList.mockReset();
@@ -223,13 +232,14 @@ describe('PlayerListPage', () => {
   });
 
   it('number/position이 null인 선수도 제외되지 않고 등번호·포지션이 "-"로 표시된다(B2)', () => {
-    const dtoWithoutNumberOrPosition = {
-      ...TEST_DTOS[0],
+    const dtoWithoutNumberOrPosition: PlyaerDTO = {
+      ...TEST_DTOS[0]!,
       id: 284324,
       name: 'A. Garnacho',
       number: null,
       position: null,
-    } as unknown as PlyaerDTO;
+      nationality: null,
+    };
     mockedUsePlayerList.mockReturnValue(
       successResult([...TEST_DTOS, dtoWithoutNumberOrPosition]),
     );
