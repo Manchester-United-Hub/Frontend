@@ -7,6 +7,7 @@
  * - onRetry 전달 시 RosterErrorState에 그대로 패스스루되어 "다시 시도" 클릭이 동작
  * - 결과 0건이면 RosterEmpty(빈 상태 문구)
  * - view='card'면 RosterGrid, view='list'면 RosterListView(리스트 헤더)
+ * - pagination을 주면 결과 분기에서만 페이저가 따라 렌더된다(로딩·에러·0건에는 없다)
  */
 
 import { describe, it, expect, afterEach, vi } from 'vitest';
@@ -114,5 +115,57 @@ describe('RosterContent', () => {
     render(<RosterContent isLoading={false} results={players} view="list" onReset={noop} />);
     expect(screen.getByText('활약연도')).toBeInTheDocument();
     expect(screen.getByText('브루누 페르난데스')).toBeInTheDocument();
+  });
+
+  it('pagination을 주면 결과와 함께 페이저를 렌더한다', () => {
+    render(
+      <RosterContent
+        isLoading={false}
+        results={players}
+        view="card"
+        onReset={noop}
+        pagination={{ page: 1, totalPages: 2, onPageChange: noop }}
+      />,
+    );
+    expect(screen.getByRole('navigation', { name: '선수 목록 페이지' })).toBeInTheDocument();
+  });
+
+  it('pagination을 주지 않으면 페이저를 렌더하지 않는다', () => {
+    render(<RosterContent isLoading={false} results={players} view="card" onReset={noop} />);
+    expect(screen.queryByRole('navigation', { name: '선수 목록 페이지' })).not.toBeInTheDocument();
+  });
+
+  it.each([
+    ['로딩', { isLoading: true, results: players }],
+    ['에러', { isLoading: false, isError: true, results: players }],
+    ['0건', { isLoading: false, results: [] as PlayerListItem[] }],
+  ] as const)('%s 분기에서는 페이저를 렌더하지 않는다', (_label, props) => {
+    render(
+      <RosterContent
+        {...props}
+        view="card"
+        onReset={noop}
+        pagination={{ page: 1, totalPages: 2, onPageChange: noop }}
+      />,
+    );
+    expect(screen.queryByRole('navigation', { name: '선수 목록 페이지' })).not.toBeInTheDocument();
+  });
+
+  it('페이지 클릭이 onPageChange로 전달된다', async () => {
+    const user = userEvent.setup();
+    const onPageChange = vi.fn();
+    render(
+      <RosterContent
+        isLoading={false}
+        results={players}
+        view="card"
+        onReset={noop}
+        pagination={{ page: 1, totalPages: 2, onPageChange }}
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: '2페이지' }));
+
+    expect(onPageChange).toHaveBeenCalledWith(2);
   });
 });

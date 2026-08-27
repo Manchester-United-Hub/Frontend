@@ -15,6 +15,7 @@
  * - 에러: isError면 RosterErrorState, '다시 시도' 클릭 시 refetch 호출
  * - 시즌: useCurrentSeason이 준 season으로 usePlayerList를 호출하고, 시즌 확정 전에는 비활성화한다
  * - 시즌 로딩/에러도 목록의 로딩/에러 상태로 합류한다
+ * - 페이지네이션: 한 페이지(12명)를 넘으면 페이저가 뜨고, 페이지 이동·필터 후 1페이지 복귀
  * - number/position/nationality가 null인 선수(B2)도 제외되지 않고 '-'로 표시된다
  * - 새로고침 버튼: 로컬 스켈레톤 연출(usePlayerListFilters.refresh)과 refetch를 함께 트리거한다
  *
@@ -31,7 +32,7 @@ import React from 'react';
 import { usePlayerList } from '@features/player/api';
 import { useCurrentSeason } from '@features/seasonInfo/api';
 import type { PlyaerDTO } from '@entities/player/model';
-import { buildPlayerListDTO } from '@test/fixtures/players';
+import { buildPlayerDTO, buildPlayerListDTO } from '@test/fixtures/players';
 
 vi.mock('@features/player/api', () => ({ usePlayerList: vi.fn() }));
 vi.mock('@features/seasonInfo/api', () => ({ useCurrentSeason: vi.fn() }));
@@ -65,7 +66,7 @@ beforeAll(() => {
 afterEach(cleanup);
 
 import { PlayerListPage } from '@pages/playerList';
-import { REFRESH_DELAY_MS } from '@pages/playerList/model';
+import { REFRESH_DELAY_MS, ROSTER_PAGE_SIZE } from '@pages/playerList/model';
 
 const mockedUsePlayerList = vi.mocked(usePlayerList);
 const mockedUseCurrentSeason = vi.mocked(useCurrentSeason);
@@ -314,6 +315,48 @@ describe('PlayerListPage', () => {
     await user.click(screen.getByRole('button', { name: '다시 시도' }));
     expect(refetchSeason).toHaveBeenCalledTimes(1);
     expect(refetchPlayers).not.toHaveBeenCalled();
+  });
+
+  it('한 페이지를 넘으면 페이저가 뜨고 2페이지로 이동하면 나머지만 보인다', async () => {
+    const overflowCount = 3;
+    const many = Array.from({ length: ROSTER_PAGE_SIZE + overflowCount }, (_, index) =>
+      buildPlayerDTO({ id: 9000 + index, name: `Player ${index}` }),
+    );
+    mockedUsePlayerList.mockReturnValue(successResult(many));
+    const user = userEvent.setup();
+    const { container } = render(<PlayerListPage />);
+
+    expect(screen.getAllByRole('listitem')).toHaveLength(ROSTER_PAGE_SIZE);
+    expect(container.textContent).toContain(
+      `총 ${many.length}명의 선수를 찾았습니다 · 1/2 페이지`,
+    );
+
+    await user.click(screen.getByRole('button', { name: '2페이지' }));
+
+    expect(screen.getAllByRole('listitem')).toHaveLength(overflowCount);
+    expect(container.textContent).toContain('2/2 페이지');
+  });
+
+  it('2페이지에서 검색어를 입력하면 1페이지로 돌아간다', async () => {
+    const many = Array.from({ length: ROSTER_PAGE_SIZE + 3 }, (_, index) =>
+      buildPlayerDTO({ id: 9000 + index, name: `Player ${index}` }),
+    );
+    mockedUsePlayerList.mockReturnValue(successResult(many));
+    const user = userEvent.setup();
+    const { container } = render(<PlayerListPage />);
+
+    await user.click(screen.getByRole('button', { name: '2페이지' }));
+    expect(container.textContent).toContain('2/2 페이지');
+
+    await user.type(screen.getByRole('textbox', { name: '선수 검색' }), 'Player');
+
+    expect(container.textContent).toContain('1/2 페이지');
+  });
+
+  it('결과가 한 페이지에 들어가면 페이저를 렌더하지 않는다', () => {
+    render(<PlayerListPage />);
+
+    expect(screen.queryByRole('navigation', { name: '선수 목록 페이지' })).not.toBeInTheDocument();
   });
 
   it('새로고침 — 클릭 즉시 스켈레톤이 뜨고 지연 후 결과로 복귀하며 refetch도 호출된다', () => {

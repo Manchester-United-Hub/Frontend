@@ -7,12 +7,19 @@
  * - refresh는 즉시 isLoading=true가 되고 REFRESH_DELAY_MS 후 false로 돌아온다(ADR-8)
  * - resetFilters는 position/decade/squad/query를 모두 초기화한다
  * - 언마운트 시 pending 타이머가 clearTimeout된다(ADR-8)
+ * - pageResults가 ROSTER_PAGE_SIZE 단위로 잘리고 totalPages가 결과 수를 따른다
+ * - 필터·검색·resetFilters는 항상 첫 페이지로 되돌린다(시안 동작)
+ * - 목록이 줄어 현재 페이지가 사라지면 마지막 페이지로 보정된다
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
-import { REFRESH_DELAY_MS, usePlayerListFilters } from '@pages/playerList/model/usePlayerListFilters';
+import {
+  REFRESH_DELAY_MS,
+  ROSTER_PAGE_SIZE,
+  usePlayerListFilters,
+} from '@pages/playerList/model/usePlayerListFilters';
 import { ALL_FILTER_KEY } from '@pages/playerList/model/types';
 import type { PlayerListItem } from '@pages/playerList/model/types';
 
@@ -42,6 +49,21 @@ const players: PlayerListItem[] = [
     squad: '레전드',
   },
 ];
+
+/** 페이지네이션 검증용 — 포지션만 다르게 준 N명. */
+const buildPlayers = (count: number): PlayerListItem[] =>
+  Array.from({ length: count }, (_, index) => ({
+    id: `p${index}`,
+    number: index,
+    name: `선수${index}`,
+    nameEn: `player${index}`,
+    position: index === 0 ? 'GK' : 'MF',
+    nationality: '잉글랜드',
+    flagCode: 'gb',
+    years: '2020',
+    status: 'active',
+    squad: '1군',
+  }));
 
 describe('usePlayerListFilters', () => {
   beforeEach(() => vi.useFakeTimers());
@@ -105,6 +127,77 @@ describe('usePlayerListFilters', () => {
     expect(result.current.decade).toBe(ALL_FILTER_KEY);
     expect(result.current.squad).toBe(ALL_FILTER_KEY);
     expect(result.current.query).toBe('');
+  });
+
+  it('결과가 한 페이지에 들어가면 totalPages는 1, pageResults는 전체다', () => {
+    const { result } = renderHook(() => usePlayerListFilters(players));
+
+    expect(result.current.page).toBe(1);
+    expect(result.current.totalPages).toBe(1);
+    expect(result.current.pageResults).toHaveLength(2);
+  });
+
+  it('pageResults는 ROSTER_PAGE_SIZE 단위로 잘리고 setPage로 다음 조각을 노출한다', () => {
+    const many = buildPlayers(ROSTER_PAGE_SIZE + 3);
+    const { result } = renderHook(() => usePlayerListFilters(many));
+
+    expect(result.current.totalPages).toBe(2);
+    expect(result.current.pageResults).toHaveLength(ROSTER_PAGE_SIZE);
+    expect(result.current.pageResults[0]?.id).toBe('p0');
+
+    act(() => result.current.setPage(2));
+
+    expect(result.current.page).toBe(2);
+    expect(result.current.pageResults).toHaveLength(3);
+    expect(result.current.pageResults[0]?.id).toBe(`p${ROSTER_PAGE_SIZE}`);
+  });
+
+  it('필터를 바꾸면 첫 페이지로 되돌아간다', () => {
+    const many = buildPlayers(ROSTER_PAGE_SIZE * 2 + 1);
+    const { result } = renderHook(() => usePlayerListFilters(many));
+
+    act(() => result.current.setPage(3));
+    expect(result.current.page).toBe(3);
+
+    act(() => result.current.setPosition('MF'));
+
+    expect(result.current.page).toBe(1);
+  });
+
+  it('검색어를 바꿔도 첫 페이지로 되돌아간다', () => {
+    const many = buildPlayers(ROSTER_PAGE_SIZE * 2 + 1);
+    const { result } = renderHook(() => usePlayerListFilters(many));
+
+    act(() => result.current.setPage(2));
+    act(() => result.current.setQuery('player'));
+
+    expect(result.current.page).toBe(1);
+  });
+
+  it('resetFilters도 첫 페이지로 되돌린다', () => {
+    const many = buildPlayers(ROSTER_PAGE_SIZE * 2 + 1);
+    const { result } = renderHook(() => usePlayerListFilters(many));
+
+    act(() => result.current.setPage(2));
+    act(() => result.current.resetFilters());
+
+    expect(result.current.page).toBe(1);
+  });
+
+  it('목록이 줄어 현재 페이지가 사라지면 마지막 페이지로 보정한다', () => {
+    const many = buildPlayers(ROSTER_PAGE_SIZE * 2 + 1);
+    const { result, rerender } = renderHook(({ list }) => usePlayerListFilters(list), {
+      initialProps: { list: many },
+    });
+
+    act(() => result.current.setPage(3));
+    expect(result.current.page).toBe(3);
+
+    rerender({ list: many.slice(0, ROSTER_PAGE_SIZE + 1) });
+
+    expect(result.current.totalPages).toBe(2);
+    expect(result.current.page).toBe(2);
+    expect(result.current.pageResults).toHaveLength(1);
   });
 
   it('언마운트 시 pending 새로고침 타이머를 clearTimeout한다', () => {

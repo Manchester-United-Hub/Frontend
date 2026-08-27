@@ -16,6 +16,10 @@
  * 두 개념을 합치지 않고 그대로 병행하는 것이 usePlayerListFilters.ts 무수정 원칙(decision-1.md)에
  * 부합한다.
  *
+ * 결과는 usePlayerListFilters가 페이지 단위로 잘라 준다(pageResults) — 페이저는 RosterContent가
+ * 결과 분기에서만 렌더한다. 결과 카운트("총 N명")는 페이지 조각이 아니라 필터를 통과한 전체
+ * 결과 수(results)를 쓴다.
+ *
  * Shell은 두 개 인스턴스로 나뉜다(ST-3A 인계): RosterHeadSection이 헤더 전용 Shell을 자체
  * 소유하고, FilterBarSection·ResultRow·결과 영역은 이 페이지가 공유하는 두 번째 Shell 안에서
  * 조립된다(디자인 소스의 두 번째 `.mu-shell` 대응). FilterBarSection의 포지션 옵션(POSITIONS)은
@@ -100,14 +104,25 @@ function PlayerListPage() {
           onQueryChange={roster.setQuery}
           onRefresh={handleRefresh}
         />
-        <ResultRow count={roster.results.length} view={roster.view} onViewChange={roster.setView} />
+        <ResultRow
+          count={roster.results.length}
+          page={roster.page}
+          totalPages={roster.totalPages}
+          view={roster.view}
+          onViewChange={roster.setView}
+        />
         <RosterContent
           isLoading={isSeasonLoading || isLoading || roster.isLoading}
           isError={isSeasonError || isError || isBffError}
-          results={roster.results}
+          results={roster.pageResults}
           view={roster.view}
           onReset={roster.resetFilters}
           onRetry={refetchRoster}
+          pagination={{
+            page: roster.page,
+            totalPages: roster.totalPages,
+            onPageChange: roster.setPage,
+          }}
         />
       </Shell>
     </main>

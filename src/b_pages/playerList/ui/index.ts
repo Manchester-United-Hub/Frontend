@@ -6,4 +6,5 @@ export * from './RosterErrorState';
 export * from './RosterGrid';
 export * from './RosterHeadSection';
 export * from './RosterListView';
+export * from './RosterPager';
 export * from './RosterSkeleton';
