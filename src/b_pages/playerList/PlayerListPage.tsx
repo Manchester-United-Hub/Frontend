@@ -8,7 +8,10 @@
  * usePlayerListFilters(클라이언트 필터/검색/뷰 상태, ST-2)에 흘려보낸다. BffApiResponse 언랩은
  * 이 페이지에서 직접 처리한다(playerQueries.ts의 list는 미수정 — sharedLayerOwnership 참조).
  *
- * 로딩/에러는 react-query 상태를 RosterContent에 그대로 매핑한다. "새로고침" 버튼은
+ * 조회 시즌은 하드코딩하지 않고 useCurrentSeason(`/api/seasons/current`)에서 받는다 — 시즌이
+ * 확정되기 전에는 usePlayerList를 비활성화한다(season 없이 조회하면 계약상 전체 선수가 온다).
+ *
+ * 로딩/에러는 두 쿼리(시즌·선수) 상태를 합쳐 RosterContent에 매핑한다. "새로고침" 버튼은
  * usePlayerListFilters의 기존 스켈레톤 연출(refresh)과 실제 refetch를 함께 트리거한다 —
  * 두 개념을 합치지 않고 그대로 병행하는 것이 usePlayerListFilters.ts 무수정 원칙(decision-1.md)에
  * 부합한다.
@@ -25,9 +28,10 @@
  * Nav/Footer는 루트 레이아웃이 전역으로 공급하므로 여기서 렌더하지 않는다.
  */
 
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 import { usePlayerList } from '@features/player/api';
+import { useCurrentSeason } from '@features/seasonInfo/api';
 import { MAX_PAGE_SIZE } from '@entities/player/model';
 import { Shell } from '@shared/ui';
 
@@ -39,16 +43,22 @@ import {
   RosterHeadSection,
 } from './ui';
 
-/** `/api/players`의 season은 선택 파라미터지만 이 페이지는 현 시즌 스쿼드만 노출한다(D-13, 페이지 로컬 상수). */
-const CURRENT_SEASON = 2025;
 /** 페이지네이션 UI가 없으므로 계약 상한(size=100)으로 한 시즌 스쿼드를 한 번에 받는다. */
 const PLAYER_LIST_PAGE_SIZE = MAX_PAGE_SIZE;
 
 function PlayerListPage() {
-  const { data, isLoading, isError, refetch } = usePlayerList({
-    season: CURRENT_SEASON,
-    size: PLAYER_LIST_PAGE_SIZE,
-  });
+  const {
+    data: currentSeason,
+    isLoading: isSeasonLoading,
+    isError: isSeasonError,
+    refetch: refetchSeason,
+  } = useCurrentSeason();
+  const season = currentSeason?.season;
+
+  const { data, isLoading, isError, refetch } = usePlayerList(
+    { season, size: PLAYER_LIST_PAGE_SIZE },
+    { enabled: season !== undefined },
+  );
   const players = useMemo(
     () => (data?.success ? data.data.players.map(mapPlayerDtoToListItem) : []),
     [data],
@@ -58,9 +68,18 @@ function PlayerListPage() {
   // reject되지 않는다 — 이 페이지에서 BFF 에러 봉투를 직접 감지해 에러 상태로 전이한다(리뷰 H-1).
   const isBffError = data !== undefined && !data.success;
 
+  // 시즌이 아직 없으면 선수 조회가 season 없이 나가므로(= 전체 선수) 시즌부터 다시 받는다.
+  const refetchRoster = useCallback(() => {
+    if (season === undefined) {
+      refetchSeason();
+      return;
+    }
+    refetch();
+  }, [season, refetchSeason, refetch]);
+
   const handleRefresh = () => {
     roster.refresh();
-    refetch();
+    refetchRoster();
   };
 
   return (
@@ -83,12 +102,12 @@ function PlayerListPage() {
         />
         <ResultRow count={roster.results.length} view={roster.view} onViewChange={roster.setView} />
         <RosterContent
-          isLoading={isLoading || roster.isLoading}
-          isError={isError || isBffError}
+          isLoading={isSeasonLoading || isLoading || roster.isLoading}
+          isError={isSeasonError || isError || isBffError}
           results={roster.results}
           view={roster.view}
           onReset={roster.resetFilters}
-          onRetry={refetch}
+          onRetry={refetchRoster}
         />
       </Shell>
     </main>

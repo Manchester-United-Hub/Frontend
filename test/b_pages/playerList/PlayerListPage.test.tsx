@@ -13,6 +13,8 @@
  * - 뷰 토글: 카드뷰 ↔ 리스트뷰 전환
  * - 로딩: isLoading이면 스켈레톤(listitem 없음)
  * - 에러: isError면 RosterErrorState, '다시 시도' 클릭 시 refetch 호출
+ * - 시즌: useCurrentSeason이 준 season으로 usePlayerList를 호출하고, 시즌 확정 전에는 비활성화한다
+ * - 시즌 로딩/에러도 목록의 로딩/에러 상태로 합류한다
  * - number/position/nationality가 null인 선수(B2)도 제외되지 않고 '-'로 표시된다
  * - 새로고침 버튼: 로컬 스켈레톤 연출(usePlayerListFilters.refresh)과 refetch를 함께 트리거한다
  *
@@ -27,10 +29,12 @@ import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 import { usePlayerList } from '@features/player/api';
+import { useCurrentSeason } from '@features/seasonInfo/api';
 import type { PlyaerDTO } from '@entities/player/model';
 import { buildPlayerListDTO } from '@test/fixtures/players';
 
 vi.mock('@features/player/api', () => ({ usePlayerList: vi.fn() }));
+vi.mock('@features/seasonInfo/api', () => ({ useCurrentSeason: vi.fn() }));
 
 vi.mock('next/link', () => ({
   default: ({
@@ -64,6 +68,23 @@ import { PlayerListPage } from '@pages/playerList';
 import { REFRESH_DELAY_MS } from '@pages/playerList/model';
 
 const mockedUsePlayerList = vi.mocked(usePlayerList);
+const mockedUseCurrentSeason = vi.mocked(useCurrentSeason);
+
+const CURRENT_SEASON = 2026;
+
+/** useCurrentSeason 반환값 중 페이지가 소비하는 4개 필드만 채운 테스트 더블. */
+const buildSeasonResult = (overrides: {
+  season?: number;
+  isLoading?: boolean;
+  isError?: boolean;
+  refetch?: () => void;
+}) =>
+  ({
+    data: overrides.season === undefined ? undefined : { season: overrides.season, started: true },
+    isLoading: overrides.isLoading ?? false,
+    isError: overrides.isError ?? false,
+    refetch: overrides.refetch ?? vi.fn(),
+  }) as unknown as ReturnType<typeof useCurrentSeason>;
 
 const TEST_DTOS: PlyaerDTO[] = [
   {
@@ -139,6 +160,8 @@ const successResult = (dtos: PlyaerDTO[], refetch?: () => void) =>
 beforeEach(() => {
   mockedUsePlayerList.mockReset();
   mockedUsePlayerList.mockReturnValue(successResult(TEST_DTOS));
+  mockedUseCurrentSeason.mockReset();
+  mockedUseCurrentSeason.mockReturnValue(buildSeasonResult({ season: CURRENT_SEASON }));
 });
 
 describe('PlayerListPage', () => {
@@ -250,6 +273,47 @@ describe('PlayerListPage', () => {
     // name과 nameEn이 둘 다 dto.name(영문)이라(AD-3, 번역 없음) PlayerCard가 같은 텍스트를
     // 두 줄(name/nameEn)로 렌더한다 — getAllByText로 중복 매치를 허용한다.
     expect(screen.getAllByText('A. Garnacho').length).toBeGreaterThan(0);
+  });
+
+  it('useCurrentSeason이 준 시즌으로 선수 목록을 조회한다', () => {
+    render(<PlayerListPage />);
+
+    expect(mockedUsePlayerList).toHaveBeenCalledWith(
+      { season: CURRENT_SEASON, size: 100 },
+      { enabled: true },
+    );
+  });
+
+  it('시즌이 확정되기 전에는 선수 조회를 비활성화하고 스켈레톤을 띄운다', () => {
+    mockedUseCurrentSeason.mockReturnValue(buildSeasonResult({ isLoading: true }));
+    mockedUsePlayerList.mockReturnValue(buildQueryResult({ data: undefined }));
+
+    render(<PlayerListPage />);
+
+    expect(mockedUsePlayerList).toHaveBeenCalledWith(
+      { season: undefined, size: 100 },
+      { enabled: false },
+    );
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
+  });
+
+  it('시즌 조회가 실패하면 RosterErrorState가 뜨고 "다시 시도"는 시즌부터 다시 받는다', async () => {
+    const refetchSeason = vi.fn();
+    const refetchPlayers = vi.fn();
+    mockedUseCurrentSeason.mockReturnValue(
+      buildSeasonResult({ isError: true, refetch: refetchSeason }),
+    );
+    mockedUsePlayerList.mockReturnValue(
+      buildQueryResult({ data: undefined, refetch: refetchPlayers }),
+    );
+    const user = userEvent.setup();
+    render(<PlayerListPage />);
+
+    expect(screen.getByText('선수 목록을 불러오지 못했어요')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: '다시 시도' }));
+    expect(refetchSeason).toHaveBeenCalledTimes(1);
+    expect(refetchPlayers).not.toHaveBeenCalled();
   });
 
   it('새로고침 — 클릭 즉시 스켈레톤이 뜨고 지연 후 결과로 복귀하며 refetch도 호출된다', () => {
