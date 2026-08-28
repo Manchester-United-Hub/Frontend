@@ -4,12 +4,7 @@ import type { PlayerListQueryDTO } from '@entities/player/model';
 
 import { playerQueries } from './playerQueries';
 
-interface UsePlayerListOptions {
-  /** false면 조회를 미룬다 — season이 확정되기 전에 전체 선수 조회로 새는 것을 막는다. */
-  enabled?: boolean;
-}
-
-const usePlayerList = (query: PlayerListQueryDTO, options?: UsePlayerListOptions) =>
-  useQuery({ ...playerQueries.list(query), ...options });
+/** season은 서버(app/players/page.tsx)가 확정해 prop으로 내리므로 여기서는 게이팅하지 않는다(S-9). */
+const usePlayerList = (query: PlayerListQueryDTO) => useQuery(playerQueries.list(query));
 
 export { usePlayerList };

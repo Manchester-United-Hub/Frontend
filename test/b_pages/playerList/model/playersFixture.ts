@@ -7,7 +7,7 @@
  * `*.{test,spec}.{ts,tsx}`만 수집하므로 이 파일은 테스트 스위트로 오인 수집되지 않는다.
  */
 
-import type { PlayerListItem } from '@pages/playerList/model/types';
+import type { PlayerListItem } from '@entities/player/model/playerListItem';
 
 export const PLAYERS: PlayerListItem[] = [
   // ---------- current first team ----------

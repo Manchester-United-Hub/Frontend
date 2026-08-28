@@ -1,379 +1,48 @@
 /**
- * PlayerListPage 통합 테스트 (ST-4, PL-2로 실 API 연결 — decision-1.md D-31).
+ * PlayerListPage 테스트 — 위젯 병합 계약(ST-4) + season prop 배선(ST-005/S-9).
  *
- * AD-7(테스트 전략): 페이지 컴포넌트 테스트는 feature 훅(usePlayerList)을 vi.mock해
- * 로딩/성공/에러/빈 상태를 렌더 검증한다 — 더 이상 `players` prop으로 데이터를 주입하지 않는다
- * (PLAYERS 목데이터는 테스트 fixture로 격하, AD-6).
+ * ST-4로 데이터 조회·필터·상호작용 로직 전부가 c_widgets/PlayerRoster의 RosterPanel로
+ * 옮겨졌다(그 커버리지는 test/c_widgets/PlayerRoster/ui/RosterPanel.test.tsx가 담당). 이
+ * 페이지는 RosterHeadSection·RosterPanel을 병합하기만 하므로, 이 테스트는 그 배선만
+ * 검증한다 — StandingsPanel.test.tsx 선례(S2-13)처럼 element.type만 단언하고 이미 자기
+ * 테스트를 가진 자식(RosterHeadSection·RosterPanel)을 다시 렌더하지 않는다.
+ *
+ * ST-005로 season이 app/players/page.tsx(서버, getSeasonInfo())에서 확정돼 이 페이지를 거쳐
+ * RosterPanel로 prop 전달된다(A-4/S-9) — 이 페이지·RosterPanel 어디에서도 useCurrentSeason()을
+ * 호출하지 않는다.
  *
  * 검증 목적:
- * - 초기 렌더: usePlayerList 성공 응답(페이지 봉투)의 players가 mapPlayerDtoToListItem을
- *   거쳐 카드뷰로 표시
- * - 포지션 필터: FilterSelect 선택 시 결과가 좁혀진다
- * - 검색 0건: RosterEmpty가 뜨고 '필터 초기화' 클릭 시 전체 필터가 리셋된다
- * - 뷰 토글: 카드뷰 ↔ 리스트뷰 전환
- * - 로딩: isLoading이면 스켈레톤(listitem 없음)
- * - 에러: isError면 RosterErrorState, '다시 시도' 클릭 시 refetch 호출
- * - 시즌: useCurrentSeason이 준 season으로 usePlayerList를 호출하고, 시즌 확정 전에는 비활성화한다
- * - 시즌 로딩/에러도 목록의 로딩/에러 상태로 합류한다
- * - 페이지네이션: 한 페이지(12명)를 넘으면 페이저가 뜨고, 페이지 이동·필터 후 1페이지 복귀
- * - number/position/nationality가 null인 선수(B2)도 제외되지 않고 '-'로 표시된다
- * - 새로고침 버튼: 로컬 스켈레톤 연출(usePlayerListFilters.refresh)과 refetch를 함께 트리거한다
- *
- * ⚠️ 아키텍처 주의: PlayerListPage = <main> + RosterHeadSection + Shell(FilterBar/ResultRow/결과).
- *    Nav/Footer는 app/layout 전역 소관이므로 이 테스트에서 기대하지 않는다(LandingPage 선례).
+ * - <main> 안에 RosterHeadSection과 RosterPanel이 이 순서로 배선되는가
+ * - RosterHeadSection은 헤더 전용 Shell을 자체 소유(RosterHeadSection 내부 소관)하고,
+ *   RosterPanel은 이 페이지가 소유하는 별도의 공유 Shell 안에서 렌더되는가(Shell 인스턴스
+ *   분리 구조, ST-3A 인계)
+ * - season prop이 그대로 RosterPanel에 전달되는가
  */
 
-import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import '@testing-library/jest-dom/vitest';
-import React from 'react';
-
-import { usePlayerList } from '@features/player/api';
-import { useCurrentSeason } from '@features/seasonInfo/api';
-import type { PlyaerDTO } from '@entities/player/model';
-import { buildPlayerDTO, buildPlayerListDTO } from '@test/fixtures/players';
-
-vi.mock('@features/player/api', () => ({ usePlayerList: vi.fn() }));
-vi.mock('@features/seasonInfo/api', () => ({ useCurrentSeason: vi.fn() }));
-
-vi.mock('next/link', () => ({
-  default: ({
-    href,
-    children,
-    className,
-  }: {
-    href: string;
-    children: React.ReactNode;
-    className?: string;
-  }) => (
-    <a href={String(href)} className={className}>
-      {children}
-    </a>
-  ),
-}));
-
-beforeAll(() => {
-  // Headless UI Listbox가 옵션을 스크롤·측정할 때 사용 — jsdom 미구현이라 스텁.
-  Element.prototype.scrollIntoView = () => {};
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as unknown as typeof ResizeObserver;
-});
-
-afterEach(cleanup);
+import { describe, it, expect } from 'vitest';
+import type { ReactElement } from 'react';
 
 import { PlayerListPage } from '@pages/playerList';
-import { REFRESH_DELAY_MS, ROSTER_PAGE_SIZE } from '@pages/playerList/model';
+import { RosterHeadSection, RosterPanel } from '@widgets/PlayerRoster/ui';
+import { Shell } from '@shared/ui';
 
-const mockedUsePlayerList = vi.mocked(usePlayerList);
-const mockedUseCurrentSeason = vi.mocked(useCurrentSeason);
-
-const CURRENT_SEASON = 2026;
-
-/** useCurrentSeason 반환값 중 페이지가 소비하는 4개 필드만 채운 테스트 더블. */
-const buildSeasonResult = (overrides: {
-  season?: number;
-  isLoading?: boolean;
-  isError?: boolean;
-  refetch?: () => void;
-}) =>
-  ({
-    data: overrides.season === undefined ? undefined : { season: overrides.season, started: true },
-    isLoading: overrides.isLoading ?? false,
-    isError: overrides.isError ?? false,
-    refetch: overrides.refetch ?? vi.fn(),
-  }) as unknown as ReturnType<typeof useCurrentSeason>;
-
-const TEST_DTOS: PlyaerDTO[] = [
-  {
-    id: 24,
-    name: 'André Onana',
-    birthDate: '1996-04-02',
-    nationality: 'Cameroon',
-    height: '190 cm',
-    weight: '85 kg',
-    number: 24,
-    position: 'Goalkeeper',
-    photo: '',
-    seasons: [2023, 2024, 2025],
-  },
-  {
-    id: 8,
-    name: 'Bruno Fernandes',
-    birthDate: '1994-09-08',
-    nationality: 'Portugal',
-    height: '179 cm',
-    weight: '69 kg',
-    number: 8,
-    position: 'Midfielder',
-    photo: '',
-    seasons: [2020, 2021, 2022, 2023, 2024, 2025],
-  },
-  {
-    id: 10,
-    name: 'Marcus Rashford',
-    birthDate: '1997-10-31',
-    nationality: 'England',
-    height: '188 cm',
-    weight: '80 kg',
-    number: 10,
-    position: 'Attacker',
-    photo: '',
-    seasons: [2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025],
-  },
-  {
-    id: 6,
-    name: 'Lisandro Martínez',
-    birthDate: '1998-01-18',
-    nationality: 'Argentina',
-    height: '175 cm',
-    weight: '73 kg',
-    number: 6,
-    position: 'Defender',
-    photo: '',
-    seasons: [2022, 2023, 2024, 2025],
-  },
-];
-
-/** react-query useQuery 반환값 중 페이지가 실제로 소비하는 4개 필드만 채운 테스트 더블. */
-const buildQueryResult = (overrides: {
-  data?: unknown;
-  isLoading?: boolean;
-  isError?: boolean;
-  refetch?: () => void;
-}) =>
-  ({
-    data: overrides.data,
-    isLoading: overrides.isLoading ?? false,
-    isError: overrides.isError ?? false,
-    refetch: overrides.refetch ?? vi.fn(),
-  }) as unknown as ReturnType<typeof usePlayerList>;
-
-const successResult = (dtos: PlyaerDTO[], refetch?: () => void) =>
-  buildQueryResult({
-    data: { success: true, data: buildPlayerListDTO(dtos), error: null },
-    refetch,
-  });
-
-beforeEach(() => {
-  mockedUsePlayerList.mockReset();
-  mockedUsePlayerList.mockReturnValue(successResult(TEST_DTOS));
-  mockedUseCurrentSeason.mockReset();
-  mockedUseCurrentSeason.mockReturnValue(buildSeasonResult({ season: CURRENT_SEASON }));
-});
+const TEST_SEASON = 2026;
 
 describe('PlayerListPage', () => {
-  it('초기 렌더 — <main> 존재, API 응답 전원이 카드뷰로 표시된다', () => {
-    const { container } = render(<PlayerListPage />);
+  it('<main> 안에 RosterHeadSection과, 공유 Shell로 감싼 RosterPanel을 이 순서로 배선하고 season을 전달한다', () => {
+    const element = PlayerListPage({ season: TEST_SEASON });
 
-    expect(container.querySelector('main')).not.toBeNull();
-    expect(container.textContent).toContain(`총 ${TEST_DTOS.length}명의 선수를 찾았습니다`);
-    expect(screen.getAllByRole('listitem')).toHaveLength(TEST_DTOS.length);
-  });
+    expect(element.type).toBe('main');
 
-  it('활약연도·스쿼드 셀렉트는 옵션이 없어 렌더되지 않는다(리뷰 H-3)', () => {
-    render(<PlayerListPage />);
+    const children = element.props.children as unknown as ReactElement[];
+    expect(children).toHaveLength(2);
 
-    expect(screen.getByRole('button', { name: '포지션' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '활약연도' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: '스쿼드' })).not.toBeInTheDocument();
-  });
+    const [headSection, shellWrapped] = children;
+    expect(headSection.type).toBe(RosterHeadSection);
 
-  it('포지션 필터 — GK를 선택하면 결과가 1명(Onana)으로 좁혀진다', async () => {
-    const user = userEvent.setup();
-    const { container } = render(<PlayerListPage />);
-
-    await user.click(screen.getByRole('button', { name: '포지션' }));
-    await user.click(screen.getByRole('option', { name: '골키퍼 · GK' }));
-
-    expect(container.textContent).toContain('총 1명의 선수를 찾았습니다');
-    // name/nameEn이 둘 다 dto.name이라(AD-3) 같은 텍스트가 두 줄로 렌더된다.
-    expect(screen.getAllByText('André Onana').length).toBeGreaterThan(0);
-  });
-
-  it('검색 0건 — RosterEmpty가 뜨고 초기화 클릭 시 전체 목록으로 되돌아온다', async () => {
-    const user = userEvent.setup();
-    const { container } = render(<PlayerListPage />);
-
-    await user.type(screen.getByRole('textbox', { name: '선수 검색' }), '존재하지않는선수');
-
-    expect(screen.getByText('조건에 맞는 선수가 없어요')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '필터 초기화' }));
-
-    expect(container.textContent).toContain(`총 ${TEST_DTOS.length}명의 선수를 찾았습니다`);
-    expect(screen.getByRole('textbox', { name: '선수 검색' })).toHaveValue('');
-  });
-
-  it('뷰 토글 — 리스트뷰로 전환하면 리스트 헤더가, 다시 카드뷰로 전환하면 그리드가 보인다', async () => {
-    const user = userEvent.setup();
-    render(<PlayerListPage />);
-
-    await user.click(screen.getByRole('radio', { name: '리스트뷰' }));
-    expect(screen.getByText('국적')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('radio', { name: '카드뷰' }));
-    expect(screen.queryByText('국적')).not.toBeInTheDocument();
-  });
-
-  it('로딩 중이면(react-query isLoading) 결과 대신 스켈레톤이 뜬다', () => {
-    mockedUsePlayerList.mockReturnValue(
-      buildQueryResult({ data: undefined, isLoading: true }),
-    );
-    render(<PlayerListPage />);
-
-    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
-  });
-
-  it('에러(react-query isError)면 RosterErrorState가 뜨고 "다시 시도" 클릭 시 refetch가 호출된다', async () => {
-    const refetch = vi.fn();
-    mockedUsePlayerList.mockReturnValue(
-      buildQueryResult({ data: undefined, isError: true, refetch }),
-    );
-    const user = userEvent.setup();
-    render(<PlayerListPage />);
-
-    expect(screen.getByText('선수 목록을 불러오지 못했어요')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '다시 시도' }));
-    expect(refetch).toHaveBeenCalledTimes(1);
-  });
-
-  it('BFF 에러 봉투(success:false)면 결과 없음이 아니라 RosterErrorState가 뜬다(리뷰 H-1)', () => {
-    mockedUsePlayerList.mockReturnValue(
-      buildQueryResult({
-        data: { success: false, data: null, error: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' } },
-        isError: false,
-      }),
-    );
-    render(<PlayerListPage />);
-
-    expect(screen.getByText('선수 목록을 불러오지 못했어요')).toBeInTheDocument();
-    expect(screen.queryByText('조건에 맞는 선수가 없어요')).not.toBeInTheDocument();
-  });
-
-  it('number/position이 null인 선수도 제외되지 않고 등번호·포지션이 "-"로 표시된다(B2)', () => {
-    const dtoWithoutNumberOrPosition: PlyaerDTO = {
-      ...TEST_DTOS[0]!,
-      id: 284324,
-      name: 'A. Garnacho',
-      number: null,
-      position: null,
-      nationality: null,
-    };
-    mockedUsePlayerList.mockReturnValue(
-      successResult([...TEST_DTOS, dtoWithoutNumberOrPosition]),
-    );
-
-    render(<PlayerListPage />);
-
-    expect(screen.getAllByRole('listitem')).toHaveLength(TEST_DTOS.length + 1);
-    // name과 nameEn이 둘 다 dto.name(영문)이라(AD-3, 번역 없음) PlayerCard가 같은 텍스트를
-    // 두 줄(name/nameEn)로 렌더한다 — getAllByText로 중복 매치를 허용한다.
-    expect(screen.getAllByText('A. Garnacho').length).toBeGreaterThan(0);
-  });
-
-  it('useCurrentSeason이 준 시즌으로 선수 목록을 조회한다', () => {
-    render(<PlayerListPage />);
-
-    expect(mockedUsePlayerList).toHaveBeenCalledWith(
-      { season: CURRENT_SEASON, size: 100 },
-      { enabled: true },
-    );
-  });
-
-  it('시즌이 확정되기 전에는 선수 조회를 비활성화하고 스켈레톤을 띄운다', () => {
-    mockedUseCurrentSeason.mockReturnValue(buildSeasonResult({ isLoading: true }));
-    mockedUsePlayerList.mockReturnValue(buildQueryResult({ data: undefined }));
-
-    render(<PlayerListPage />);
-
-    expect(mockedUsePlayerList).toHaveBeenCalledWith(
-      { season: undefined, size: 100 },
-      { enabled: false },
-    );
-    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
-  });
-
-  it('시즌 조회가 실패하면 RosterErrorState가 뜨고 "다시 시도"는 시즌부터 다시 받는다', async () => {
-    const refetchSeason = vi.fn();
-    const refetchPlayers = vi.fn();
-    mockedUseCurrentSeason.mockReturnValue(
-      buildSeasonResult({ isError: true, refetch: refetchSeason }),
-    );
-    mockedUsePlayerList.mockReturnValue(
-      buildQueryResult({ data: undefined, refetch: refetchPlayers }),
-    );
-    const user = userEvent.setup();
-    render(<PlayerListPage />);
-
-    expect(screen.getByText('선수 목록을 불러오지 못했어요')).toBeInTheDocument();
-
-    await user.click(screen.getByRole('button', { name: '다시 시도' }));
-    expect(refetchSeason).toHaveBeenCalledTimes(1);
-    expect(refetchPlayers).not.toHaveBeenCalled();
-  });
-
-  it('한 페이지를 넘으면 페이저가 뜨고 2페이지로 이동하면 나머지만 보인다', async () => {
-    const overflowCount = 3;
-    const many = Array.from({ length: ROSTER_PAGE_SIZE + overflowCount }, (_, index) =>
-      buildPlayerDTO({ id: 9000 + index, name: `Player ${index}` }),
-    );
-    mockedUsePlayerList.mockReturnValue(successResult(many));
-    const user = userEvent.setup();
-    const { container } = render(<PlayerListPage />);
-
-    expect(screen.getAllByRole('listitem')).toHaveLength(ROSTER_PAGE_SIZE);
-    expect(container.textContent).toContain(
-      `총 ${many.length}명의 선수를 찾았습니다 · 1/2 페이지`,
-    );
-
-    await user.click(screen.getByRole('button', { name: '2페이지' }));
-
-    expect(screen.getAllByRole('listitem')).toHaveLength(overflowCount);
-    expect(container.textContent).toContain('2/2 페이지');
-  });
-
-  it('2페이지에서 검색어를 입력하면 1페이지로 돌아간다', async () => {
-    const many = Array.from({ length: ROSTER_PAGE_SIZE + 3 }, (_, index) =>
-      buildPlayerDTO({ id: 9000 + index, name: `Player ${index}` }),
-    );
-    mockedUsePlayerList.mockReturnValue(successResult(many));
-    const user = userEvent.setup();
-    const { container } = render(<PlayerListPage />);
-
-    await user.click(screen.getByRole('button', { name: '2페이지' }));
-    expect(container.textContent).toContain('2/2 페이지');
-
-    await user.type(screen.getByRole('textbox', { name: '선수 검색' }), 'Player');
-
-    expect(container.textContent).toContain('1/2 페이지');
-  });
-
-  it('결과가 한 페이지에 들어가면 페이저를 렌더하지 않는다', () => {
-    render(<PlayerListPage />);
-
-    expect(screen.queryByRole('navigation', { name: '선수 목록 페이지' })).not.toBeInTheDocument();
-  });
-
-  it('새로고침 — 클릭 즉시 스켈레톤이 뜨고 지연 후 결과로 복귀하며 refetch도 호출된다', () => {
-    vi.useFakeTimers();
-    const refetch = vi.fn();
-    mockedUsePlayerList.mockReturnValue(successResult(TEST_DTOS, refetch));
-    render(<PlayerListPage />);
-
-    fireEvent.click(screen.getByRole('button', { name: '새로고침' }));
-    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
-    expect(refetch).toHaveBeenCalledTimes(1);
-
-    act(() => {
-      vi.advanceTimersByTime(REFRESH_DELAY_MS);
-    });
-    expect(screen.getAllByRole('listitem')).toHaveLength(TEST_DTOS.length);
-
-    vi.useRealTimers();
+    expect(shellWrapped.type).toBe(Shell);
+    const shellChild = shellWrapped.props as unknown as { children: ReactElement };
+    expect(shellChild.children.type).toBe(RosterPanel);
+    expect((shellChild.children.props as { season: number }).season).toBe(TEST_SEASON);
   });
 });
