@@ -1,24 +1,25 @@
 /**
  * Player detail page domain types.
  *
+ * Rewritten for real API data (D-20/D-21/D-23/D-24/D-31, PD-3) — the
+ * previous mock-derived shape (en/flag/years/birth/foot/joined/left/career/
+ * trophies/status/squad/captain/legend) had no counterpart in `PlyaerDTO`
+ * (`GET /api/players/{id}`) and is removed. `radar`/`ovr` are commented out
+ * rather than deleted — preserved for future restoration (D-26/D-30);
+ * `RadarPoint`/`AttrLevel` stay exported as-is because `AttributeCard`/
+ * `AttributeBarList`/`HexRadar` still import them unchanged.
+ *
  * These are model-layer types, not component prop types (code-quality.md —
  * domain types and component props stay separate). Component props are
  * defined per-section under ui/{Section}.
- *
- * Field names mirror the design source's `window.PLAYERS` (players-data.js)
- * 1:1 — see plan.json architecture.interface_contracts and
- * result-ST-001.md for the reconciliation note. Short keys (nm·en·nat·dob…)
- * are kept verbatim from the source rather than translated, per the club
- * page precedent (b_pages/clubInfo/model/types.ts).
  */
 
 // ───────── Player ─────────
 
-export type PlayerStatus = 'active' | 'retired';
-
+/** D-31 — union itself is not expanded; "unknown" is expressed via `PlayerDetail.pos?`. */
 export type PlayerPosition = 'GK' | 'DF' | 'MF' | 'FW';
 
-/** Mirrors `PLAYERS[i].career`. */
+/** Aggregated apps/goals/assists across this season's competitions — not true career (D-21). */
 export interface CareerTotals {
   apps: number;
   goals: number;
@@ -26,94 +27,69 @@ export interface CareerTotals {
 }
 
 /**
- * A single attribute-hexagon axis (6 total per player). Mirrors
- * `PLAYERS[i].radar[i]` — `k`/`v` verbatim. Axis labels differ by position:
- * outfield `["슈팅","패스","드리블","스피드","수비","피지컬"]`, GK
- * `["반응","핸들링","킥력","위치선정","민첩성","공중장악"]`.
+ * A single attribute-hexagon axis. Kept for `AttributeCard`/`HexRadar`/
+ * `AttributeBarList`, which stay untouched (D-26/D-30) — no longer produced
+ * or consumed by `PlayerDetail`/`PlayerDetailPage` (see `radar`/`ovr` below).
  */
 export interface RadarPoint {
-  /** Axis label (Korean), e.g. "슈팅", "반응". */
   k: string;
-  /** Axis value, 0–100. */
   v: number;
 }
 
 /**
- * Mirrors `window.PLAYERS[i]` from players-data.js.
+ * Bio fields sourced from `PlyaerDTO` (`GET /api/players/{id}?season=`).
+ * `num`/`pos`/`height`/`weight` are all nullable/optional — D-31 confirmed
+ * several first-team players (not only youth) return `null` for both
+ * `number` and `position`, and PD-1/PD-3 observed `height`/`weight` null
+ * for youth players. `pos` stays optional rather than adding an `'UNKNOWN'`
+ * union member (D-31 — don't expand `PlayerPosition`, express "unknown" via
+ * optionality instead).
  *
- * `photo` is intentionally omitted — no consumer in
- * architecture.interface_contracts renders an actual photo image
- * (PlayerHeader always renders PlayerSilhouette), and the plan's field
- * list for PlayerDetail does not include it (Simplicity First — no field
- * beyond what's consumed). See result-ST-001.md.
+ * `nat`/`dob`/`age` are `| null` — origin/dev's merged `PlayerDTOSchema`
+ * made `birthDate`/`nationality` nullable (실측, ST-001 병합). No default
+ * value is substituted; the UI layer (`PlayerInfoGrid`) renders `null` as
+ * `'-'` via the existing `UNKNOWN_VALUE` convention instead.
  */
 export interface PlayerDetail {
-  /** Stable slug id, e.g. "bruno". Used as the route param and lookup key. */
-  id: string;
-  /** Jersey number. */
-  num: number;
-  /** Korean display name. */
+  id: number;
+  /** Jersey number — nullable, render `?? '-'`. */
+  num: number | null;
   nm: string;
-  /** English display name. */
-  en: string;
-  pos: PlayerPosition;
-  /** Nationality, Korean display text, e.g. "포르투갈". */
-  nat: string;
-  /** Flag lookup code, e.g. "pt", "gb", "ar". */
-  flag: string;
-  /** Career span display string, e.g. "2020–현재" or "2004–2017". */
-  years: string;
-  /** Date of birth, display string "YYYY.MM.DD". */
-  dob: string;
-  age: number;
-  /** Birthplace, Korean display text, e.g. "마이아, 포르투갈". */
-  birth: string;
-  /** Centimeters. */
-  height: number;
-  /** Kilograms. */
-  weight: number;
-  /** Preferred foot, Korean display text, e.g. "오른발". */
-  foot: string;
-  /** Club join date, display string "YYYY.MM.DD". */
-  joined: string;
-  /** Club departure date, display string, or null while still at the club. */
-  left: string | null;
-  career: CareerTotals;
-  /** Career trophy count. */
-  trophies: number;
-  status: PlayerStatus;
-  /** Squad label, e.g. "1군" (current) or "레전드" (legend). */
-  squad: string;
-  /** True only for the current captain (source: only "bruno"). */
-  captain?: boolean;
-  /** True for legend-status retirees, rendered with a legend badge. */
-  legend?: boolean;
-  /** 6-axis attribute hexagon data, position-appropriate axis labels. */
-  radar: RadarPoint[];
-  /** Overall rating — rounded mean of `radar[*].v`. */
-  ovr: number;
+  /** Optional — API `position` free text maps to 4 known values only (D-31). */
+  pos?: PlayerPosition;
+  /** Nullable per merged `PlayerDTOSchema` — render `'-'` when null. */
+  nat: string | null;
+  /** Date of birth, `yyyy-MM-dd` (API format, not reformatted). Nullable per merged `PlayerDTOSchema`. */
+  dob: string | null;
+  /** `null` when `dob` is null — age cannot be computed without a birth date. */
+  age: number | null;
+  /** Centimeters, digits only (no "cm" suffix — API confirmed by direct call, D-13). Nullable. */
+  height: string | null;
+  /** Kilograms, digits only (no "kg" suffix — API confirmed by direct call, D-13). Nullable. */
+  weight: string | null;
+  /** Photo URL — API provides one for every observed player (code-review M-4). Non-null per `PlyaerDTOSchema`. */
+  photo: string;
+  // radar: RadarPoint[];
+  // ovr: number; // 능력치 — 정규화 기준 부재로 비활성화, 추후 복원 예정(D-26)
 }
 
 // ───────── Derived (model/derive.ts outputs) ─────────
 
-/** A single season-table row. Mirrors `seasonRows(p)[i]` from player-detail.jsx. */
+/**
+ * A single season-table row. D-20: the API param is a single season, so
+ * each row is a *competition* within that season, not a career year —
+ * `season` holds `LeagueStatisticsDTO.leagueName`.
+ */
 export interface SeasonRow {
-  /** Season display label, e.g. "2020/21". */
   season: string;
   apps: number;
   goals: number;
   assists: number;
 }
 
-/**
- * Current (or last, if retired) season snapshot. Mirrors `curSeason(p)`
- * from player-detail.jsx.
- */
+/** Current-season snapshot for CurrentSeasonCard (D-21 대표 대회 선택 규칙). */
 export interface SeasonSnapshot {
-  retired: boolean;
-  /** Season display label, e.g. "2025/26" or a retired player's final season. */
   szn: string;
-  /** Card title, e.g. "현재 시즌" or "마지막 시즌". */
   title: string;
   apps: number;
   goals: number;
@@ -121,8 +97,8 @@ export interface SeasonSnapshot {
 }
 
 /**
- * Attribute-value tier used by the UI to pick a token color (attrColor in
- * player-detail.jsx). Logic (getAttrLevel) and token mapping stay separate —
- * see plan.json architecture.standards.
+ * Attribute-value tier used by the UI to pick a token color. Logic
+ * (`getAttrLevel`) and token mapping stay separate (architecture.standards).
+ * Kept for `AttributeBarList`/`HexRadar`/`attrLevelColor.ts` (D-26/D-30).
  */
 export type AttrLevel = 'high' | 'mid' | 'low';

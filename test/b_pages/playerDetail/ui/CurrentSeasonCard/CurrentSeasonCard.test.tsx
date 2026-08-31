@@ -16,7 +16,6 @@ import { CurrentSeasonCard } from '@pages/playerDetail/ui';
 afterEach(cleanup);
 
 const FIELD_PLAYER_SNAPSHOT = {
-  retired: false,
   szn: '2025/26',
   title: '현재 시즌',
   apps: 30,
@@ -25,7 +24,6 @@ const FIELD_PLAYER_SNAPSHOT = {
 };
 
 const GK_SNAPSHOT = {
-  retired: false,
   szn: '2025/26',
   title: '현재 시즌',
   apps: 34,
@@ -58,7 +56,7 @@ describe('CurrentSeasonCard — 필드플레이어(Donut) vs GK(Ring) 분기', (
   it('은퇴 선수는 title="마지막 시즌"을 그대로 표시한다(스냅샷 props 전달만 검증)', () => {
     render(
       <CurrentSeasonCard
-        snapshot={{ retired: true, szn: '2016/17', title: '마지막 시즌', apps: 25, goals: 25, assists: 8 }}
+        snapshot={{ szn: '2016/17', title: '마지막 시즌', apps: 25, goals: 25, assists: 8 }}
         isGoalkeeper={false}
       />
     );
