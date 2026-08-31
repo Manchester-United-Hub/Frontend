@@ -8,10 +8,12 @@ import { Eyebrow, Shell } from '@shared/ui';
 function NewsHeadSection() {
   return (
     <Shell className="pt-10 pb-1">
-      <Eyebrow>News &amp; Analysis</Eyebrow>
-      <h1 className="mt-1.5 text-[34px] leading-[1.1] font-extrabold tracking-[-0.025em]">기사</h1>
-      <p className="mt-2 max-w-[560px] text-[15px] text-muted-foreground">
-        경기 리포트와 전술 분석, 이적 소식과 인터뷰까지 — 팬이 정리한 맨유 이야기.
+      <Eyebrow>News</Eyebrow>
+      <h1 className="mt-1.5 text-[34px] leading-[1.1] font-extrabold tracking-tight">
+        기사
+      </h1>
+      <p className="mt-2 max-w-140 text-[15px] text-muted-foreground">
+        맨유의 최신 소식을 한번에 - 최신 맨유 뉴스.
       </p>
     </Shell>
   );

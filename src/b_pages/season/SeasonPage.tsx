@@ -1,13 +1,37 @@
-import { seasonSummaryCards } from './model';
-import { SeasonHeader, SeasonTabs, SummaryCards } from './ui';
+import { Suspense } from 'react';
 
-/** SeasonPage — 시즌 페이지 조립(main > Header + SummaryCards + Tabs). clubInfo `ClubPage`를 그대로 미러링했다(plan.md). */
-export function SeasonPage() {
+import { getSeasonInfo } from '@entities/seasonInfo/api/server';
+import { StandingsPanel, StandingSkeleton } from '@widgets/Standing/ui';
+import { MatchesSkeleton, SchedulePanel } from '@widgets/MatchSchedule/ui';
+
+import {
+  SeasonHeader,
+  SeasonTabs,
+  SummaryCardsSkeleton,
+  SummaryPanel,
+} from './ui';
+
+export async function SeasonPage() {
+  const { label, status, startYear } = await getSeasonInfo();
+
   return (
     <main>
-      <SeasonHeader />
-      <SummaryCards summaryCards={seasonSummaryCards} />
-      <SeasonTabs />
+      <SeasonHeader season={label} status={status} />
+      <Suspense fallback={<SummaryCardsSkeleton />}>
+        <SummaryPanel seasonStartYear={startYear} />
+      </Suspense>
+      <SeasonTabs
+        matchesPanel={
+          <Suspense fallback={<MatchesSkeleton season={label} />}>
+            <SchedulePanel seasonLabel={label} seasonStartYear={startYear} />
+          </Suspense>
+        }
+        standingsPanel={
+          <Suspense fallback={<StandingSkeleton season={label} />}>
+            <StandingsPanel seasonLabel={label} seasonStartYear={startYear} />
+          </Suspense>
+        }
+      />
     </main>
   );
 }

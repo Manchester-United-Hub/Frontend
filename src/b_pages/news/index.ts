@@ -1,1 +1,1 @@
-export { NewsPage, type NewsPageProps } from './NewsPage';
+export { NewsPage } from './NewsPage';

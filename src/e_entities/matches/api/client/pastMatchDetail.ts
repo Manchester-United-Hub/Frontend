@@ -3,7 +3,7 @@ import type { BffApiResponse } from '@shared/model';
 import type {
   MatchDetailsQueryDTO,
   PastMatchDetailDTO,
-} from '@entities/matches/model';
+} from '@entities/matches/types';
 
 const getPastMatchDetail = async ({
   matchId,

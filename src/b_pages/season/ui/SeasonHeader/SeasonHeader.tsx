@@ -1,4 +1,7 @@
 import { Eyebrow, Shell } from '@shared/ui';
+import type { SeasonStatus } from '@entities/seasonInfo/utils';
+
+import { SeasonStatusTag } from '../SeasonStatusTag';
 
 const SEASON_HEADER_HEADING_ID = 'season-header-heading';
 
@@ -8,11 +11,22 @@ const SEASON_HEADER_HEADING_ID = 'season-header-heading';
  * 헤더라, ClubHeader의 사진/스크림/워터마크 마크업은 가져오지 않고 PanelHead와
  * 유사한 단순 텍스트 블록으로 구현했다(시안 그대로 — 임의 확장 없음).
  */
-export function SeasonHeader() {
+
+interface SeasonHeaderProps {
+  season: string;
+  status: SeasonStatus;
+}
+export function SeasonHeader({ season, status }: SeasonHeaderProps) {
   return (
-    <section aria-labelledby={SEASON_HEADER_HEADING_ID} className="border-b border-border">
+    <section
+      aria-labelledby={SEASON_HEADER_HEADING_ID}
+      className="border-b border-border"
+    >
       <Shell className="pb-8 pt-12">
-        <Eyebrow>2025/26 Premier League</Eyebrow>
+        <div className="flex flex-wrap items-center gap-2">
+          <Eyebrow>{season} Premier League</Eyebrow>
+          <SeasonStatusTag status={status} />
+        </div>
         <h1
           id={SEASON_HEADER_HEADING_ID}
           className="mt-2 text-[34px] font-extrabold leading-[1.1] tracking-[-0.025em] text-foreground max-[620px]:text-[28px]"

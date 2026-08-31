@@ -10,7 +10,7 @@ const NAV_ITEMS: NavItem[] = [
     labelEn: 'Highlights',
     href: '/highlights',
   },
-  { id: 'articles', label: '기사', labelEn: 'Articles', href: '/articles' },
+  { id: 'news', label: '기사', labelEn: 'NEWS', href: '/news' },
 ];
 
 export { NAV_ITEMS };
