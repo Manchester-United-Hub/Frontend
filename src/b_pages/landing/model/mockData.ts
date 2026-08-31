@@ -7,7 +7,7 @@
  * Route hrefs omitted for all items — target pages do not yet exist (ADR-7).
  */
 
-import type { HeroContent, MatchItem, CategoryItem, PlayerItem } from './types';
+import type { HeroContent, MatchItem, CategoryItem } from './types';
 
 // ───────── Nav ─────────
 
@@ -88,46 +88,5 @@ export const categories: CategoryItem[] = [
     name: '기사',
     nameEn: 'Articles',
     description: '팬이 정리한 소식과 분석 글',
-  },
-];
-
-// ───────── Squad ─────────
-
-export const squadPlayers: PlayerItem[] = [
-  {
-    number: 8,
-    name: '브루누 페르난데스',
-    nameEn: 'Bruno Fernandes',
-    position: 'MF',
-    status: 'active',
-    years: '2020–현재',
-    nationality: '포르투갈',
-  },
-  {
-    number: 11,
-    name: '라스무스 회일룬',
-    nameEn: 'Rasmus Højlund',
-    position: 'FW',
-    status: 'active',
-    years: '2023–현재',
-    nationality: '덴마크',
-  },
-  {
-    number: 37,
-    name: '코비 메이누',
-    nameEn: 'Kobbie Mainoo',
-    position: 'MF',
-    status: 'active',
-    years: '2023–현재',
-    nationality: '잉글랜드',
-  },
-  {
-    number: 10,
-    name: '웨인 루니',
-    nameEn: 'Wayne Rooney',
-    position: 'FW',
-    status: 'retired',
-    years: '2004–2017',
-    nationality: '잉글랜드',
   },
 ];

@@ -103,21 +103,3 @@ export interface CategoryItem {
    */
   href?: Route;
 }
-
-// ───────── Player ─────────
-
-/** Domain type for a squad member — covers both active and retired players. */
-export interface PlayerItem {
-  number: number;
-  name: string;
-  nameEn: string;
-  /** Position code, e.g. "MF" or "FW". */
-  position: string;
-  status: 'active' | 'retired';
-  /**
-   * Tenure string, e.g. "2020–현재" or "2004–2017".
-   * Passed as the `meta` prop to PlayerCard.
-   */
-  years: string;
-  nationality: string;
-}
