@@ -1,19 +1,23 @@
-import { heroContent, nextMatch, recentMatch, categories, squadPlayers } from './model/mockData';
+import { heroContent, nextMatch, recentMatch, categories } from './model/mockData';
 import {
   CategoryCardsSection,
   HeroSection,
   MatchStripSection,
-  SquadPreviewSection,
+  SquadPreviewContainer,
 } from './ui';
 
-export function LandingPage() {
+interface LandingPageProps {
+  season: number;
+}
+
+export function LandingPage({ season }: LandingPageProps) {
   return (
     <>
       <main>
         <HeroSection content={heroContent} nextMatch={nextMatch} />
         <MatchStripSection status="ready" recent={recentMatch} next={nextMatch} />
         <CategoryCardsSection categories={categories} />
-        <SquadPreviewSection players={squadPlayers} />
+        <SquadPreviewContainer season={season} />
       </main>
     </>
   );
