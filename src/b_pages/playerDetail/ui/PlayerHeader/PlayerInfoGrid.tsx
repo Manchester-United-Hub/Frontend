@@ -34,15 +34,22 @@ interface InfoCellData {
  * 접미사 없이 숫자만 노출하면 사용자가 단위를 알 수 없으므로 여기서 cm/kg를
  * 직접 붙인다. height/weight/position은 null·미매핑 가능성이 있어(D-31,
  * PD-1) 전부 '-'로 방어한다.
+ *
+ * 국적(nat)·생년월일(dob/age)도 병합된 스키마상 nullable이다(ST-001). 국적은
+ * null이면 '-', 생년월일은 dob 또는 age 둘 중 하나라도 null이면 '-' — 둘 다
+ * 있을 때만 기존 `${dob} (${age}세)` 포맷을 유지한다. 새 상수·새 규약은
+ * 만들지 않고 기존 UNKNOWN_VALUE를 그대로 재사용한다.
  */
 function buildInfoCells(player: PlayerDetail): InfoCellData[] {
   const heightText = player.height !== null ? `${player.height}cm` : UNKNOWN_VALUE;
   const weightText = player.weight !== null ? `${player.weight}kg` : UNKNOWN_VALUE;
   const positionText = player.pos ? `${POSITION_LABEL[player.pos]} (${player.pos})` : UNKNOWN_VALUE;
+  const birthText =
+    player.dob !== null && player.age !== null ? `${player.dob} (${player.age}세)` : UNKNOWN_VALUE;
 
   return [
-    { icon: <Globe size={12} aria-hidden="true" />, label: '국적', value: player.nat },
-    { icon: <Cake size={12} aria-hidden="true" />, label: '생년월일', value: `${player.dob} (${player.age}세)` },
+    { icon: <Globe size={12} aria-hidden="true" />, label: '국적', value: player.nat ?? UNKNOWN_VALUE },
+    { icon: <Cake size={12} aria-hidden="true" />, label: '생년월일', value: birthText },
     {
       icon: <Ruler size={12} aria-hidden="true" />,
       label: '신장 / 체중',

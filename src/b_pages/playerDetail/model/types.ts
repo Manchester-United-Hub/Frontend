@@ -44,6 +44,11 @@ export interface RadarPoint {
  * for youth players. `pos` stays optional rather than adding an `'UNKNOWN'`
  * union member (D-31 — don't expand `PlayerPosition`, express "unknown" via
  * optionality instead).
+ *
+ * `nat`/`dob`/`age` are `| null` — origin/dev's merged `PlayerDTOSchema`
+ * made `birthDate`/`nationality` nullable (실측, ST-001 병합). No default
+ * value is substituted; the UI layer (`PlayerInfoGrid`) renders `null` as
+ * `'-'` via the existing `UNKNOWN_VALUE` convention instead.
  */
 export interface PlayerDetail {
   id: number;
@@ -52,10 +57,12 @@ export interface PlayerDetail {
   nm: string;
   /** Optional — API `position` free text maps to 4 known values only (D-31). */
   pos?: PlayerPosition;
-  nat: string;
-  /** Date of birth, `yyyy-MM-dd` (API format, not reformatted). */
-  dob: string;
-  age: number;
+  /** Nullable per merged `PlayerDTOSchema` — render `'-'` when null. */
+  nat: string | null;
+  /** Date of birth, `yyyy-MM-dd` (API format, not reformatted). Nullable per merged `PlayerDTOSchema`. */
+  dob: string | null;
+  /** `null` when `dob` is null — age cannot be computed without a birth date. */
+  age: number | null;
   /** Centimeters, digits only (no "cm" suffix — API confirmed by direct call, D-13). Nullable. */
   height: string | null;
   /** Kilograms, digits only (no "kg" suffix — API confirmed by direct call, D-13). Nullable. */

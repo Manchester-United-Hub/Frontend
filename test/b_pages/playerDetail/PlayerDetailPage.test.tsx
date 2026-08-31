@@ -44,7 +44,11 @@ vi.mock('@features/player/api', () => ({
 import { usePlayerProfile, usePlayerStatistics } from '@features/player/api';
 import { PlayerDetailPage } from '@pages/playerDetail';
 import type { LeagueStatisticsDTO, PlyaerDTO } from '@entities/player/model';
-import { buildStatisticsFixture } from '@test/b_pages/playerDetail/model/playerFixtures';
+import {
+  buildStatisticsFixture,
+  FIXTURE_BRUNO_DTO as BRUNO_DTO,
+  FIXTURE_ONANA_DTO as ONANA_DTO,
+} from '@test/b_pages/playerDetail/model/playerFixtures';
 
 afterEach(cleanup);
 
@@ -54,30 +58,6 @@ const mockedUsePlayerStatistics = usePlayerStatistics as Mock;
 function mockQueryResult<T>(overrides: Partial<UseQueryResult<T>>): UseQueryResult<T> {
   return { data: undefined, isLoading: false, isError: false, ...overrides } as UseQueryResult<T>;
 }
-
-const BRUNO_DTO: PlyaerDTO = {
-  id: 1485,
-  name: 'Bruno Fernandes',
-  birthDate: '1994-09-08',
-  nationality: 'Portugal',
-  height: '179',
-  weight: '66',
-  number: 8,
-  position: 'Midfielder',
-  photo: 'https://example.com/1485.png',
-};
-
-const ONANA_DTO: PlyaerDTO = {
-  id: 24309,
-  name: 'André Onana',
-  birthDate: '1996-04-02',
-  nationality: 'Cameroon',
-  height: '190',
-  weight: '92',
-  number: 24,
-  position: 'Goalkeeper',
-  photo: 'https://example.com/24309.png',
-};
 
 const BRUNO_STATS: LeagueStatisticsDTO[] = [
   buildStatisticsFixture({ leagueName: 'Premier League', appearances: 30, goals: 8, assists: 6 }),

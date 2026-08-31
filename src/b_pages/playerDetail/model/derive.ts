@@ -42,8 +42,15 @@ export function mapApiPositionToCode(position: string | null): PlayerPosition | 
   return API_POSITION_TO_CODE[position];
 }
 
-/** `birthDate`(yyyy-MM-dd)와 기준 시각으로부터 만 나이를 계산하는 순수 함수. */
-export function computeAge(birthDate: string, now: Date): number {
+/**
+ * `birthDate`(yyyy-MM-dd)와 기준 시각으로부터 만 나이를 계산하는 순수 함수.
+ * `birthDate`가 `null`이면(origin/dev 병합으로 nullable화, ST-001) 나이를
+ * 계산할 방법이 없으므로 `null`을 그대로 반환한다 — 0이나 임의값으로
+ * 채우지 않는다.
+ */
+export function computeAge(birthDate: string | null, now: Date): number | null {
+  if (birthDate === null) return null;
+
   const birth = new Date(birthDate);
   const hasHadBirthdayThisYear =
     now.getMonth() > birth.getMonth() ||
@@ -52,10 +59,11 @@ export function computeAge(birthDate: string, now: Date): number {
 }
 
 /**
- * 선수 프로필 DTO → 화면용 `PlayerDetail`. `height`/`weight`는 e_entities
- * 스키마상 non-null 문자열이지만 PD-1·PD-3 실측으로 null 가능성이 확인돼
- * (유소년 선수) 방어적으로 널 코얼레싱한다 — 스키마 자체는 PD-1 소유라
- * 여기서 고치지 않는다.
+ * 선수 프로필 DTO → 화면용 `PlayerDetail`. `birthDate`/`nationality`는
+ * 병합된 `PlayerDTOSchema`(ST-001)상 이미 nullable이라 그대로 통과시킨다
+ * (빈 문자열·'미상' 같은 기본값 주입 금지 — 표현 계층에서 `'-'`로 흡수).
+ * `height`/`weight`도 스키마상 이미 nullable이라 `?? null`은 방어 코드가
+ * 아니라 타입을 명시적으로 좁히는 통과 대입이다.
  */
 export function mapProfileDtoToPlayerDetail(dto: PlyaerDTO, now: Date): PlayerDetail {
   return {

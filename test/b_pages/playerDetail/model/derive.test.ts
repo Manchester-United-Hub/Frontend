@@ -27,7 +27,7 @@ import {
 } from '@pages/playerDetail/model/derive';
 import type { PlyaerDTO } from '@entities/player/model';
 
-import { buildStatisticsFixture } from './playerFixtures';
+import { buildStatisticsFixture, FIXTURE_BRUNO_DTO, FIXTURE_NULL_BIO_DTO } from './playerFixtures';
 
 describe('mapApiPositionToCode', () => {
   it.each([
@@ -62,20 +62,14 @@ describe('computeAge', () => {
   it('생일 당일은 이미 지난 것으로 취급한다', () => {
     expect(computeAge('1994-08-03', new Date('2026-08-03'))).toBe(32);
   });
+
+  it('birthDate가 null이면 null을 반환한다(ST-001 병합 nullable화, 0·임의값 금지)', () => {
+    expect(computeAge(null, new Date('2026-08-03'))).toBeNull();
+  });
 });
 
 describe('mapProfileDtoToPlayerDetail', () => {
-  const baseDto: PlyaerDTO = {
-    id: 1485,
-    name: 'Bruno Fernandes',
-    birthDate: '1994-09-08',
-    nationality: 'Portugal',
-    height: '179',
-    weight: '66',
-    number: 8,
-    position: 'Midfielder',
-    photo: 'https://example.com/1485.png',
-  };
+  const baseDto: PlyaerDTO = FIXTURE_BRUNO_DTO;
 
   it('DTO 필드를 PlayerDetail로 매핑한다', () => {
     const player = mapProfileDtoToPlayerDetail(baseDto, new Date('2026-08-03'));
@@ -107,6 +101,13 @@ describe('mapProfileDtoToPlayerDetail', () => {
     const player = mapProfileDtoToPlayerDetail(dtoWithNulls, new Date('2026-08-03'));
     expect(player.num).toBeNull();
     expect(player.pos).toBeUndefined();
+  });
+
+  it('birthDate/nationality가 null이면 nat/dob/age를 기본값 없이 null로 통과시킨다(ST-002 인계, 실측 id 570128)', () => {
+    const player = mapProfileDtoToPlayerDetail(FIXTURE_NULL_BIO_DTO, new Date('2026-08-03'));
+    expect(player.nat).toBeNull();
+    expect(player.dob).toBeNull();
+    expect(player.age).toBeNull();
   });
 });
 

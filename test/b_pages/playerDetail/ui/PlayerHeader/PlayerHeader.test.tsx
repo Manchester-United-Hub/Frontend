@@ -45,6 +45,7 @@ vi.mock('next/link', () => ({
 
 import { BackLink, PlayerHeader } from '@pages/playerDetail/ui';
 import type { PlayerDetail } from '@pages/playerDetail/model';
+import { FIXTURE_NULL_BIO } from '@test/b_pages/playerDetail/model/playerFixtures';
 
 afterEach(cleanup);
 
@@ -152,6 +153,17 @@ describe('PlayerHeader — num/pos/height/weight 결측 방어 (D-31, PD-1)', ()
     // 렌더하므로 getAllByText로 스코프한다(단일 요소 단정 시 다중 매치 에러).
     render(<PlayerHeader player={UNKNOWN_FIELDS} />);
     expect(screen.getAllByText('- · -').length).toBeGreaterThan(0);
+  });
+});
+
+describe('PlayerHeader — 국적·생년월일 null 경계 (ST-002 인계, PlayerInfoGrid nullable 흡수)', () => {
+  it('국적·생년월일이 null이면 각각 "-"로 렌더된다 (nat/dob/age nullable 전파, height/weight/pos는 채워둠)', () => {
+    render(<PlayerHeader player={FIXTURE_NULL_BIO} />);
+    expect(screen.getByText('국적')).toBeInTheDocument();
+    expect(screen.getByText('생년월일')).toBeInTheDocument();
+    // nat 셀·dob 셀이 각각 정확히 '-'를 렌더한다. height/weight/pos는 채워둬 다른 결측
+    // 경로(UNKNOWN_FIELDS가 이미 커버)와 매치가 섞이지 않는다.
+    expect(screen.getAllByText('-')).toHaveLength(2);
   });
 });
 
