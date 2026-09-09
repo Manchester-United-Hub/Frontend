@@ -4,6 +4,7 @@ export * from './Button';
 export * from './Card';
 export * from './CategoryCard';
 export * from './Crest';
+export * from './ErrorBoundary';
 export * from './Eyebrow';
 export * from './FilterSelect';
 export * from './MatchCard';

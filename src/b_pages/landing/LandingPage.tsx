@@ -1,4 +1,4 @@
-import { heroContent, nextMatch, recentMatch, categories } from './model/mockData';
+import { heroContent, nextMatch, recentMatch } from './model/mockData';
 import {
   CategoryCardsSection,
   HeroSection,
@@ -15,9 +15,13 @@ export function LandingPage({ season }: LandingPageProps) {
     <>
       <main>
         <HeroSection content={heroContent} nextMatch={nextMatch} />
-        <MatchStripSection status="ready" recent={recentMatch} next={nextMatch} />
-        <CategoryCardsSection categories={categories} />
+        <MatchStripSection
+          status="ready"
+          recent={recentMatch}
+          next={nextMatch}
+        />
         <SquadPreviewContainer season={season} />
+        <CategoryCardsSection />
       </main>
     </>
   );

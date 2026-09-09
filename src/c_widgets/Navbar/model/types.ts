@@ -5,6 +5,8 @@ interface NavItem {
   label: string;
   labelEn: string;
   href?: Route;
+  description: string;
+  isOuterLink?: boolean;
 }
 
 export type { NavItem };

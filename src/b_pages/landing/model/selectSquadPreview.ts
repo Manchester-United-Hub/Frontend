@@ -10,16 +10,22 @@
 import { mapPlayerDtoToListItem } from '@entities/player/utils';
 import type { PlayerListItem, PlyaerListDTO } from '@entities/player/model';
 
-/** 데스크탑 4열 2행 프리뷰 건수. */
-const SQUAD_PREVIEW_COUNT = 8;
+/** 데스크탑 4열 1행 프리뷰 건수. */
+const SQUAD_PREVIEW_COUNT = 4;
 
-const comparePlayersByNumber = (a: PlayerListItem, b: PlayerListItem): number => {
-  if (a.number === undefined) return b.number === undefined ? a.name.localeCompare(b.name) : 1;
+const comparePlayersByNumber = (
+  a: PlayerListItem,
+  b: PlayerListItem
+): number => {
+  if (a.number === undefined)
+    return b.number === undefined ? a.name.localeCompare(b.name) : 1;
   if (b.number === undefined) return -1;
   return a.number - b.number || a.name.localeCompare(b.name);
 };
 
-const selectSquadPreview = (data: PlyaerListDTO | undefined): PlayerListItem[] => {
+const selectSquadPreview = (
+  data: PlyaerListDTO | undefined
+): PlayerListItem[] => {
   if (data === undefined) return [];
 
   return data.players

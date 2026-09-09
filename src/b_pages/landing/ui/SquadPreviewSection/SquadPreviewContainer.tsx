@@ -1,41 +1,62 @@
 'use client';
 
 /**
- * SquadPreviewContainer — 스쿼드 프리뷰 데이터 페칭·상태 파생 담당.
+ * SquadPreviewContainer — 스쿼드 프리뷰의 껍데기(section·헤더)와 경계(에러·서스펜스) 소유.
  *
- * app/page.tsx가 서버에서 playerServerQueries.list(season)로 prefetch한 캐시를
- * usePlayerList(rosterListQuery(season))가 이어받는다(queryKey를 rosterListQuery 팩토리로
- * 통일해 하이드레이션 캐시를 공유한다). 마크업·상태별 렌더 분기는 SquadPreviewSection이
- * 전담한다 — 이 컴포넌트는 로딩/에러/빈상태/준비 상태만 파생해 내려준다.
+ * 헤더·여백을 Suspense 바깥에 두어 로딩 중에도 섹션이 통째로 사라지지 않게 한다.
+ * 데이터 조회는 SquadPreviewSection이 useSuspenseQuery로 수행하므로, 로딩은 Suspense
+ * fallback이, 에러는 ErrorBoundary fallback이 받는다 — useSuspenseQuery는 에러를
+ * isError가 아니라 throw로 알리기 때문이다.
+ *
+ * 재시도는 useQueryErrorResetBoundary().reset으로 실패 쿼리의 리셋을 예약한 뒤 경계를
+ * 되돌린다. 그래야 children이 다시 렌더될 때 react-query가 재조회한다.
  */
 
-import { useMemo } from 'react';
+import { Suspense } from 'react';
+import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 
-import { rosterListQuery, usePlayerList } from '@features/player/api';
+import { RosterErrorState } from '@features/player/ui';
+import { ErrorBoundary } from '@shared/ui';
 
-import { selectSquadPreview } from '../../model/selectSquadPreview';
-import { SquadPreviewSection, type SquadPreviewStatus } from './SquadPreviewSection';
+import { SQUAD_PREVIEW_COUNT } from '../../model/selectSquadPreview';
+import { PlayerCardSkeleton } from './PlayerCardSkeleton';
+import { SECTION_HEADING_ID, SquadPreviewHeader } from './SquadPreviewHeader';
+import { SquadPreviewSection } from './SquadPreviewSection';
 
 interface SquadPreviewContainerProps {
   season: number;
 }
 
+const LOADING_GRID = (
+  <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
+    {Array.from({ length: SQUAD_PREVIEW_COUNT }, (_, index) => (
+      <PlayerCardSkeleton key={index} />
+    ))}
+  </div>
+);
+
+const renderRosterError = (retry: () => void) => (
+  <RosterErrorState onRetry={retry} />
+);
+
 function SquadPreviewContainer({ season }: SquadPreviewContainerProps) {
-  const { data, isLoading, isError, refetch } = usePlayerList(rosterListQuery(season));
-  const players = useMemo(() => selectSquadPreview(data), [data]);
-  const status: SquadPreviewStatus = isLoading
-    ? 'loading'
-    : isError
-      ? 'error'
-      : players.length === 0
-        ? 'empty'
-        : 'ready';
+  const { reset } = useQueryErrorResetBoundary();
 
-  const handleRetry = () => {
-    refetch();
-  };
-
-  return <SquadPreviewSection status={status} players={players} onRetry={handleRetry} />;
+  return (
+    <section
+      aria-labelledby={SECTION_HEADING_ID}
+      className="py-14 max-[620px]:py-11"
+    >
+      <div className="mx-auto max-w-shell px-6">
+        <SquadPreviewHeader />
+        <ErrorBoundary onReset={reset} fallback={renderRosterError}>
+          <Suspense fallback={LOADING_GRID}>
+            <SquadPreviewSection season={season} />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
+    </section>
+  );
 }
 
 export { SquadPreviewContainer, type SquadPreviewContainerProps };

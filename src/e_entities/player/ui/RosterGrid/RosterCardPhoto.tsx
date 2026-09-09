@@ -1,5 +1,6 @@
 'use client';
 
+import { cn } from '@shared/utils';
 import Image from 'next/image';
 import { useState } from 'react';
 
@@ -17,6 +18,8 @@ import { useState } from 'react';
  */
 interface RosterCardPhotoProps {
   src: string;
+  alt?: string;
+  className?: string;
 }
 
 const PLAYER_PHOTO_SIZE = 400;
@@ -35,7 +38,13 @@ const PHOTO_FALLBACK_SILHOUETTE = (
   </svg>
 );
 
-function RosterCardPhoto({ src }: RosterCardPhotoProps) {
+function RosterCardPhoto({
+  src,
+  alt = '맨체스터 유나이티드 선수',
+  className,
+}: RosterCardPhotoProps) {
+  const classname = cn('h-full w-full object-cover', className);
+
   const [hasError, setHasError] = useState(false);
 
   const handleError = () => {
@@ -47,14 +56,12 @@ function RosterCardPhoto({ src }: RosterCardPhotoProps) {
   return (
     <Image
       src={src}
-      // 카드 본문에 선수 이름(name·nameEn)이 이미 텍스트로 노출되므로(NewsRow.tsx와 동일한
-      // 판단) 사진은 장식용으로 두어 스크린리더 중복 낭독을 피한다.
-      alt=""
+      alt={alt}
       width={PLAYER_PHOTO_SIZE}
       height={PLAYER_PHOTO_SIZE}
       loading="lazy"
       onError={handleError}
-      className="h-full w-full object-cover"
+      className={classname}
     />
   );
 }

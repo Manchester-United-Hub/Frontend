@@ -1,4 +1,8 @@
-import { QueryClient, dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import {
+  QueryClient,
+  dehydrate,
+  HydrationBoundary,
+} from '@tanstack/react-query';
 
 import { getSeasonInfo } from '@entities/seasonInfo/api/server';
 import { playerServerQueries } from '@features/player/api/playerServerQueries';
@@ -12,8 +16,9 @@ export default async function Home() {
 
   // 프리페치 전용 QueryClient — retry: false(S-8). 백엔드 장애 시 재시도로 TTFB를
   // 붙잡지 않고, 실패 쿼리는 dehydrate 대상에서 제외돼 클라이언트가 이어받는다.
-  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });
-
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
   await queryClient.prefetchQuery(playerServerQueries.list(startYear));
 
   return (

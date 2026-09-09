@@ -84,7 +84,9 @@ function PlayerCard({
             {number}
           </span>
         ) : null}
-        {photo ?? <Silhouette />}
+        <div className="w-30 h-30 rounded-full border border-gray-300 p-1">
+          {photo ?? <Silhouette />}
+        </div>
       </div>
       <div className="px-3.5 pb-4 pt-3.5">
         <div className="text-[15px] font-bold leading-[1.15]">{name}</div>
