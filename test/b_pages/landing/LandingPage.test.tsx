@@ -5,8 +5,8 @@
  * - 런타임 에러 없이 마운트 가능
  * - <main> 존재 및 4개 섹션 헤딩 텍스트 확인
  *
- * ST-004 변경점: SquadPreviewContainer가 usePlayerList(@features/player/api)로 직접
- * 페칭하므로, RosterPanel.test.tsx 패턴대로 usePlayerList를 vi.mock해 react-query
+ * ST-004 변경점: SquadPreviewSection이 useSuspensePlayerList(@features/player/api)로
+ * 직접 페칭하므로, RosterPanel.test.tsx 패턴대로 그 훅을 vi.mock해 react-query
  * QueryClientProvider 없이도 렌더 가능하게 한다. season prop(2026)을 전달한다.
  *
  * ⚠️ 아키텍처 주의: LandingPage = <main> + 4 섹션만.
@@ -43,28 +43,25 @@ vi.mock('next/navigation', () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 
-import { usePlayerList } from '@features/player/api';
+import { useSuspensePlayerList } from '@features/player/api';
 
 vi.mock('@features/player/api', async () => {
   const actual = await vi.importActual<typeof import('@features/player/api')>(
     '@features/player/api',
   );
-  return { ...actual, usePlayerList: vi.fn() };
+  return { ...actual, useSuspensePlayerList: vi.fn() };
 });
 
 import { LandingPage } from '@pages/landing';
 
-const mockedUsePlayerList = vi.mocked(usePlayerList);
+const mockedUseSuspensePlayerList = vi.mocked(useSuspensePlayerList);
 const SEASON = 2026;
 
 beforeEach(() => {
-  mockedUsePlayerList.mockReset();
-  mockedUsePlayerList.mockReturnValue({
+  mockedUseSuspensePlayerList.mockReset();
+  mockedUseSuspensePlayerList.mockReturnValue({
     data: undefined,
-    isLoading: false,
-    isError: false,
-    refetch: vi.fn(),
-  } as unknown as ReturnType<typeof usePlayerList>);
+  } as unknown as ReturnType<typeof useSuspensePlayerList>);
 });
 
 describe('LandingPage 스모크', () => {

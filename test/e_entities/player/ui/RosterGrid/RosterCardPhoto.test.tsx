@@ -46,4 +46,32 @@ describe('RosterCardPhoto', () => {
     const svg = container.querySelector('svg');
     expect(svg).toHaveAttribute('aria-hidden', 'true');
   });
+
+  it('alt 미지정 시 img의 alt가 기본값 "맨체스터 유나이티드 선수"로 렌더된다', () => {
+    const { container } = render(<RosterCardPhoto src={PLAYER_PHOTO_URL} />);
+
+    const img = container.querySelector('img');
+    expect(img).toHaveAttribute('alt', '맨체스터 유나이티드 선수');
+  });
+
+  it('alt를 주입하면 기본값 대신 주입된 값이 렌더된다', () => {
+    const { container } = render(
+      <RosterCardPhoto src={PLAYER_PHOTO_URL} alt="누네스 선수 사진" />
+    );
+
+    const img = container.querySelector('img');
+    expect(img).toHaveAttribute('alt', '누네스 선수 사진');
+  });
+
+  it('className을 주입하면 기본 클래스와 병합되고 충돌 시 호출자 값이 우선한다', () => {
+    const { container } = render(
+      <RosterCardPhoto src={PLAYER_PHOTO_URL} className="object-contain" />
+    );
+
+    const img = container.querySelector('img');
+    expect(img?.className).toContain('h-full');
+    expect(img?.className).toContain('w-full');
+    expect(img?.className).toContain('object-contain');
+    expect(img?.className).not.toContain('object-cover');
+  });
 });

@@ -1,22 +1,19 @@
 /**
- * SquadPreviewSection 단위 테스트 (ST-004 재작성 — mockData.squadPlayers 의존 제거).
+ * SquadPreviewSection 단위 테스트.
  *
- * players는 @test/fixtures/players의 buildPlayerDTO + 실 컨버터(mapPlayerDtoToListItem)로
- * 얻는다 — status/필드 매핑을 실 컨버터 경유로 검증한다.
+ * 이 컴포넌트는 조회 결과를 그리드로 그리는 일만 한다 — 로딩·에러 분기는 상위
+ * SquadPreviewContainer의 Suspense·ErrorBoundary 소관이라 여기서 다루지 않는다.
+ * useSuspensePlayerList를 vi.mock해 QueryClientProvider 없이 data만 주입한다.
  *
  * 검증 목적:
- * - 헤딩 "1군 스쿼드" (D-14 카피 정정)
- * - ready 상태: players 수만큼 카드 렌더, 이름 표시
- * - position이 없으면 "-" 표시
- * - number가 없어도 "undefined" 문자열이 새지 않음
- * - loading 상태: 스켈레톤(aria-hidden) 자리표시자, listitem 없음
- * - error 상태: "다시 시도" 클릭 시 onRetry 호출
- * - empty 상태: 빈 상태 문구
+ * - ready 상태: 카드가 li로 렌더되고 선수 상세로 링크된다
+ * - 프리뷰 건수(4)를 넘는 데이터는 잘려 나간다
+ * - position이 없으면 "-" 표시, number가 없어도 "undefined" 문자열이 새지 않음
+ * - 빈 목록: 빈 상태 문구
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, cleanup, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
@@ -38,79 +35,84 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
-  usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
-}));
+import { useSuspensePlayerList } from '@features/player/api';
+import { buildPlayerDTO, buildPlayerListDTO } from '@test/fixtures/players';
 
-import { mapPlayerDtoToListItem } from '@entities/player/utils';
-import { buildPlayerDTO } from '@test/fixtures/players';
+vi.mock('@features/player/api', async () => {
+  const actual =
+    await vi.importActual<typeof import('@features/player/api')>(
+      '@features/player/api'
+    );
+  return { ...actual, useSuspensePlayerList: vi.fn() };
+});
 
 import { SquadPreviewSection } from '@pages/landing/ui/SquadPreviewSection';
 
-const PLAYER_WITH_NUMBER = mapPlayerDtoToListItem(
-  buildPlayerDTO({ id: 1, name: '브루누', number: 8 }),
-);
-const PLAYER_WITHOUT_NUMBER_OR_POSITION = mapPlayerDtoToListItem(
-  buildPlayerDTO({ id: 2, name: '가르나초', number: null, position: null }),
-);
+const mockedUseSuspensePlayerList = vi.mocked(useSuspensePlayerList);
+
+const SEASON = 2026;
+/** selectSquadPreview가 남기는 프리뷰 건수 — 상수 import 없이 리터럴로 고정한다. */
+const PREVIEW_COUNT = 4;
+
+const mockPlayers = (dtos: ReturnType<typeof buildPlayerDTO>[]) => {
+  mockedUseSuspensePlayerList.mockReturnValue({
+    data: buildPlayerListDTO(dtos),
+  } as unknown as ReturnType<typeof useSuspensePlayerList>);
+};
+
+beforeEach(() => {
+  mockedUseSuspensePlayerList.mockReset();
+});
 
 describe('SquadPreviewSection', () => {
-  it('헤딩 "1군 스쿼드"를 렌더한다', () => {
-    render(<SquadPreviewSection players={[PLAYER_WITH_NUMBER]} />);
+  it('선수마다 li와 상세 링크를 렌더한다', () => {
+    mockPlayers([
+      buildPlayerDTO({ id: 1, name: '브루누', number: 8 }),
+      buildPlayerDTO({ id: 2, name: '가르나초', number: 17 }),
+    ]);
 
-    expect(screen.getByRole('heading', { name: '1군 스쿼드' })).toBeInTheDocument();
-  });
-
-  it('ready 상태 — players 수만큼 카드가 렌더되고 이름이 표시된다', () => {
-    render(
-      <SquadPreviewSection
-        status="ready"
-        players={[PLAYER_WITH_NUMBER, PLAYER_WITHOUT_NUMBER_OR_POSITION]}
-      />,
-    );
+    render(<SquadPreviewSection season={SEASON} />);
 
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
-    // name·nameEn이 둘 다 dto.name이라(D-9) 같은 텍스트가 두 번 렌더된다.
-    expect(screen.getAllByText('브루누').length).toBeGreaterThan(0);
-    expect(screen.getAllByText('가르나초').length).toBeGreaterThan(0);
+    expect(screen.getByRole('link', { name: /브루누/ })).toHaveAttribute(
+      'href',
+      '/players/1'
+    );
   });
 
-  it('position이 없으면 "-"로 표시된다', () => {
-    render(<SquadPreviewSection players={[PLAYER_WITHOUT_NUMBER_OR_POSITION]} />);
-
-    expect(screen.getByText('-')).toBeInTheDocument();
-  });
-
-  it('number가 없어도 "undefined" 문자열이 새지 않는다', () => {
-    const { container } = render(
-      <SquadPreviewSection players={[PLAYER_WITHOUT_NUMBER_OR_POSITION]} />,
+  it('프리뷰 건수를 넘는 선수는 잘라낸다', () => {
+    mockPlayers(
+      Array.from({ length: PREVIEW_COUNT + 3 }, (_, index) =>
+        buildPlayerDTO({
+          id: index + 1,
+          number: index + 1,
+          name: `Player ${index + 1}`,
+        })
+      )
     );
 
+    render(<SquadPreviewSection season={SEASON} />);
+
+    expect(screen.getAllByRole('listitem')).toHaveLength(PREVIEW_COUNT);
+  });
+
+  it('position이 없으면 "-"로 표시하고 "undefined" 문자열을 노출하지 않는다', () => {
+    mockPlayers([
+      buildPlayerDTO({ id: 1, name: '가르나초', number: null, position: null }),
+    ]);
+
+    const { container } = render(<SquadPreviewSection season={SEASON} />);
+
+    expect(screen.getByText('-')).toBeInTheDocument();
     expect(container.textContent).not.toContain('undefined');
   });
 
-  it('loading 상태 — 스켈레톤 자리표시자가 렌더되고 listitem은 없다', () => {
-    const { container } = render(<SquadPreviewSection status="loading" players={[]} />);
+  it('선수가 없으면 빈 상태 문구를 렌더한다', () => {
+    mockPlayers([]);
 
-    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
-    expect(container.querySelectorAll('[aria-hidden="true"]').length).toBeGreaterThan(0);
-  });
-
-  it('error 상태 — "다시 시도" 클릭 시 onRetry가 호출된다', async () => {
-    const onRetry = vi.fn();
-    const user = userEvent.setup();
-    render(<SquadPreviewSection status="error" players={[]} onRetry={onRetry} />);
-
-    await user.click(screen.getByRole('button', { name: '다시 시도' }));
-
-    expect(onRetry).toHaveBeenCalledTimes(1);
-  });
-
-  it('empty 상태 — 빈 상태 문구가 렌더된다', () => {
-    render(<SquadPreviewSection status="empty" players={[]} />);
+    render(<SquadPreviewSection season={SEASON} />);
 
     expect(screen.getByText('등록된 선수가 없어요')).toBeInTheDocument();
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
   });
 });

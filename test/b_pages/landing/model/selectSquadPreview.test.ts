@@ -9,7 +9,7 @@
  * - number undefined(=DTO number null) 선수는 후순위
  * - 등번호 동률은 이름순
  * - number가 모두 undefined면 이름순
- * - 9명 이상이면 상위 8명만 남긴다(리터럴 8 — SQUAD_PREVIEW_COUNT는 import하지 않는다)
+ * - 프리뷰 건수를 넘으면 상위 4명만 남긴다(리터럴 4 — SQUAD_PREVIEW_COUNT는 import하지 않는다)
  * - undefined 입력 → []
  * - players 빈 배열 → []
  * - seasons 빈 배열(years==='') 무사통과
@@ -77,15 +77,15 @@ describe('selectSquadPreview', () => {
     expect(result.map((player) => player.name)).toEqual(['Alonso', 'Zidane']);
   });
 
-  it('9명 이상이면 상위 8명만 남긴다', () => {
-    const dtos = Array.from({ length: 9 }, (_, index) =>
+  it('5명 이상이면 상위 4명만 남긴다', () => {
+    const dtos = Array.from({ length: 5 }, (_, index) =>
       buildPlayerDTO({ id: index + 1, number: index + 1, name: `Player ${index + 1}` }),
     );
 
     const result = selectSquadPreview(buildPlayerListDTO(dtos));
 
-    expect(result).toHaveLength(8);
-    expect(result.map((player) => player.number)).toEqual([1, 2, 3, 4, 5, 6, 7, 8]);
+    expect(result).toHaveLength(4);
+    expect(result.map((player) => player.number)).toEqual([1, 2, 3, 4]);
   });
 
   it('seasons가 빈 배열인 선수도 years=""로 무사히 변환된다', () => {

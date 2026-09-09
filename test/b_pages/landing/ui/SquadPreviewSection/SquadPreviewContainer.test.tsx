@@ -1,24 +1,28 @@
 /**
- * SquadPreviewContainer 단위 테스트 (ST-004 신규).
+ * SquadPreviewContainer 통합 테스트.
  *
- * RosterPanel.test.tsx 패턴을 따라 usePlayerList(@features/player/api)를 vi.mock해
- * loading/error/empty/ready 4개 status 전이와 재시도→refetch를 검증한다. react-query
- * QueryClientProvider는 필요 없다 — 훅 자체를 목킹하기 때문이다.
+ * 컨테이너의 책임은 껍데기(section·헤더)와 경계(Suspense·ErrorBoundary)라, 훅을 목킹하면
+ * 정작 검증할 것이 사라진다. 그래서 실제 QueryClient를 쓰고 BFF 클라이언트
+ * (@entities/player/api/client)만 목킹해 suspend→resolve/reject 전이를 그대로 태운다.
  *
  * 검증 목적:
- * - isLoading → loading 상태(스켈레톤, listitem 없음)
- * - isError → error 상태, "다시 시도" 클릭 시 refetch 호출
- * - 데이터가 빈 배열 → empty 상태(빈 상태 문구)
- * - 정상 데이터 → ready 상태(카드 수만큼 listitem)
+ * - 조회가 끝나기 전에도 헤더는 남고, 스켈레톤 카드가 프리뷰 건수만큼 렌더된다
+ *   (회귀 가드: Array(n).map은 hole을 건너뛰어 fallback이 빈 div가 된다)
+ * - 조회 성공 → 카드 렌더
+ * - 조회 실패 → ErrorBoundary가 RosterErrorState를 렌더하고, "다시 시도"로 복구된다
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
 import { render, cleanup, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/vitest';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React from 'react';
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 vi.mock('next/link', () => ({
   default: ({
@@ -36,83 +40,92 @@ vi.mock('next/link', () => ({
   ),
 }));
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), prefetch: vi.fn() }),
-  usePathname: () => '/',
-  useSearchParams: () => new URLSearchParams(),
-}));
-
-import { usePlayerList } from '@features/player/api';
+import { getPlayerList } from '@entities/player/api/client';
 import { buildPlayerDTO, buildPlayerListDTO } from '@test/fixtures/players';
 
-vi.mock('@features/player/api', async () => {
-  const actual = await vi.importActual<typeof import('@features/player/api')>(
-    '@features/player/api',
-  );
-  return { ...actual, usePlayerList: vi.fn() };
+vi.mock('@entities/player/api/client', async () => {
+  const actual =
+    await vi.importActual<typeof import('@entities/player/api/client')>(
+      '@entities/player/api/client'
+    );
+  return { ...actual, getPlayerList: vi.fn() };
 });
 
 import { SquadPreviewContainer } from '@pages/landing/ui/SquadPreviewSection';
 
-const mockedUsePlayerList = vi.mocked(usePlayerList);
+const mockedGetPlayerList = vi.mocked(getPlayerList);
 
 const SEASON = 2026;
+/** Suspense fallback이 그리는 스켈레톤 카드 수 — 상수 import 없이 리터럴로 고정한다. */
+const SKELETON_CARD_COUNT = 4;
 
-/** react-query useQuery 반환값 중 컨테이너가 실제로 소비하는 4개 필드만 채운 테스트 더블. */
-const buildQueryResult = (overrides: {
-  data?: unknown;
-  isLoading?: boolean;
-  isError?: boolean;
-  refetch?: () => void;
-}) =>
+const PLAYERS = [
+  buildPlayerDTO({ id: 1, name: '브루누', number: 8 }),
+  buildPlayerDTO({ id: 2, name: '가르나초', number: 17 }),
+];
+
+const successResponse = () =>
   ({
-    data: overrides.data,
-    isLoading: overrides.isLoading ?? false,
-    isError: overrides.isError ?? false,
-    refetch: overrides.refetch ?? vi.fn(),
-  }) as unknown as ReturnType<typeof usePlayerList>;
+    success: true,
+    data: buildPlayerListDTO(PLAYERS),
+    error: null,
+  }) as Awaited<ReturnType<typeof getPlayerList>>;
+
+const errorResponse = () =>
+  ({
+    success: false,
+    data: null,
+    error: { code: 'BFF_ERROR', message: '조회 실패' },
+  }) as Awaited<ReturnType<typeof getPlayerList>>;
+
+const renderContainer = () => {
+  const queryClient = new QueryClient({
+    defaultOptions: { queries: { retry: false } },
+  });
+
+  return render(
+    <QueryClientProvider client={queryClient}>
+      <SquadPreviewContainer season={SEASON} />
+    </QueryClientProvider>
+  );
+};
 
 beforeEach(() => {
-  mockedUsePlayerList.mockReset();
+  mockedGetPlayerList.mockReset();
+  vi.spyOn(console, 'error').mockImplementation(() => {});
 });
 
 describe('SquadPreviewContainer', () => {
-  it('isLoading이면 loading 상태를 렌더한다(스켈레톤, listitem 없음)', () => {
-    mockedUsePlayerList.mockReturnValue(buildQueryResult({ isLoading: true }));
+  it('조회 중에도 헤더를 유지하고 스켈레톤 카드를 렌더한다', () => {
+    mockedGetPlayerList.mockReturnValue(new Promise(() => {}));
 
-    render(<SquadPreviewContainer season={SEASON} />);
+    const { container } = renderContainer();
 
+    expect(
+      screen.getByRole('heading', { name: '1군 스쿼드' })
+    ).toBeInTheDocument();
+    expect(container.querySelector('.grid')?.childElementCount).toBe(
+      SKELETON_CARD_COUNT
+    );
     expect(screen.queryAllByRole('listitem')).toHaveLength(0);
   });
 
-  it('isError이면 error 상태를 렌더하고 "다시 시도" 클릭 시 refetch를 호출한다', async () => {
-    const refetch = vi.fn();
-    mockedUsePlayerList.mockReturnValue(buildQueryResult({ isError: true, refetch }));
+  it('조회에 성공하면 선수 카드를 렌더한다', async () => {
+    mockedGetPlayerList.mockResolvedValue(successResponse());
+
+    renderContainer();
+
+    expect(await screen.findAllByRole('listitem')).toHaveLength(PLAYERS.length);
+  });
+
+  it('조회에 실패하면 에러 상태를 렌더하고 "다시 시도"로 복구된다', async () => {
+    mockedGetPlayerList.mockResolvedValueOnce(errorResponse());
+    mockedGetPlayerList.mockResolvedValue(successResponse());
     const user = userEvent.setup();
 
-    render(<SquadPreviewContainer season={SEASON} />);
-    await user.click(screen.getByRole('button', { name: '다시 시도' }));
+    renderContainer();
+    await user.click(await screen.findByRole('button', { name: '다시 시도' }));
 
-    expect(refetch).toHaveBeenCalledTimes(1);
-  });
-
-  it('선수 목록이 빈 배열이면 empty 상태를 렌더한다', () => {
-    mockedUsePlayerList.mockReturnValue(buildQueryResult({ data: buildPlayerListDTO([]) }));
-
-    render(<SquadPreviewContainer season={SEASON} />);
-
-    expect(screen.getByText('등록된 선수가 없어요')).toBeInTheDocument();
-  });
-
-  it('정상 데이터가 있으면 ready 상태로 카드를 렌더한다', () => {
-    const dtos = [
-      buildPlayerDTO({ id: 1 }),
-      buildPlayerDTO({ id: 2, number: 9, name: 'B' }),
-    ];
-    mockedUsePlayerList.mockReturnValue(buildQueryResult({ data: buildPlayerListDTO(dtos) }));
-
-    render(<SquadPreviewContainer season={SEASON} />);
-
-    expect(screen.getAllByRole('listitem')).toHaveLength(dtos.length);
+    expect(await screen.findAllByRole('listitem')).toHaveLength(PLAYERS.length);
   });
 });

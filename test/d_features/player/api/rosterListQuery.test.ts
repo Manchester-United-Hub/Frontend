@@ -65,4 +65,16 @@ describe('rosterListQuery', () => {
     expect(clientOptions.staleTime).toBe(3_600_000);
     expect(serverOptions.staleTime).toBe(3_600_000);
   });
+
+  it('size를 넘기면 기본값(MAX_PAGE_SIZE) 대신 오버라이드한 size로 PlayerListQueryDTO를 만든다', () => {
+    expect(rosterListQuery(2026, 4)).toEqual({ season: 2026, size: 4 });
+  });
+
+  it('size 오버라이드는 기본값 경로와 다른 queryKey를 만든다(서버 prefetch 키와 갈라짐)', () => {
+    const defaultKey = playerQueries.list(rosterListQuery(2026)).queryKey;
+    const overriddenKey = playerQueries.list(rosterListQuery(2026, 4)).queryKey;
+
+    expect(overriddenKey).not.toEqual(defaultKey);
+    expect(overriddenKey).toEqual(['player', 'list', { season: 2026, size: 4 }]);
+  });
 });
