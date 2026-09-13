@@ -7,7 +7,7 @@
  * Route hrefs omitted for all items — target pages do not yet exist (ADR-7).
  */
 
-import type { HeroContent, MatchItem, CategoryItem, PlayerItem } from './types';
+import type { HeroContent, MatchItem } from './types';
 
 // ───────── Nav ─────────
 
@@ -53,81 +53,3 @@ export const nextMatch: MatchItem = {
   time: '23:30 KST',
   countdown: 'D-3',
 };
-
-// ───────── Categories ─────────
-// href omitted for all — target routes do not yet exist (ADR-7).
-// icon key is a string identifier; the section component maps it to a lucide ReactNode.
-
-export const categories: CategoryItem[] = [
-  {
-    key: 'season',
-    name: '시즌',
-    nameEn: 'Season',
-    description: '일정·결과·순위표를 한눈에 추적',
-  },
-  {
-    key: 'players',
-    name: '선수',
-    nameEn: 'Players',
-    description: '현역·역대 선수 기록과 프로필',
-  },
-  {
-    key: 'club',
-    name: '구단',
-    nameEn: 'Club',
-    description: '연혁·홈구장·팀 통계와 감독',
-  },
-  {
-    key: 'highlights',
-    name: '하이라이트',
-    nameEn: 'Highlights',
-    description: '경기 영상과 베스트 순간 모음',
-  },
-  {
-    key: 'articles',
-    name: '기사',
-    nameEn: 'Articles',
-    description: '팬이 정리한 소식과 분석 글',
-  },
-];
-
-// ───────── Squad ─────────
-
-export const squadPlayers: PlayerItem[] = [
-  {
-    number: 8,
-    name: '브루누 페르난데스',
-    nameEn: 'Bruno Fernandes',
-    position: 'MF',
-    status: 'active',
-    years: '2020–현재',
-    nationality: '포르투갈',
-  },
-  {
-    number: 11,
-    name: '라스무스 회일룬',
-    nameEn: 'Rasmus Højlund',
-    position: 'FW',
-    status: 'active',
-    years: '2023–현재',
-    nationality: '덴마크',
-  },
-  {
-    number: 37,
-    name: '코비 메이누',
-    nameEn: 'Kobbie Mainoo',
-    position: 'MF',
-    status: 'active',
-    years: '2023–현재',
-    nationality: '잉글랜드',
-  },
-  {
-    number: 10,
-    name: '웨인 루니',
-    nameEn: 'Wayne Rooney',
-    position: 'FW',
-    status: 'retired',
-    years: '2004–2017',
-    nationality: '잉글랜드',
-  },
-];

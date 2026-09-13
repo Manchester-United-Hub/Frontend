@@ -10,9 +10,12 @@ import type { PlayerListQueryDTO } from '@entities/player/model';
  * size는 MAX_PAGE_SIZE(100) 그대로 — 필터·검색이 클라이언트에서 전체 스쿼드를 대상으로
  * 돌기 때문에 서버 페이징으로 바꾸지 않는다.
  */
-const rosterListQuery = (seasonStartYear: number): PlayerListQueryDTO => ({
+const rosterListQuery = (
+  seasonStartYear: number,
+  size: number = MAX_PAGE_SIZE
+): PlayerListQueryDTO => ({
   season: seasonStartYear,
-  size: MAX_PAGE_SIZE,
+  size,
 });
 
 export { rosterListQuery };

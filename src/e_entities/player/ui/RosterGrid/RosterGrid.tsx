@@ -33,16 +33,14 @@ function RosterGrid({ players }: RosterGridProps) {
             meta={player.years}
             number={player.number}
             nationality={player.nationality}
-            // flag 슬롯 자체는 항상 렌더한다 — PlayerCard의 hasNationality가 flag 유무로
-            // 국적 행 전체를 게이트하므로(f_shared, 수정 금지), slot을 undefined로 비우면
-            // 글리프가 없는 flagCode:undefined 선수(전원)의 국적이 카드뷰에서 통째로 사라진다
-            // (리뷰 H-2). 글리프만 조건부로 비운다.
-            flag={<span aria-hidden="true">{player.flagCode ? FLAG_EMOJI[player.flagCode] : ''}</span>}
-            // photo가 없거나 빈 문자열이면 slot을 아예 넘기지 않는다 — PlayerCard(f_shared,
-            // 수정 금지)의 `photo ?? <Silhouette />` 폴백이 그대로 유지되게 하기 위함(D-9).
-            // 단 이는 photo 부재 경로에만 해당한다. 로드 실패 경로는 slot 값이 이미 엘리먼트라
-            // PlayerCard 폴백에 도달하지 않으며, RosterCardPhoto가 자기 폴백을 렌더한다(D-15).
-            photo={player.photo ? <RosterCardPhoto src={player.photo} /> : undefined}
+            flag={
+              <span aria-hidden="true">
+                {player.flagCode ? FLAG_EMOJI[player.flagCode] : ''}
+              </span>
+            }
+            photo={
+              player.photo ? <RosterCardPhoto src={player.photo} /> : undefined
+            }
             href={playerDetailHref(player.id)}
             className="h-full"
           />

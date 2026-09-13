@@ -2,6 +2,7 @@ export * from './playerKeys';
 export * from './playerQueries';
 export * from './rosterListQuery';
 export * from './usePlayerList';
+export * from './useSuspensePlayerList';
 export * from './usePlayerProfile';
 export * from './usePlayerStatistics';
 

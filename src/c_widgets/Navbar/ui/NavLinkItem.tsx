@@ -1,6 +1,7 @@
 import { cn } from '@shared/utils';
 import { NavItem } from '../model';
 import Link from 'next/link';
+import { SquareArrowOutUpRight } from 'lucide-react';
 
 interface NavLinkItemProps {
   item: NavItem;
@@ -17,19 +18,23 @@ function NavLinkItem({ item }: NavLinkItemProps) {
       {item.labelEn}
     </span>
   );
-  if (item.href) {
+  if (item.isOuterLink) {
     return (
-      <Link href={item.href} className={cls}>
-        {item.label}
+      <a href={item.href} className={cls} target="_blank" rel="noreferrer">
+        <p className="flex items-center gap-1">
+          <span>{item.label}</span>
+          <SquareArrowOutUpRight width={8} height={8} />
+        </p>
         {sublabel}
-      </Link>
+      </a>
     );
   }
+
   return (
-    <span className={cls}>
+    <Link href={item.href} className={cls}>
       {item.label}
       {sublabel}
-    </span>
+    </Link>
   );
 }
 

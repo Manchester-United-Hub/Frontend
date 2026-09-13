@@ -1,9 +1,16 @@
-import { CalendarDays, Users, Shield, Play, Newspaper, LayoutGrid } from 'lucide-react';
+import {
+  CalendarDays,
+  Users,
+  Shield,
+  Play,
+  Newspaper,
+  LayoutGrid,
+  ShoppingBag,
+} from 'lucide-react';
 
 import { CategoryCard, Eyebrow } from '@shared/ui';
-import type { CategoryItem } from '../../model/types';
-
-// ── 아이콘 매핑 (모듈 스코프 — key → lucide ReactNode) ──────────────────
+import Link from 'next/link';
+import { NAV_ITEMS, NavItem } from '@widgets/Navbar/model';
 
 const ICON_SIZE = 20;
 
@@ -12,28 +19,21 @@ const ICON_MAP: Record<string, React.ReactNode> = {
   players: <Users size={ICON_SIZE} aria-hidden />,
   club: <Shield size={ICON_SIZE} aria-hidden />,
   highlights: <Play size={ICON_SIZE} aria-hidden />,
-  articles: <Newspaper size={ICON_SIZE} aria-hidden />,
+  news: <Newspaper size={ICON_SIZE} aria-hidden />,
+  store: <ShoppingBag size={ICON_SIZE} aria-hidden />,
 };
 
-/** 매핑에 없는 key에 대한 기본 아이콘 — 빈 슬롯 렌더 방지 */
 const FALLBACK_ICON = <LayoutGrid size={ICON_SIZE} aria-hidden />;
 
 const SECTION_HEADING_ID = 'category-cards-heading';
 
-// ── 컴포넌트 ─────────────────────────────────────────────────────────────
-
-export interface CategoryCardsSectionProps {
-  categories: CategoryItem[];
-}
-
-export function CategoryCardsSection({ categories }: CategoryCardsSectionProps) {
+export function CategoryCardsSection() {
   return (
     <section
       aria-labelledby={SECTION_HEADING_ID}
       className="py-14 max-[620px]:py-11"
     >
-      <div className="mx-auto max-w-[1200px] px-6">
-        {/* 섹션 헤더 */}
+      <div className="mx-auto max-w-shell px-6">
         <div className="mb-6">
           <Eyebrow>Explore the Hub</Eyebrow>
           <h2
@@ -45,20 +45,38 @@ export function CategoryCardsSection({ categories }: CategoryCardsSectionProps) 
         </div>
         <ul
           role="list"
-          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"
+          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6"
         >
-          {categories.map((cat: CategoryItem) => (
-            <li key={cat.key}>
+          {NAV_ITEMS.map((nav: NavItem) => {
+            const card = (
               <CategoryCard
-                icon={ICON_MAP[cat.key] ?? FALLBACK_ICON}
-                name={cat.name}
-                nameEn={cat.nameEn}
-                description={cat.description}
-                href={cat.href}
+                icon={ICON_MAP[nav.id] ?? FALLBACK_ICON}
+                name={nav.label}
+                nameEn={nav.labelEn}
+                description={nav.description ?? ''}
                 className="h-full"
               />
-            </li>
-          ))}
+            );
+
+            return (
+              <li key={nav.id}>
+                {nav.isOuterLink ? (
+                  <a
+                    href={nav.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block h-full"
+                  >
+                    {card}
+                  </a>
+                ) : (
+                  <Link href={nav.href} className="block h-full">
+                    {card}
+                  </Link>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </div>
     </section>
