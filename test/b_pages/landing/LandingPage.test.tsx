@@ -19,6 +19,14 @@
  *    Nav(<header>)와 Footer(<footer>)는 app/layout 전역 소관이며
  *    @widgets/Navbar · @widgets/Footer 위젯 테스트에서 별도 검증한다.
  *    이 스모크 테스트에서 nav/footer 존재를 기대하지 않는다.
+ *
+ * ⚠️ ST-008: LandingPage가 FeaturedMatchContainer·MatchStripContainer(둘 다
+ *    useLandingMatches() 구독)를 렌더하므로 QueryClientProvider 컨텍스트가 필요하다.
+ *    이 스모크 테스트의 단언은 정적 텍스트(hero 헤드라인·섹션 헤딩)만 확인하고 실제
+ *    경기 데이터에 의존하지 않으므로, FeaturedMatchContainer.test.tsx·
+ *    MatchStripContainer.test.tsx(ST-006)와 동일하게 useLandingMatches를 vi.mock으로
+ *    대체한다 — Provider 래핑보다 가볍고, 실제 데이터를 기다리는 waitFor 없이 동기 렌더로
+ *    끝난다.
  */
 
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest';
@@ -54,12 +62,30 @@ import { buildPlayerDTO, buildPlayerListDTO } from '@test/fixtures/players';
 
 vi.mock('@features/player/api', async () => {
   const actual = await vi.importActual<typeof import('@features/player/api')>(
-    '@features/player/api',
+    '@features/player/api'
   );
   return { ...actual, useSuspensePlayerList: vi.fn() };
 });
 
+vi.mock('@features/matches/api', async () => {
+  const actual = await vi.importActual<typeof import('@features/matches/api')>(
+    '@features/matches/api'
+  );
+  return { ...actual, useLandingMatches: vi.fn() };
+});
+
 import { LandingPage } from '@pages/landing';
+import { useLandingMatches } from '@features/matches/api';
+
+const mockedUseLandingMatches = vi.mocked(useLandingMatches);
+
+beforeEach(() => {
+  mockedUseLandingMatches.mockReturnValue({
+    data: undefined,
+    isPending: true,
+    isError: false,
+  } as unknown as ReturnType<typeof useLandingMatches>);
+});
 
 const mockedUseSuspensePlayerList = vi.mocked(useSuspensePlayerList);
 const SEASON = 2026;

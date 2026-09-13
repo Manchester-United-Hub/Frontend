@@ -80,4 +80,8 @@ describe('BFF_PATH', () => {
   it('teamStatistics()는 /api/v1/team/statistics를 반환한다', () => {
     expect(BFF_PATH.teamStatistics()).toBe('/api/v1/team/statistics');
   });
+
+  it('landingMatches()는 /api/v1/match/landing를 반환한다', () => {
+    expect(BFF_PATH.landingMatches()).toBe('/api/v1/match/landing');
+  });
 });

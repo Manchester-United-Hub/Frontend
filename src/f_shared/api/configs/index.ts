@@ -83,6 +83,9 @@ const BFF_PATH = {
   currentSeason() {
     return `/api/v1/season`;
   },
+  landingMatches() {
+    return '/api/v1/match/landing';
+  },
 };
 
 export { BASE_URL, FETCH_TIMEOUT_MICROSECOND, API_PATH, BFF_PATH };

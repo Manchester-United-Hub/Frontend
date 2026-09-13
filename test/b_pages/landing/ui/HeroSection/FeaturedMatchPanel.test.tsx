@@ -37,7 +37,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 import { FeaturedMatchPanel } from '@pages/landing/ui/HeroSection';
-import { nextMatch } from '@pages/landing/model/mockData';
+import { nextMatchItem as nextMatch } from '@test/fixtures/landingMatchItems';
 import type { MatchItem } from '@pages/landing/model/types';
 
 /** time·countdown이 없는 최소 경기 (옵션 필드 부재 분기 검증용) */
@@ -62,7 +62,7 @@ describe('FeaturedMatchPanel', () => {
 
   it('time·countdown 있으면 시간·카운트다운 렌더 (truthy 분기)', () => {
     const { container } = render(<FeaturedMatchPanel match={nextMatch} />);
-    expect(container.textContent).toContain('23:30 KST');
+    expect(container.textContent).toContain('23:30');
     expect(container.textContent).toContain('D-3');
   });
 

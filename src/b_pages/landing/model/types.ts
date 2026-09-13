@@ -10,12 +10,6 @@ import type { Route } from 'next';
 
 // ───────── Hero ─────────
 
-export interface HeroStat {
-  num: string;
-  unit: string;
-  label: string;
-}
-
 export interface HeroCta {
   label: string;
   variant: 'red' | 'outline';
@@ -28,7 +22,6 @@ export interface HeroContent {
   accent: string;
   sub: string;
   ctas: HeroCta[];
-  stats: HeroStat[];
 }
 
 export interface MatchItemTeam {

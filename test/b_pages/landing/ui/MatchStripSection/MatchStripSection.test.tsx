@@ -5,6 +5,8 @@
  * - status 4분기: ready / loading / empty / error
  * - status 미전달 시 기본값(ready) 동작
  * - 섹션 aria-labelledby 시맨틱
+ * - T-6(High-1 재작업, D-11): status="ready"에서 recent·next 중 한쪽만 있어도 본문이
+ *   비지 않는지 — 재작업 전에는 ready 분기가 둘 다 있을 때만 그리드를 렌더했다.
  */
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -36,7 +38,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 import { MatchStripSection } from '@pages/landing/ui/MatchStripSection';
-import { recentMatch, nextMatch } from '@pages/landing/model/mockData';
+import { recentMatchItem as recentMatch, nextMatchItem as nextMatch } from '@test/fixtures/landingMatchItems';
 import type { MatchItem } from '@pages/landing/model/types';
 
 describe('MatchStripSection 상태 분기', () => {
@@ -110,5 +112,23 @@ describe('MatchStripSection 상태 분기', () => {
     expect(container.textContent).toContain('5월 25일 (일)');
     // countdown 부재 → 기본 데이터의 'D-3' Badge가 나타나지 않음
     expect(container.textContent).not.toContain('D-3');
+  });
+
+  /* ── T-6: ready + 한쪽 슬롯만 데이터 (High-1 재작업, D-11) ─────────────── */
+
+  it('ready + recent만 있으면 본문이 비지 않고 recent 팀명이 렌더된다', () => {
+    const { container } = render(
+      <MatchStripSection status="ready" recent={recentMatch} />,
+    );
+    expect(container.textContent).toContain('에버턴');
+    expect(container.textContent).toContain('다음 경기 일정이 아직 없어요');
+  });
+
+  it('ready + next만 있으면 본문이 비지 않고 next 팀명이 렌더된다', () => {
+    const { container } = render(
+      <MatchStripSection status="ready" next={nextMatch} />,
+    );
+    expect(container.textContent).toContain('리버풀');
+    expect(container.textContent).toContain('최근 경기 기록이 없어요');
   });
 });
