@@ -33,7 +33,7 @@ export function CategoryCardsSection() {
       aria-labelledby={SECTION_HEADING_ID}
       className="py-14 max-[620px]:py-11"
     >
-      <div className="mx-auto max-w-[1200px] px-6">
+      <div className="mx-auto max-w-shell px-6">
         <div className="mb-6">
           <Eyebrow>Explore the Hub</Eyebrow>
           <h2
