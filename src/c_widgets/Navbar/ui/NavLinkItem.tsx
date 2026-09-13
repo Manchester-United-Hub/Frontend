@@ -19,13 +19,8 @@ function NavLinkItem({ item }: NavLinkItemProps) {
     </span>
   );
   if (item.isOuterLink) {
-    if (!item.href) {
-      throw new Error(
-        'NavItemError: 외부 링크 네비게이션 아이템은 href 속성이 반드시 필요합니다.'
-      );
-    }
     return (
-      <a href={item.href} className={cls} target="_blank">
+      <a href={item.href} className={cls} target="_blank" rel="noreferrer">
         <p className="flex items-center gap-1">
           <span>{item.label}</span>
           <SquareArrowOutUpRight width={8} height={8} />
@@ -34,20 +29,12 @@ function NavLinkItem({ item }: NavLinkItemProps) {
       </a>
     );
   }
-  if (item.href) {
-    return (
-      <Link href={item.href} className={cls}>
-        {item.label}
-        {sublabel}
-      </Link>
-    );
-  }
 
   return (
-    <span className={cls}>
+    <Link href={item.href} className={cls}>
       {item.label}
       {sublabel}
-    </span>
+    </Link>
   );
 }
 

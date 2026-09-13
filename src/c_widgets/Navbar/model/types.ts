@@ -4,8 +4,8 @@ interface NavItem {
   id: string;
   label: string;
   labelEn: string;
-  href?: Route;
-  description: string;
+  href: Route;
+  description?: string;
   isOuterLink?: boolean;
 }
 

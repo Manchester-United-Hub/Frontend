@@ -53,7 +53,7 @@ export function CategoryCardsSection() {
                 icon={ICON_MAP[nav.id] ?? FALLBACK_ICON}
                 name={nav.label}
                 nameEn={nav.labelEn}
-                description={nav.description}
+                description={nav.description ?? ''}
                 className="h-full"
               />
             );
@@ -65,7 +65,7 @@ export function CategoryCardsSection() {
                     {card}
                   </a>
                 ) : (
-                  <Link href={nav.href ?? ''} className="block h-full">
+                  <Link href={nav.href} className="block h-full">
                     {card}
                   </Link>
                 )}
