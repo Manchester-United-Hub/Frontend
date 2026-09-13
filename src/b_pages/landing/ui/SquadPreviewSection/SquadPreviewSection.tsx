@@ -9,6 +9,7 @@ import { PlayerCard, StateBox } from '@shared/ui';
 
 import { selectSquadPreview } from '../../model/selectSquadPreview';
 import { RosterCardPhoto } from '@entities/player/ui/RosterGrid/RosterCardPhoto';
+import { playerDetailHref } from '@entities/player/model';
 
 const EMPTY_BOX = (
   <StateBox
@@ -36,7 +37,7 @@ export function SquadPreviewSection({ season }: SquadPreviewSectionProps) {
     >
       {players.map((player) => (
         <li key={player.id}>
-          <Link href={`/players/${player.id}`} className="block h-full">
+          <Link href={playerDetailHref(player.id)} className="block h-full">
             <PlayerCard
               name={player.name}
               nameEn={player.nameEn}
