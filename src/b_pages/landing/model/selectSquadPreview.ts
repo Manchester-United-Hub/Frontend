@@ -23,11 +23,7 @@ const comparePlayersByNumber = (
   return a.number - b.number || a.name.localeCompare(b.name);
 };
 
-const selectSquadPreview = (
-  data: PlyaerListDTO | undefined
-): PlayerListItem[] => {
-  if (data === undefined) return [];
-
+const selectSquadPreview = (data: PlyaerListDTO): PlayerListItem[] => {
   return data.players
     .map(mapPlayerDtoToListItem)
     .toSorted(comparePlayersByNumber)

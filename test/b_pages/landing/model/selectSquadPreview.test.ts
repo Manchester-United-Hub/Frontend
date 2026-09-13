@@ -10,7 +10,6 @@
  * - 등번호 동률은 이름순
  * - number가 모두 undefined면 이름순
  * - 프리뷰 건수를 넘으면 상위 4명만 남긴다(리터럴 4 — SQUAD_PREVIEW_COUNT는 import하지 않는다)
- * - undefined 입력 → []
  * - players 빈 배열 → []
  * - seasons 빈 배열(years==='') 무사통과
  * - 실 컨버터(mapPlayerDtoToListItem)와 동일한 필드 매핑 결과
@@ -24,10 +23,6 @@ import { buildPlayerDTO, buildPlayerListDTO } from '@test/fixtures/players';
 import { selectSquadPreview } from '@pages/landing/model/selectSquadPreview';
 
 describe('selectSquadPreview', () => {
-  it('undefined 입력이면 빈 배열을 반환한다', () => {
-    expect(selectSquadPreview(undefined)).toEqual([]);
-  });
-
   it('players가 빈 배열이면 빈 배열을 반환한다', () => {
     expect(selectSquadPreview(buildPlayerListDTO([]))).toEqual([]);
   });

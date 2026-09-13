@@ -9,6 +9,12 @@
  * 직접 페칭하므로, RosterPanel.test.tsx 패턴대로 그 훅을 vi.mock해 react-query
  * QueryClientProvider 없이도 렌더 가능하게 한다. season prop(2026)을 전달한다.
  *
+ * ⚠️ 목은 반드시 실제 응답 형태(PlyaerListDTO)를 돌려줘야 한다. data: undefined를 돌려주면
+ *    SquadPreviewSection이 렌더 중 TypeError를 던지고 SquadPreviewContainer의 ErrorBoundary가
+ *    그것을 삼킨다. 헤딩은 경계 바깥이라 그대로 남으므로 아래 단언들은 전부 통과하고,
+ *    "런타임 에러 없이 마운트된다"는 이 파일의 전제만 조용히 무너진다. 그래서 스쿼드 그리드가
+ *    실제로 렌더됐는지(= 에러 폴백이 아닌지)를 마지막 케이스에서 직접 단언한다.
+ *
  * ⚠️ 아키텍처 주의: LandingPage = <main> + 4 섹션만.
  *    Nav(<header>)와 Footer(<footer>)는 app/layout 전역 소관이며
  *    @widgets/Navbar · @widgets/Footer 위젯 테스트에서 별도 검증한다.
@@ -44,6 +50,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 import { useSuspensePlayerList } from '@features/player/api';
+import { buildPlayerDTO, buildPlayerListDTO } from '@test/fixtures/players';
 
 vi.mock('@features/player/api', async () => {
   const actual = await vi.importActual<typeof import('@features/player/api')>(
@@ -56,11 +63,15 @@ import { LandingPage } from '@pages/landing';
 
 const mockedUseSuspensePlayerList = vi.mocked(useSuspensePlayerList);
 const SEASON = 2026;
+const SQUAD_DTO = buildPlayerListDTO([
+  buildPlayerDTO({ id: 1, name: '브루누', number: 8 }),
+  buildPlayerDTO({ id: 2, name: '가르나초', number: 17 }),
+]);
 
 beforeEach(() => {
   mockedUseSuspensePlayerList.mockReset();
   mockedUseSuspensePlayerList.mockReturnValue({
-    data: undefined,
+    data: SQUAD_DTO,
   } as unknown as ReturnType<typeof useSuspensePlayerList>);
 });
 
@@ -88,5 +99,12 @@ describe('LandingPage 스모크', () => {
   it('스쿼드 섹션 헤딩 존재("1군 스쿼드" — D-14 카피 정정)', () => {
     const { container } = render(<LandingPage season={SEASON} />);
     expect(container.textContent).toContain('1군 스쿼드');
+  });
+
+  it('스쿼드 그리드가 에러 폴백이 아니라 카드로 렌더된다', () => {
+    const { container } = render(<LandingPage season={SEASON} />);
+
+    expect(container.querySelector('a[href="/players/1"]')).not.toBeNull();
+    expect(container.textContent).not.toContain('다시 시도');
   });
 });
