@@ -35,6 +35,33 @@ describe('PlayerCard', () => {
     expect(container.querySelector('svg[aria-hidden="true"]')).not.toBeNull();
   });
 
+  it('사진 프레임은 원형으로 클립하고 테두리에 디자인 토큰을 쓴다', () => {
+    // overflow-hidden이 빠지면 정사각 사진이 원형 테두리 밖으로 삐져나오고,
+    // border-gray-*를 쓰면 다크 테마에서 테두리가 배경과 분리되지 않는다.
+    const { container } = render(
+      <PlayerCard
+        name="브루누"
+        nameEn="Bruno"
+        position="MF"
+        status="active"
+        photo={
+          <Image
+            alt="브루누 사진"
+            src="/bruno.png"
+            width={100}
+            height={100}
+          />
+        }
+      />
+    );
+
+    const frame = screen.getByAltText('브루누 사진').parentElement;
+    expect(frame).toHaveClass('rounded-full');
+    expect(frame).toHaveClass('overflow-hidden');
+    expect(frame).toHaveClass('border-border');
+    expect(container.querySelector('[class*="border-gray-"]')).toBeNull();
+  });
+
   it('photo 노드를 주면 실루엣 대신 해당 노드를 렌더한다', () => {
     render(
       <PlayerCard

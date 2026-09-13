@@ -84,7 +84,7 @@ function PlayerCard({
             {number}
           </span>
         ) : null}
-        <div className="w-30 h-30 rounded-full border border-gray-300 p-1">
+        <div className="w-30 h-30 rounded-full border p-1 overflow-hidden border-border">
           {photo ?? <Silhouette />}
         </div>
       </div>
