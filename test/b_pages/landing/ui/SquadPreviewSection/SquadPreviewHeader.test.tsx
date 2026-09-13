@@ -4,7 +4,7 @@
  * 검증 목적:
  * - 헤딩 "1군 스쿼드"를 렌더하고 SECTION_HEADING_ID를 id로 노출한다
  *   (상위 section의 aria-labelledby가 이 id를 참조한다)
- * - "역대 선수 목록"은 유효 라우트가 없어 링크가 아니다(ADR-7)
+ * - "역대 선수 목록"은 선수 목록 페이지(/players)로 이동하는 링크다
  */
 
 import { describe, it, expect, afterEach } from 'vitest';
@@ -26,10 +26,10 @@ describe('SquadPreviewHeader', () => {
     expect(heading).toHaveAttribute('id', SECTION_HEADING_ID);
   });
 
-  it('"역대 선수 목록"을 링크가 아닌 텍스트로 렌더한다', () => {
+  it('"역대 선수 목록"을 /players 링크로 렌더한다', () => {
     render(<SquadPreviewHeader />);
 
-    expect(screen.getByText('역대 선수 목록')).toBeInTheDocument();
-    expect(screen.queryByRole('link')).not.toBeInTheDocument();
+    const link = screen.getByRole('link', { name: /역대 선수 목록/ });
+    expect(link).toHaveAttribute('href', '/players');
   });
 });

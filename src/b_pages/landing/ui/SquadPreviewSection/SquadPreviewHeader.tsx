@@ -1,5 +1,7 @@
 import { ArrowRight } from 'lucide-react';
+import Link from 'next/link';
 import { Eyebrow } from '@shared/ui';
+import { routes } from '@shared/utils';
 
 const SECTION_HEADING_ID = 'squad-heading';
 
@@ -15,11 +17,13 @@ export function SquadPreviewHeader() {
           1군 스쿼드
         </h2>
       </div>
-      {/* 유효 라우트 미존재 → 비링크(span) 처리 (ADR-7) */}
-      <span className="inline-flex cursor-default items-center gap-1.5 text-sm font-medium text-muted-foreground">
+      <Link
+        href={routes.players()}
+        className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+      >
         역대 선수 목록
         <ArrowRight size={16} aria-hidden />
-      </span>
+      </Link>
     </div>
   );
 }
