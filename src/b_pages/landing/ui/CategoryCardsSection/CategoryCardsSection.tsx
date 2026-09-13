@@ -61,7 +61,12 @@ export function CategoryCardsSection() {
             return (
               <li key={nav.id}>
                 {nav.isOuterLink ? (
-                  <a href={nav.href} target="_blank" className="block h-full">
+                  <a
+                    href={nav.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block h-full"
+                  >
                     {card}
                   </a>
                 ) : (

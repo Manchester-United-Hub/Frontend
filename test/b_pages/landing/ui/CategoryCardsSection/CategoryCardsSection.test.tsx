@@ -8,7 +8,7 @@
  * - 한글·영문 라벨 6건 모두 렌더 (F-3: 무props)
  * - 카드 설명 텍스트 존재 (description은 여전히 렌더되는 살아있는 계약이므로 유지)
  * - ul[role=list] 직계 li 6개 (F-1: <li> 래핑 회귀 수정)
- * - 외부 링크(store)는 a[target="_blank"] + 고정 href, 내부 5건은 target 없음 (F-4)
+ * - 외부 링크(store)는 a[target="_blank"] + rel="noreferrer" + 고정 href, 내부 5건은 target 없음 (F-4)
  * - 섹션 aria-labelledby가 h2 id와 일치
  */
 
@@ -76,6 +76,12 @@ describe('CategoryCardsSection', () => {
     const outerLink = container.querySelector('a[target="_blank"]');
     expect(outerLink).not.toBeNull();
     expect(outerLink).toHaveAttribute('href', 'https://store.manutd.com/ko-kr');
+  });
+
+  it('외부 링크에는 rel="noreferrer"가 붙어 referrer가 새지 않는다', () => {
+    const { container } = render(<CategoryCardsSection />);
+    const outerLink = container.querySelector('a[target="_blank"]');
+    expect(outerLink).toHaveAttribute('rel', 'noreferrer');
   });
 
   it('내부 카테고리 5개는 target 속성이 없다', () => {
