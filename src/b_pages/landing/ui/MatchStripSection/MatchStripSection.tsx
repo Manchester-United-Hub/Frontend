@@ -1,7 +1,8 @@
-import { AlertTriangle, ArrowRight, Inbox } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 
-import { Eyebrow, StateBox } from '@shared/ui';
+import { Eyebrow } from '@shared/ui';
 import type { MatchItem, MatchStripStatus } from '../../model/types';
+import { ERROR_BOX, MATCHES_EMPTY_BOX } from '../matchStates';
 import { MatchCardSkeleton } from './MatchCardSkeleton';
 import { MatchStripGrid } from './MatchStripGrid';
 
@@ -16,24 +17,6 @@ const LOADING_GRID = (
     <MatchCardSkeleton />
     <MatchCardSkeleton />
   </div>
-);
-
-const EMPTY_BOX = (
-  <StateBox
-    variant="empty"
-    icon={<Inbox size={22} aria-hidden />}
-    title="예정된 경기가 없어요"
-    description="시즌 휴식기입니다. 일정이 확정되면 여기에 표시됩니다."
-  />
-);
-
-const ERROR_BOX = (
-  <StateBox
-    variant="error"
-    icon={<AlertTriangle size={22} aria-hidden />}
-    title="경기 정보를 불러오지 못했어요"
-    description="일시적인 연결 문제입니다. 사용자 탓이 아니에요 — 잠시 후 다시 시도해 주세요."
-  />
 );
 
 // ── 섹션 헤더 (정적 — 모듈 스코프 호이스팅) ─────────────────────────────
@@ -65,10 +48,10 @@ export interface MatchStripSectionProps {
    * 기본값: 'ready'.
    */
   status?: MatchStripStatus;
-  /** 최근 경기 데이터 (LandingPage에서 주입) */
-  recent: MatchItem;
-  /** 다음 경기 데이터 (LandingPage에서 주입) */
-  next: MatchItem;
+  /** 최근 경기 데이터. status가 'ready'가 아니거나 데이터가 없으면 undefined(ST-006). */
+  recent?: MatchItem;
+  /** 다음 경기 데이터. status가 'ready'가 아니거나 데이터가 없으면 undefined(ST-006). */
+  next?: MatchItem;
 }
 
 /** 최근 경기 + 다음 경기 스트립. status prop으로 상태를 분기한다. */
@@ -82,11 +65,9 @@ export function MatchStripSection({
       <div className="mx-auto max-w-[1200px] px-6">
         {SECTION_HEADER}
         {status === 'loading' ? LOADING_GRID : null}
-        {status === 'empty' ? EMPTY_BOX : null}
+        {status === 'empty' ? MATCHES_EMPTY_BOX : null}
         {status === 'error' ? ERROR_BOX : null}
-        {status === 'ready' ? (
-          <MatchStripGrid recent={recent} next={next} />
-        ) : null}
+        {status === 'ready' ? <MatchStripGrid recent={recent} next={next} /> : null}
       </div>
     </section>
   );

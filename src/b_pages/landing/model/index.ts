@@ -1,2 +1,2 @@
-export * from './mockData';
+export * from './configs';
 export * from './types';

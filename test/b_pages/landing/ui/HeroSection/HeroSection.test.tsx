@@ -4,8 +4,9 @@
  * 검증 목적:
  * - Eyebrow · 헤드라인 accent 분리 · 서브카피 렌더
  * - CTA 버튼 2개 렌더
- * - stats 3개(리그 우승 / UCL 우승 / 창단) 렌더
- * - FeaturedMatchPanel — nextMatch 팀 코드·경기장 렌더
+ * - matchPanel 슬롯 — 전달된 노드를 그대로 렌더 (ST-006: nextMatch 데이터는 더 이상
+ *   HeroSection이 알지 못하고 FeaturedMatchContainer가 소유한다. 데이터 의존이 사라져
+ *   QueryClientProvider가 불필요하다)
  * - aria 시맨틱 (h1#hero-heading, section aria-labelledby)
  */
 
@@ -38,56 +39,68 @@ vi.mock('next/navigation', () => ({
 }));
 
 import { HeroSection } from '@pages/landing/ui/HeroSection';
-import { heroContent, nextMatch } from '@pages/landing/model/mockData';
+import { heroContent } from '@pages/landing/model/configs';
 import type { HeroContent } from '@pages/landing/model/types';
 import type { Route } from 'next';
 
+/** matchPanel 슬롯용 스텁 — HeroSection은 데이터를 모르므로 내용은 임의 노드면 된다. */
+const MATCH_PANEL_STUB = (
+  <div data-testid="match-panel-stub">스텁 매치 패널</div>
+);
+
 describe('HeroSection', () => {
   it('Eyebrow 텍스트 렌더', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={heroContent} matchPanel={MATCH_PANEL_STUB} />
+    );
     expect(container.textContent).toContain(heroContent.eyebrow);
   });
 
   it('헤드라인 accent 분리 렌더 (accent 텍스트 존재)', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={heroContent} matchPanel={MATCH_PANEL_STUB} />
+    );
     expect(container.textContent).toContain(heroContent.accent);
   });
 
   it('서브카피 렌더', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={heroContent} matchPanel={MATCH_PANEL_STUB} />
+    );
     expect(container.textContent).toContain('경기 일정과 결과');
   });
 
   it('CTA 버튼 2개 렌더 (선수 둘러보기 / 시즌 일정)', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={heroContent} matchPanel={MATCH_PANEL_STUB} />
+    );
     expect(container.textContent).toContain('선수 둘러보기');
     expect(container.textContent).toContain('시즌 일정');
   });
 
-  it('stats 3개 모두 렌더 (리그 우승 / UCL 우승 / 창단)', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
-    heroContent.stats.forEach((stat) => {
-      expect(container.textContent).toContain(stat.label);
-      expect(container.textContent).toContain(stat.num);
-    });
-  });
-
-  it('FeaturedMatchPanel — nextMatch 팀 코드·경기장 렌더', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
-    expect(container.textContent).toContain(nextMatch.home.code);
-    expect(container.textContent).toContain(nextMatch.away.code);
-    expect(container.textContent).toContain(nextMatch.venue);
+  it('matchPanel 슬롯 — 전달된 노드를 그대로 렌더 (컨테이너 분리 후 HeroSection은 데이터를 모른다)', () => {
+    const { container } = render(
+      <HeroSection content={heroContent} matchPanel={MATCH_PANEL_STUB} />
+    );
+    expect(
+      container.querySelector('[data-testid="match-panel-stub"]')
+    ).not.toBeNull();
+    expect(container.textContent).toContain('스텁 매치 패널');
   });
 
   it('h1 id=hero-heading 존재 — aria-labelledby 연결', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={heroContent} matchPanel={MATCH_PANEL_STUB} />
+    );
     expect(container.querySelector('h1#hero-heading')).not.toBeNull();
   });
 
   it('section aria-labelledby="hero-heading" 존재', () => {
-    const { container } = render(<HeroSection content={heroContent} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={heroContent} matchPanel={MATCH_PANEL_STUB} />
+    );
     expect(
-      container.querySelector('section[aria-labelledby="hero-heading"]'),
+      container.querySelector('section[aria-labelledby="hero-heading"]')
     ).not.toBeNull();
   });
 
@@ -99,7 +112,9 @@ describe('HeroSection', () => {
       headline: '액센트 없는 헤드라인 문장',
       accent: '여기에없는단어',
     };
-    const { container } = render(<HeroSection content={content} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={content} matchPanel={MATCH_PANEL_STUB} />
+    );
     expect(container.textContent).toContain('액센트 없는 헤드라인 문장');
   });
 
@@ -111,23 +126,14 @@ describe('HeroSection', () => {
         { label: '일정 보기', variant: 'outline', href: '/season' as Route },
       ],
     };
-    const { container } = render(<HeroSection content={content} nextMatch={nextMatch} />);
+    const { container } = render(
+      <HeroSection content={content} matchPanel={MATCH_PANEL_STUB} />
+    );
     const redLink = container.querySelector('a[href="/players"]');
     const outlineLink = container.querySelector('a[href="/season"]');
     expect(redLink).not.toBeNull();
     expect(redLink?.textContent).toContain('선수 보기');
     expect(outlineLink).not.toBeNull();
     expect(outlineLink?.textContent).toContain('일정 보기');
-  });
-
-  it('unit 있는 stat은 강조 span으로 렌더 (stat.unit !== "" 분기)', () => {
-    const content: HeroContent = {
-      ...heroContent,
-      stats: [{ num: '99', unit: '%', label: '승률' }],
-    };
-    const { container } = render(<HeroSection content={content} nextMatch={nextMatch} />);
-    const unit = container.querySelector('span.text-united-red');
-    expect(unit).not.toBeNull();
-    expect(unit?.textContent).toBe('%');
   });
 });
