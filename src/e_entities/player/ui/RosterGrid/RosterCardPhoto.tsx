@@ -38,11 +38,7 @@ const PHOTO_FALLBACK_SILHOUETTE = (
   </svg>
 );
 
-function RosterCardPhoto({
-  src,
-  alt = '맨체스터 유나이티드 선수',
-  className,
-}: RosterCardPhotoProps) {
+function RosterCardPhoto({ src, alt = '', className }: RosterCardPhotoProps) {
   const classname = cn('h-full w-full object-cover', className);
 
   const [hasError, setHasError] = useState(false);
