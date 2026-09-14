@@ -30,7 +30,7 @@ export interface ClubIdentity {
 // ───────── Summary ─────────
 
 /**
- * A single summary stat card (8 total): 창단연도·연고지·홈구장·리그·구단주·감독·UEFA랭킹·시즌순위.
+ * A single summary stat card (6 total): 창단연도·연고지·홈구장·리그·구단주·감독.
  * Mirrors `CLUB_DATA.summary[i]`.
  */
 export interface SummaryCard {
@@ -64,22 +64,7 @@ export interface HistoryEvent {
 
 // ───────── Manager ─────────
 
-/** Career record tallies. Mirrors `CLUB_DATA.manager.record` — `{ p, w, d, l }` verbatim. */
-export interface ManagerRecord {
-  /** Played. */
-  p: number;
-  /** Won. */
-  w: number;
-  /** Drawn. */
-  d: number;
-  /** Lost. */
-  l: number;
-}
-
-/**
- * Mirrors `CLUB_DATA.manager`. Win rate (`w / p`) is NOT stored — ManagerTab derives it
- * at render time from `record` (architecture.decisions "파생 상태는 렌더 중 계산").
- */
+/** Mirrors `CLUB_DATA.manager`. */
 export interface Manager {
   name: string;
   en: string;
@@ -90,13 +75,11 @@ export interface Manager {
   /** Role label, e.g. "감독 · Head Coach". */
   role: string;
   appointed: string;
+  /** Date of birth, display text, e.g. "1981년 7월 28일". */
+  born: string;
+  /** Birthplace, display text, e.g. "잉글랜드 타인위어주 월센드". */
+  birthplace: string;
   contract: string;
-  age: string;
-  /** Preferred formation — reuses FormationName since the value is always one of the 4. */
-  preferred: FormationName;
-  /** Tactical style chips (3). */
-  style: string[];
-  record: ManagerRecord;
   /** Previous clubs managed (3), joined with " · " for display. */
   prevClubs: string[];
 }
@@ -125,48 +108,9 @@ export interface Stadium {
   facts: StadiumFact[];
 }
 
-// ───────── Squad ─────────
-
-/**
- * Domain type for a squad member (starter or substitute).
- * Mirrors `CLUB_DATA.lineup[i]` / `CLUB_DATA.subs[i]` — `num`/`nm`/`en`/`role` verbatim.
- */
-export interface SquadPlayer {
-  /** Jersey number — unique within the squad, usable as a React key. */
-  num: number;
-  /** Korean display name (may include a marker, e.g. "브루누 (C)" for captain). */
-  nm: string;
-  /** English display name. */
-  en: string;
-  /** Position code, e.g. "GK", "RB", "CM", "AM", "ST". */
-  role: string;
-}
-
-// ───────── Formation ─────────
-
-export type FormationName = '4-3-3' | '4-2-3-1' | '4-4-2' | '3-4-2-1';
-
-/**
- * A single pitch coordinate. x/y are percentages (0–100).
- * x: 0 = left, 100 = right. y: 0 = attacking end, 100 = own goal / GK end.
- * Mirrors a `CLUB_DATA.formations[name][i]` `[x, y]` pair.
- */
-export interface FormationCoordinate {
-  x: number;
-  y: number;
-}
-
-/**
- * `FORMATIONS[name]` is an array of exactly 11 coordinates, ordered to pair by
- * index with `lineup` (starters) — `lineup[i]` renders at `FORMATIONS[name][i]`.
- * See `.design-ref/club-data.js` comment: "11 players assigned in order to each
- * formation's 11 slots".
- */
-export type FormationCoordinates = Record<FormationName, FormationCoordinate[]>;
-
 // ───────── Sub tabs ─────────
 
-export type SubTabId = 'history' | 'highlights' | 'squad' | 'manager' | 'stadium' | 'stats';
+export type SubTabId = 'history' | 'manager' | 'stadium' | 'stats';
 
 /** Mirrors the `TABS` constant in club.jsx (component-local, not in club-data.js). */
 export interface SubTabMeta {
@@ -175,12 +119,12 @@ export interface SubTabMeta {
   kr: string;
   /** English label. */
   en: string;
-  /** True for tabs rendered via EmptyTab (하이라이트·팀통계). */
+  /** True for tabs rendered via EmptyTab (팀통계). */
   soon?: boolean;
 }
 
 /**
- * Copy for a `soon` sub tab's EmptyTab. Not present in club-data.js (EmptyTab's
+ * Copy for the `soon` sub tab's EmptyTab. Not present in club-data.js (EmptyTab's
  * call-site data wasn't in the captured design source) — see result-ST-001.md.
  */
 export interface EmptyTabCopy {

@@ -2,8 +2,9 @@
  * ClubHeader 전용 테스트 — QA 커버리지 갭 메우기(qa-coverage), code-conventions §6
  * 컴포넌트 1:테스트 1 미러링 완성.
  *
- * 검증 목적: identity props(구단명·영문명·닉네임·창단연도) 렌더, 액션 버튼 2개,
- * 창단연도 워터마크(장식) 렌더.
+ * 검증 목적: identity props(구단명·영문명·닉네임·창단연도) 렌더, 액션 버튼 미렌더
+ * (ST-005 D-5a 이후 명예의 전당/구단 소식 받기 제거), 배경 실사진이 장식(alt="")이라
+ * 접근성 트리에서 제외됨.
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
@@ -27,20 +28,19 @@ describe('ClubHeader', () => {
     expect(screen.getByText(new RegExp(`Est\\.\\s*${clubIdentity.founded}`))).toBeInTheDocument();
   });
 
-  it('명예의 전당 액션 버튼을 렌더한다 (구단 소식 받기 알림 버튼은 임시 비활성화)', () => {
+  it('액션 버튼을 렌더하지 않는다 (명예의 전당·구단 소식 받기 모두 제거)', () => {
     render(<ClubHeader identity={clubIdentity} />);
 
-    expect(screen.getByRole('button', { name: /명예의 전당/ })).toBeInTheDocument();
-    // 알림 버튼 임시 비활성화 — 원복 시 아래 주석 해제
-    // expect(screen.getByRole('button', { name: /구단 소식 받기/ })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: /구단 소식 받기/ })).not.toBeInTheDocument();
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
   });
 
-  it('창단연도 워터마크(장식 요소)가 aria-hidden으로 렌더된다', () => {
+  it('배경 실사진이 alt=""(장식)라 접근성 트리에서 제외된다', () => {
     const { container } = render(<ClubHeader identity={clubIdentity} />);
-    const watermark = container.querySelector('span.pointer-events-none.select-none');
-    expect(watermark).not.toBeNull();
-    expect(watermark).toHaveAttribute('aria-hidden', 'true');
-    expect(watermark?.textContent).toBe(clubIdentity.founded);
+
+    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    const backgroundImage = container.querySelector('img');
+    expect(backgroundImage).not.toBeNull();
+    expect(backgroundImage).toHaveAttribute('alt', '');
+    expect(backgroundImage?.parentElement).toHaveAttribute('aria-hidden', 'true');
   });
 });

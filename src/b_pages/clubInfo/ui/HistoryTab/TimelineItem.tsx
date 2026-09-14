@@ -34,7 +34,7 @@ export function TimelineItem({ event }: TimelineItemProps) {
   return (
     <li className="relative grid grid-cols-[56px_1fr] gap-7 pb-[26px]">
       <div
-        className={`pt-px text-right text-base font-extrabold tracking-[-0.01em] ${
+        className={`pt-px pr-1 text-right text-base font-extrabold tracking-[-0.01em] ${
           now ? 'text-united-red' : 'text-foreground'
         }`}
       >
@@ -43,7 +43,7 @@ export function TimelineItem({ event }: TimelineItemProps) {
       {/* 타임라인 노드 — 장식 요소, 콘텐츠 없음 */}
       <span
         aria-hidden
-        className={`absolute left-16 top-1 z-[1] h-4 w-4 rounded-full border-2 ${dotClassName}`}
+        className={`absolute left-14 top-1 z-[1] h-4 w-4 rounded-full border-2 ${dotClassName}`}
       />
       <Card
         padding="none"
