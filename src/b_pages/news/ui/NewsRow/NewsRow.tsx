@@ -35,7 +35,7 @@ function NewsRow({ title, description, link, date, source, className }: NewsRowP
       rel="noopener noreferrer"
       className={cn(
         ROW_LAYOUT_CLASSNAME,
-        'group text-inherit motion-safe:transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background',
+        'group text-inherit motion-safe:transition-colors hover:bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ring',
         className,
       )}
     >

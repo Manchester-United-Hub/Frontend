@@ -49,4 +49,12 @@ describe('NewsRow', () => {
     expect(screen.queryByText('·')).not.toBeInTheDocument();
     expect(screen.getByText(baseProps.date)).toBeInTheDocument();
   });
+
+  it('포커스 링을 inset으로 그려 카드의 overflow-hidden에 잘리지 않는다', () => {
+    render(<NewsRow {...baseProps} />);
+
+    const link = screen.getByRole('link');
+    expect(link).toHaveClass('focus-visible:ring-inset');
+    expect(link).not.toHaveClass('focus-visible:ring-offset-2');
+  });
 });

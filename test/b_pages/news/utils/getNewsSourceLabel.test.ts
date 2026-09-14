@@ -22,6 +22,12 @@ describe('getNewsSourceLabel', () => {
     ).toBe('스포츠투데이');
   });
 
+  it('www.m. 처럼 접두사가 중첩되어도 반복 제거해 매핑된 라벨로 반환한다', () => {
+    expect(
+      getNewsSourceLabel('https://www.m.sports.naver.com/x')
+    ).toBe('네이버 스포츠');
+  });
+
   it('매핑에 없는 호스트는 정규화된 호스트명 그대로 반환한다', () => {
     expect(getNewsSourceLabel('https://www.bbc.co.uk/sport/football')).toBe(
       'bbc.co.uk'
