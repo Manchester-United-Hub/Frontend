@@ -28,6 +28,7 @@
   --draw: #b88207;
   --loss: #71717a;
   --footer-bg: #131316;
+  --surface-hero: #0b0b0d;
 }
 
 :root[data-theme='dark'],

@@ -14,7 +14,7 @@ export interface HeroStateBoxProps {
 }
 
 /**
- * Hero(다크 배경, `#0b0b0d`) 전용 StateBox 래퍼 (R-4, M4 + L7).
+ * Hero(다크 배경, `var(--surface-hero)`) 전용 StateBox 래퍼 (R-4, M4 + L7).
  *
  * - `FeaturedMatchPanelSkeleton`과 같은 다크 셸(border + `var(--footer-bg)`)로 감싸,
  *   로딩→empty/error 전환 시 패널 자리가 빈 공간처럼 보이지 않게 한다.
