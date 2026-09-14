@@ -9,7 +9,7 @@ const STADIUM_HEADING_ID = 'stadium-heading';
 
 /**
  * StadiumTab — 홈구장 탭. 조립만 담당 — 이름 붙은 서브컴포넌트는 각 파일로 분리
- * (StadiumPhotoSlot/StadiumMeta/StadiumFactItem, 형제 탭 HistoryTab/ManagerTab/SquadTab과
+ * (StadiumPhotoSlot/StadiumMeta/StadiumFactItem, 형제 탭 HistoryTab/ManagerTab과
  * 동일 패턴). stadium을 props로 받는 서버 컴포넌트.
  */
 

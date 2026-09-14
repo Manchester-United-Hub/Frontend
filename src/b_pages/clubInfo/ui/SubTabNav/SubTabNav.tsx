@@ -30,17 +30,22 @@ function SubTab({ tab, isActive, onChange }: SubTabProps) {
           "text-united-red after:absolute after:inset-x-3 after:-bottom-px after:h-0.5 after:rounded-sm after:bg-united-red after:content-['']"
       )}
     >
+      {tab.soon ? (
+        <Badge
+          variant="soft"
+          size="xs"
+          pill
+          className="absolute -top-[9px] left-1/2 -translate-x-1/2 whitespace-nowrap leading-[1.4]"
+        >
+          {SOON_LABEL}
+        </Badge>
+      ) : null}
       <BilingualLabel
         kr={tab.kr}
         en={tab.en}
         className="gap-px"
         enClassName="opacity-80"
       />
-      {tab.soon ? (
-        <Badge variant="soft" size="xs" pill className="mt-0.5">
-          {SOON_LABEL}
-        </Badge>
-      ) : null}
     </button>
   );
 }
@@ -54,7 +59,7 @@ function SubTab({ tab, isActive, onChange }: SubTabProps) {
 const SOON_LABEL = '준비 중';
 
 export interface SubTabNavProps {
-  /** 렌더할 탭 목록(6). model.subTabs를 그대로 전달. */
+  /** 렌더할 탭 목록(4). model.subTabs를 그대로 전달. */
   tabs: SubTabMeta[];
   /** 현재 활성 탭 id. */
   activeId: SubTabId;
@@ -69,7 +74,7 @@ export function SubTabNav({ tabs, activeId, onChange }: SubTabNavProps) {
         <div
           role="tablist"
           aria-label="구단 정보 하위 탭"
-          className="flex items-stretch gap-10 overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain [scrollbar-width:none] [&::-webkit-scrollbar]:hidden *:first:ml-auto *:last:mr-auto max-[820px]:gap-1.5"
+          className="flex items-end gap-10 overflow-x-auto overflow-y-hidden touch-pan-x overscroll-x-contain pt-2.5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden *:first:ml-auto *:last:mr-auto max-[820px]:gap-1.5"
         >
           {tabs.map((tab) => (
             <SubTab

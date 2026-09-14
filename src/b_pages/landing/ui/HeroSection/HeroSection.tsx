@@ -41,7 +41,7 @@ export function HeroSection({ content, matchPanel }: HeroSectionProps) {
 
   return (
     <section
-      className="relative overflow-hidden bg-[#0b0b0d] text-white"
+      className="relative overflow-hidden bg-[var(--surface-hero)] text-white"
       aria-labelledby="hero-heading"
     >
       <div className="mx-auto grid max-w-shell grid-cols-[1.2fr_0.8fr] items-center gap-14 px-6 pb-16 pt-18 max-[860px]:grid-cols-1 max-[860px]:gap-9 max-[860px]:pb-10 max-[860px]:pt-12">

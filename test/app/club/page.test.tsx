@@ -16,10 +16,10 @@ import Club from '@app/club/page';
 afterEach(cleanup);
 
 describe('Club 라우트 (app/club/page)', () => {
-  it('런타임 에러 없이 마운트되고 ClubPage(<main> + 탭 6개)가 렌더된다', () => {
+  it('런타임 에러 없이 마운트되고 ClubPage(<main> + 탭 4개)가 렌더된다', () => {
     const { container } = render(<Club />);
     expect(container.querySelector('main')).not.toBeNull();
-    expect(screen.getAllByRole('tab')).toHaveLength(6);
+    expect(screen.getAllByRole('tab')).toHaveLength(4);
   });
 
   it('초기 탭은 history — 연혁 타임라인이 기본 렌더된다', () => {

@@ -8,6 +8,11 @@ const FOOTER_COLS = [
   { heading: '더보기', links: ['기사', '검색', 'RSS', '문의'] },
 ] as const;
 
+// D-8: old-trafford.jpg 출처 표기 (CC BY-SA 3.0) — 공통 푸터 하단 바에 노출
+const PHOTO_CREDIT_PREFIX = 'Photo: Arne Müseler / ';
+const PHOTO_CREDIT_LICENSE = 'CC BY-SA 3.0';
+const PHOTO_LICENSE_URL = 'https://creativecommons.org/licenses/by-sa/3.0/';
+
 function MainFooter() {
   return (
     <footer
@@ -50,9 +55,22 @@ function MainFooter() {
           'text-[13px] text-[#71717a]',
         )}
       >
-        <span className="max-w-[640px]">
-          © 2026 Manchester United FC Hub — 팬 제작 비공식 사이트. 구단 공식 자산과 무관합니다.
-        </span>
+        <div className="flex flex-col gap-1 max-w-[640px]">
+          <span>
+            © 2026 Manchester United FC Hub — 팬 제작 비공식 사이트. 구단 공식 자산과 무관합니다.
+          </span>
+          <span>
+            {PHOTO_CREDIT_PREFIX}
+            <a
+              href={PHOTO_LICENSE_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              {PHOTO_CREDIT_LICENSE}
+            </a>
+          </span>
+        </div>
         <span>Glory Glory Man United</span>
       </div>
     </footer>

@@ -1,25 +1,28 @@
-import { Building2 } from 'lucide-react';
+import Image from 'next/image';
+
+const STADIUM_PHOTO_SRC = '/images/old-trafford.jpg';
+const STADIUM_PHOTO_SIZES = '(min-width: 1025px) 56vw, 100vw';
 
 export interface StadiumPhotoSlotProps {
-  /** aria-label에 쓰이는 구장명 — "{name} 전경 사진". */
+  /** alt 텍스트에 쓰이는 구장명 — "{name} 항공 전경". */
   name: string;
 }
 
 /**
- * 구장 사진 슬롯 — 레포에 실제 이미지 자산이 없어 PlayerCard(f_shared/ui) 실루엣
- * 플레이스홀더 관습을 따라 아이콘 워터마크로 대체한 플레이스홀더.
- * `role="img"` + `aria-label`로 스크린 리더에 사진 자리임을 알린다(ResultBadge 선례).
+ * 구장 사진 슬롯 — public/images/old-trafford.jpg(로컬 자산, 16:10)를 next/image로
+ * 렌더한다. 실제 `<img>`가 의미 있는 alt를 가지므로 role="img"+aria-label 중복 선언은
+ * 두지 않는다.
  */
 export function StadiumPhotoSlot({ name }: StadiumPhotoSlotProps) {
   return (
-    <div
-      role="img"
-      aria-label={`${name} 전경 사진`}
-      className="relative aspect-[16/10] overflow-hidden rounded-lg border border-border bg-linear-to-b from-muted to-muted/60"
-    >
-      <div className="absolute inset-0 grid place-items-center">
-        <Building2 size={48} strokeWidth={1.5} aria-hidden="true" className="text-muted-foreground/40" />
-      </div>
+    <div className="relative aspect-[16/10] overflow-hidden rounded-lg border border-border">
+      <Image
+        src={STADIUM_PHOTO_SRC}
+        alt={`${name} 항공 전경`}
+        fill
+        sizes={STADIUM_PHOTO_SIZES}
+        className="object-cover"
+      />
     </div>
   );
 }

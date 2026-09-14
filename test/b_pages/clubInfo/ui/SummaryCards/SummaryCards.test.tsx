@@ -2,7 +2,7 @@
  * SummaryCards 전용 테스트 — QA 커버리지 갭 메우기(qa-coverage).
  *
  * 검증 목적:
- * - 8개 카드가 label·en·value·sub 그대로 렌더되는가
+ * - 6개 카드가 label·en·value·sub 그대로 렌더되는가
  * - ICON_MAP에 없는 icon name을 주입했을 때 FALLBACK_ICON으로 대체되어
  *   크래시 없이 렌더되는가(SummaryCards.tsx:53 미도달 분기)
  */
@@ -18,11 +18,11 @@ import type { SummaryCard } from '@pages/clubInfo/model/types';
 afterEach(cleanup);
 
 describe('SummaryCards', () => {
-  it('8개 카드를 렌더하고 각 카드는 label·en·value·sub를 표시한다', () => {
+  it('6개 카드를 렌더하고 각 카드는 label·en·value·sub를 표시한다', () => {
     render(<SummaryCards summaryCards={summaryCards} />);
 
     const list = screen.getByRole('list', { name: '구단 요약 정보' });
-    expect(within(list).getAllByRole('listitem')).toHaveLength(8);
+    expect(within(list).getAllByRole('listitem')).toHaveLength(6);
 
     summaryCards.forEach((card) => {
       // label·en은 BilingualLabel(f_shared/ui)이 kr/en을 별도 <span>으로 렌더한다

@@ -19,10 +19,10 @@ afterEach(cleanup);
 
 describe('EmptyTab', () => {
   it('"{label} 준비 중이에요" 제목·설명을 렌더한다 (알림 받기 버튼은 임시 비활성화)', () => {
-    render(<EmptyTab label="하이라이트" copy={emptyTabCopy.highlights} />);
+    render(<EmptyTab label="팀통계" copy={emptyTabCopy.stats} />);
 
-    expect(screen.getByRole('heading', { name: '하이라이트 준비 중이에요' })).toBeInTheDocument();
-    expect(screen.getByText(emptyTabCopy.highlights.desc)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '팀통계 준비 중이에요' })).toBeInTheDocument();
+    expect(screen.getByText(emptyTabCopy.stats.desc)).toBeInTheDocument();
     // 알림 버튼 임시 비활성화 — 원복 시 아래 주석 해제
     // expect(screen.getByRole('button', { name: /업데이트되면 알림 받기/ })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /업데이트되면 알림 받기/ })).not.toBeInTheDocument();

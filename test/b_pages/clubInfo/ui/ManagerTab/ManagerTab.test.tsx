@@ -1,10 +1,7 @@
 /**
- * ManagerTab 파생 계산 테스트 — QA 검증(qa-clubInfo).
- *
- * 검증 목적:
- * - 승률(win rate) = round(w / p * 100)이 렌더 중 정확히 파생되는가 (mockData: 19/38 = 50%)
- * - 경계값: p=0(0경기) 입력 시 division-by-zero 없이 대체 텍스트('—')로 가드되는가
- *   (code-review 후속 조치 — 이전에는 NaN%가 렌더되는 것을 "이슈로 기록"만 했으나 가드 적용됨)
+ * ManagerTab 조립 테스트 — mgr-detail 2열 그리드(좌: 직함·이름 + ManagerFacts / 우: mgr-shot + ManagerCareer)가
+ * 올바른 서브컴포넌트로 조립되는지 검증한다. 각 서브컴포넌트의 상세 렌더·엣지 케이스는
+ * ManagerFacts.test.tsx·ManagerCareer.test.tsx가 각자 소유한다(§code-conventions 컴포넌트 1:테스트 1).
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
@@ -16,28 +13,30 @@ import { manager } from '@pages/clubInfo/model/mockData';
 
 afterEach(cleanup);
 
-describe('ManagerTab 승률 파생 계산', () => {
-  it('mockData 기준 19승/38경기 → 50% 로 표시된다', () => {
+describe('ManagerTab', () => {
+  it('직함 뱃지·이름·영문명이 렌더된다', () => {
     render(<ManagerTab manager={manager} />);
-    expect(manager.record).toEqual({ p: 38, w: 19, d: 9, l: 10 });
-    expect(screen.getByText('50%')).toBeInTheDocument();
-    expect(
-      screen.getByText('38경기 기준', { exact: false })
-    ).toBeInTheDocument();
+    expect(screen.getByText(manager.role)).toBeInTheDocument();
+    expect(screen.getByRole('heading', { level: 2, name: manager.name })).toBeInTheDocument();
+    expect(screen.getByText(manager.en)).toBeInTheDocument();
   });
 
-  it('P/W/D/L 4셀이 record 값 그대로 렌더된다', () => {
+  it('ManagerFacts(감독 정보 5행)가 조립된다', () => {
     render(<ManagerTab manager={manager} />);
-    expect(screen.getByText('38')).toBeInTheDocument();
-    expect(screen.getByText('19')).toBeInTheDocument();
-    expect(screen.getByText('9')).toBeInTheDocument();
-    expect(screen.getByText('10')).toBeInTheDocument();
+    expect(screen.getByText('출생')).toBeInTheDocument();
+    expect(screen.getByText(manager.born)).toBeInTheDocument();
   });
 
-  it('경계값: p=0이면 NaN% 대신 대체 텍스트(—)가 렌더되고 크래시 없다', () => {
-    const zeroMatchs = { ...manager, record: { p: 0, w: 0, d: 0, l: 0 } };
-    expect(() => render(<ManagerTab manager={zeroMatchs} />)).not.toThrow();
-    expect(screen.getByText('—')).toBeInTheDocument();
-    expect(screen.queryByText('NaN%')).not.toBeInTheDocument();
+  it('mgr-shot 사진 슬롯에 Silhouette 플레이스홀더가 렌더된다', () => {
+    const { container } = render(<ManagerTab manager={manager} />);
+    // Silhouette은 fill="currentColor"로 렌더되어 stroke 기반인 lucide 아이콘(ManagerFacts)과 구분된다.
+    const silhouette = container.querySelector('svg[aria-hidden="true"][fill="currentColor"]');
+    expect(silhouette).not.toBeNull();
+  });
+
+  it('ManagerCareer(경력 · Career)가 조립된다', () => {
+    render(<ManagerTab manager={manager} />);
+    expect(screen.getByRole('heading', { level: 3, name: '경력 · Career' })).toBeInTheDocument();
+    expect(screen.getAllByRole('listitem').length).toBeGreaterThan(0);
   });
 });
