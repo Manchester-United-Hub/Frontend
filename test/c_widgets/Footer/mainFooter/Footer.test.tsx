@@ -8,6 +8,8 @@
  * - 저작권 텍스트 (Manchester United FC Hub · 2026)
  * - 로고 워드마크 텍스트 (MANCHESTER UNITED)
  * - 링크 항목 수 ≥ 12 (3컬럼 × 4) — ADR-7 비링크(span), dead link 없음
+ * - 구장 사진 라이선스 크레딧 textContent (D-6/D-8 원문 일치)
+ * - 라이선스 앵커의 href·target·rel
  *
  * ⚠️ Footer는 app/layout 전역 소관. LandingPage 내부에 포함되지 않으므로
  *    LandingPage 스모크에서 footer를 기대하지 않는다 — 이 파일에서만 검증.
@@ -15,6 +17,7 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 afterEach(cleanup);
@@ -82,5 +85,18 @@ describe('MainFooter 위젯', () => {
     expect(items.length).toBeGreaterThanOrEqual(12);
     // dead link(href="#")를 남기지 않는다
     expect(container.querySelectorAll('footer a[href="#"]').length).toBe(0);
+  });
+
+  it('구장 사진 라이선스 크레딧 textContent가 D-6 원문과 일치', () => {
+    const { container } = render(<MainFooter />);
+    expect(container.textContent).toContain('Photo: Arne Müseler / CC BY-SA 3.0');
+  });
+
+  it('라이선스 앵커의 href·target·rel', () => {
+    const { container } = render(<MainFooter />);
+    const anchor = container.querySelector('footer a[href="https://creativecommons.org/licenses/by-sa/3.0/"]');
+    expect(anchor).not.toBeNull();
+    expect(anchor).toHaveAttribute('target', '_blank');
+    expect(anchor).toHaveAttribute('rel', 'noreferrer');
   });
 });
