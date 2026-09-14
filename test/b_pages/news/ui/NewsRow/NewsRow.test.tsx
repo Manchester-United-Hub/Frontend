@@ -11,9 +11,8 @@ const baseProps = {
   description: '후반 추가시간에 터진 극적인 결승골이 팬들을 열광시켰다.',
   link: 'https://news.example.com/a',
   date: '2025.05.18',
+  source: '네이버 스포츠',
 };
-
-const DEFAULT_NEWS_IMAGE = '/images/news-default.svg';
 
 describe('NewsRow', () => {
   it('제목·발행일을 렌더하고 외부 원문 링크로 연결한다', () => {
@@ -28,29 +27,34 @@ describe('NewsRow', () => {
     expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   });
 
-  it('본문을 한 줄로 clamp해 노출한다(전문 렌더, CSS로 말줄임)', () => {
+  it('본문을 두 줄로 clamp해 노출한다(전문 렌더, CSS로 말줄임)', () => {
     render(<NewsRow {...baseProps} />);
 
     const body = screen.getByText(baseProps.description);
     expect(body).toBeInTheDocument();
-    expect(body).toHaveClass('line-clamp-1');
+    expect(body).toHaveClass('line-clamp-2');
   });
 
-  it('imageUrl이 있으면 썸네일로 사용한다', () => {
-    const { container } = render(
-      <NewsRow {...baseProps} imageUrl="https://cdn.example.com/thumb.jpg" />,
-    );
-    const img = container.querySelector('img');
+  it('출처·구분점·발행일을 메타 줄에 렌더한다', () => {
+    render(<NewsRow {...baseProps} />);
 
-    expect(img).toHaveAttribute('src', 'https://cdn.example.com/thumb.jpg');
+    expect(screen.getByText(baseProps.source)).toBeInTheDocument();
+    expect(screen.getByText('·')).toBeInTheDocument();
+    expect(screen.getByText(baseProps.date)).toBeInTheDocument();
   });
 
-  it('imageUrl이 없으면 기본 이미지로 폴백하고 장식용 alt를 둔다', () => {
-    const { container } = render(<NewsRow {...baseProps} />);
-    const img = container.querySelector('img');
+  it('source가 빈 문자열이면 구분점(·)도 렌더하지 않는다', () => {
+    render(<NewsRow {...baseProps} source="" />);
 
-    expect(img).toHaveAttribute('src', DEFAULT_NEWS_IMAGE);
-    expect(img).toHaveAttribute('alt', '');
-    expect(img).toHaveAttribute('loading', 'lazy');
+    expect(screen.queryByText('·')).not.toBeInTheDocument();
+    expect(screen.getByText(baseProps.date)).toBeInTheDocument();
+  });
+
+  it('포커스 링을 inset으로 그려 카드의 overflow-hidden에 잘리지 않는다', () => {
+    render(<NewsRow {...baseProps} />);
+
+    const link = screen.getByRole('link');
+    expect(link).toHaveClass('focus-visible:ring-inset');
+    expect(link).not.toHaveClass('focus-visible:ring-offset-2');
   });
 });
