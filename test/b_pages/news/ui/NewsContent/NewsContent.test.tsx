@@ -91,23 +91,13 @@ describe('NewsContent', () => {
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
 
-  it('기사가 있으면 카운트와 리스트를 렌더하고, 다음 페이지가 없으면 버튼을 숨긴다', () => {
+  it('기사가 있으면 리스트를 렌더하고, 다음 페이지가 없으면 버튼을 숨긴다', () => {
     mockFeed({ newsItems });
 
     render(<NewsContent />);
 
-    expect(screen.getByText('개의 기사', { exact: false })).toBeInTheDocument();
-    expect(screen.getByText(String(newsItems.length))).toBeInTheDocument();
     expect(screen.getByRole('list')).toBeInTheDocument();
     expect(screen.queryByRole('button')).not.toBeInTheDocument();
-  });
-
-  it('다음 페이지가 남아 있으면 카운트를 숨긴다(부분 개수를 총계로 오인 방지)', () => {
-    mockFeed({ newsItems, hasNextPage: true });
-
-    render(<NewsContent />);
-
-    expect(screen.queryByText('개의 기사', { exact: false })).not.toBeInTheDocument();
   });
 
   it('다음 페이지가 있으면 더 보기 버튼 클릭 시 콜백을 호출한다', async () => {
