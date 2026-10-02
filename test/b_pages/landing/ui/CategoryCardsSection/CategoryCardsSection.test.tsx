@@ -41,7 +41,7 @@ describe('CategoryCardsSection', () => {
   it('카테고리 6개 한글 이름 모두 렌더', () => {
     const { container } = render(<CategoryCardsSection />);
     const text = container.textContent ?? '';
-    ['시즌', '선수', '구단', '하이라이트', '기사', '공식 Store'].forEach(
+    ['시즌', '선수', '구단', '기사', '공식 Store'].forEach(
       (name) => {
         expect(text).toContain(name);
       }
@@ -51,7 +51,7 @@ describe('CategoryCardsSection', () => {
   it('카테고리 6개 영문 이름 모두 렌더', () => {
     const { container } = render(<CategoryCardsSection />);
     const text = container.textContent ?? '';
-    ['Season', 'Players', 'Club', 'Highlights', 'NEWS', 'STORE'].forEach(
+    ['Season', 'Players', 'Club', 'NEWS', 'STORE'].forEach(
       (en) => {
         expect(text).toContain(en);
       }
@@ -63,12 +63,12 @@ describe('CategoryCardsSection', () => {
     expect(container.textContent).toContain('일정·결과·순위표를 한눈에 추적');
   });
 
-  it('ul[role=list]의 직계 자식 li가 6개다', () => {
+  it('ul[role=list]의 직계 자식 li가 5개다', () => {
     const { container } = render(<CategoryCardsSection />);
     const list = container.querySelector('ul[role="list"]');
     expect(list).not.toBeNull();
     const items = list!.querySelectorAll(':scope > li');
-    expect(items).toHaveLength(6);
+    expect(items).toHaveLength(5);
   });
 
   it('외부 링크(store)는 a[target="_blank"]이고 href가 스토어 URL이다', () => {
@@ -84,17 +84,17 @@ describe('CategoryCardsSection', () => {
     expect(outerLink).toHaveAttribute('rel', 'noreferrer');
   });
 
-  it('내부 카테고리 5개는 target 속성이 없다', () => {
+  it('내부 카테고리 4개는 target 속성이 없다', () => {
     const { container } = render(<CategoryCardsSection />);
     const list = container.querySelector('ul[role="list"]');
     const innerLinks = list!.querySelectorAll('li > a:not([target])');
-    expect(innerLinks).toHaveLength(5);
+    expect(innerLinks).toHaveLength(4);
   });
 
-  it('lg 뷰포트에서 카드 6개가 한 줄에 배치되도록 grid-cols-6를 적용한다', () => {
+  it('lg 뷰포트에서 카드 5개가 한 줄에 배치되도록 grid-cols-5를 적용한다', () => {
     const { container } = render(<CategoryCardsSection />);
     const list = container.querySelector('ul[role="list"]');
-    expect(list).toHaveClass('lg:grid-cols-6');
+    expect(list).toHaveClass('lg:grid-cols-5');
   });
 
   it('섹션 aria-labelledby가 h2 id와 일치', () => {

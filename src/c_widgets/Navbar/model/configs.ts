@@ -22,13 +22,14 @@ const NAV_ITEMS: NavItem[] = [
     href: '/club',
     description: '연혁·홈구장·팀 통계와 감독',
   },
-  {
-    id: 'highlights',
-    label: '하이라이트',
-    labelEn: 'Highlights',
-    href: '/highlights',
-    description: '경기 영상과 베스트 순간 모음',
-  },
+  // 1.0.0 릴리스 제외 — 하이라이트 실 API 연동 후 복구 (랜딩 카테고리 카드도 이 목록을 쓴다)
+  // {
+  //   id: 'highlights',
+  //   label: '하이라이트',
+  //   labelEn: 'Highlights',
+  //   href: '/highlights',
+  //   description: '경기 영상과 베스트 순간 모음',
+  // },
   {
     id: 'news',
     label: '기사',

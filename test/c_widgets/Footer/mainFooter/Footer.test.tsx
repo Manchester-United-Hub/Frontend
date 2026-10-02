@@ -4,10 +4,10 @@
  * 검증 목적:
  * - <footer> 시맨틱 엘리먼트 렌더
  * - 링크 컬럼 헤딩 2개 렌더 (둘러보기·더보기), 구단 열 없음
- * - 둘러보기 컬럼 링크 텍스트 (시즌·선수·하이라이트·기사)
+ * - 둘러보기 컬럼 링크 텍스트 (시즌·선수·기사)
  * - 저작권 텍스트 (Manchester United FC Hub · 2026)
  * - 로고 워드마크 텍스트 (MANCHESTER UNITED)
- * - 링크 5개의 href가 실제 라우트 — dead link 없음, 비노출 항목 없음
+ * - 링크 4개의 href가 실제 라우트 — dead link 없음, 비노출 항목 없음
  * - 구장 사진 라이선스 크레딧 textContent (D-6/D-8 원문 일치)
  * - 라이선스 앵커의 href·target·rel
  *
@@ -60,10 +60,10 @@ describe('MainFooter 위젯', () => {
     });
   });
 
-  it('둘러보기 컬럼 링크 텍스트 (시즌·선수·하이라이트·기사)', () => {
+  it('둘러보기 컬럼 링크 텍스트 (시즌·선수·기사)', () => {
     const { container } = render(<MainFooter />);
     const text = container.textContent ?? '';
-    ['시즌', '선수', '하이라이트', '기사'].forEach((link) => {
+    ['시즌', '선수', '기사'].forEach((link) => {
       expect(text).toContain(link);
     });
   });
@@ -82,11 +82,11 @@ describe('MainFooter 위젯', () => {
   it('링크 항목 5개가 실제 라우트로 연결되고 dead link가 없다', () => {
     const { container } = render(<MainFooter />);
     const items = container.querySelectorAll('footer ul[role="list"] li');
-    expect(items.length).toBe(5);
+    expect(items.length).toBe(4);
     const hrefs = Array.from(
       container.querySelectorAll('footer ul[role="list"] a[href]'),
     ).map((anchor) => anchor.getAttribute('href'));
-    expect(hrefs).toEqual(['/season', '/players', '/club', '/highlights', '/news']);
+    expect(hrefs).toEqual(['/season', '/players', '/club', '/news']);
     expect(container.querySelectorAll('footer a[href="#"]').length).toBe(0);
   });
 
