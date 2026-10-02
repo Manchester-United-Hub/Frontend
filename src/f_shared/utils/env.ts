@@ -1,9 +1,10 @@
-import { z } from 'zod';
+// import { z } from 'zod';
 
-const EnvSchema = z.object({
-  BASE_URL: z.httpUrl(),
-});
+// const EnvSchema = z.object({
+//   BASE_URL: z.httpUrl(),
+// });
 
-const env = EnvSchema.parse(process.env);
+// const env = EnvSchema.parse(process.env);
+const env = process.env;
 
 export { env };

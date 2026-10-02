@@ -18,9 +18,11 @@ export async function GET(request: NextRequest) {
   const parsed = NewsQuerySchema.safeParse(
     Object.fromEntries(request.nextUrl.searchParams)
   );
+
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.message }, { status: 400 });
   }
   const result = await fetchNewsList(parsed.data);
+
   return NextResponse.json(toBffResponse(result), { status: result.status });
 }

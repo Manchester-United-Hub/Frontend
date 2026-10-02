@@ -1,9 +1,9 @@
 ---
 name: 이슈 생성 템플릿
 about: 이 템플릿 사용하셔서 이슈 생성하시면 됩니다 !
-title: ""
-labels: bug, chore, feature, refactor
-assignees: ""
+title: ''
+labels: progress
+assignees: ''
 ---
 
 ## 🎯 목표

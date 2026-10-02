@@ -1,0 +1,259 @@
+/**
+ * usePlayerListFilters 훅 단위 테스트 (ST-2, ST-006)
+ *
+ * 검증 목적:
+ * - 초기값과 results가 전체 목록을 반영한다
+ * - setter로 필터를 바꾸면 results가 재계산된다
+ * - refresh는 즉시 isLoading=true가 되고 REFRESH_DELAY_MS 후 false로 돌아온다(ADR-8)
+ * - resetFilters는 position/decade/squad/query를 모두 초기화한다
+ * - 언마운트 시 pending 타이머가 clearTimeout된다(ADR-8)
+ * - pageResults가 pageSize 인자 단위로 잘리고 totalPages가 결과 수를 따른다
+ * - 필터·검색·resetFilters는 항상 첫 페이지로 되돌린다(시안 동작)
+ * - 목록이 줄어 현재 페이지가 사라지면 마지막 페이지로 보정된다
+ * - pageSize가 런타임에 줄거나(A-7 수용 동작) 늘 때(초과 페이지 클램프) 동작한다(ST-006)
+ *
+ * ST-006 변경점: pageSize가 상수(ROSTER_PAGE_SIZE)에서 인자로 바뀌었다(S-13). src 상수를
+ * import하지 않고 이 파일의 리터럴로 pageSize를 직접 넘긴다(S-16).
+ */
+
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { act, renderHook } from '@testing-library/react';
+
+import {
+  REFRESH_DELAY_MS,
+  usePlayerListFilters,
+} from '@features/player/model/usePlayerListFilters';
+import { ALL_FILTER_KEY } from '@entities/player/model/playerFilter';
+import type { PlayerListItem } from '@entities/player/model/playerListItem';
+
+/** 이 파일 전용 리터럴 페이지 크기(S-16) — src의 페이지 크기 상수를 import하지 않는다. */
+const PAGE_SIZE = 10;
+
+const players: PlayerListItem[] = [
+  {
+    id: 'bruno',
+    number: 8,
+    name: '브루누 페르난데스',
+    nameEn: 'Bruno Fernandes',
+    position: 'MF',
+    nationality: '포르투갈',
+    flagCode: 'pt',
+    years: '2020–현재',
+    status: 'active',
+    squad: '1군',
+  },
+  {
+    id: 'rooney',
+    number: 10,
+    name: '웨인 루니',
+    nameEn: 'Wayne Rooney',
+    position: 'FW',
+    nationality: '잉글랜드',
+    flagCode: 'gb',
+    years: '2004–2017',
+    status: 'retired',
+    squad: '레전드',
+  },
+];
+
+/** 페이지네이션 검증용 — 포지션만 다르게 준 N명. */
+const buildPlayers = (count: number): PlayerListItem[] =>
+  Array.from({ length: count }, (_, index) => ({
+    id: `p${index}`,
+    number: index,
+    name: `선수${index}`,
+    nameEn: `player${index}`,
+    position: index === 0 ? 'GK' : 'MF',
+    nationality: '잉글랜드',
+    flagCode: 'gb',
+    years: '2020',
+    status: 'active',
+    squad: '1군',
+  }));
+
+describe('usePlayerListFilters', () => {
+  beforeEach(() => vi.useFakeTimers());
+  afterEach(() => vi.useRealTimers());
+
+  it('초기값 — 필터는 all, query는 빈 문자열, results는 전체 목록', () => {
+    const { result } = renderHook(() => usePlayerListFilters(players, PAGE_SIZE));
+
+    expect(result.current.position).toBe(ALL_FILTER_KEY);
+    expect(result.current.decade).toBe(ALL_FILTER_KEY);
+    expect(result.current.squad).toBe(ALL_FILTER_KEY);
+    expect(result.current.query).toBe('');
+    expect(result.current.view).toBe('card');
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.results).toHaveLength(2);
+  });
+
+  it('setPosition으로 필터를 바꾸면 results가 재계산된다', () => {
+    const { result } = renderHook(() => usePlayerListFilters(players, PAGE_SIZE));
+
+    act(() => result.current.setPosition('FW'));
+
+    expect(result.current.position).toBe('FW');
+    expect(result.current.results.map((p) => p.id)).toEqual(['rooney']);
+  });
+
+  it('refresh — 즉시 isLoading=true, REFRESH_DELAY_MS 후 false로 복귀한다', () => {
+    const { result } = renderHook(() => usePlayerListFilters(players, PAGE_SIZE));
+
+    act(() => result.current.refresh());
+    expect(result.current.isLoading).toBe(true);
+
+    act(() => vi.advanceTimersByTime(REFRESH_DELAY_MS));
+    expect(result.current.isLoading).toBe(false);
+  });
+
+  it('refresh — 이미 refreshTimeoutRef.current가 있는 경우 clearTimeout한다.', () => {
+    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+    const { result } = renderHook(() => usePlayerListFilters(players, PAGE_SIZE));
+
+    act(() => result.current.refresh()); // 1st: refreshTimeoutRef.current 설정
+    act(() => result.current.refresh()); // 2nd: 기존 ref 발견 → clearTimeout 발동
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+    clearTimeoutSpy.mockRestore();
+  });
+
+  it('resetFilters — position/decade/squad/query를 모두 초기화한다', () => {
+    const { result } = renderHook(() => usePlayerListFilters(players, PAGE_SIZE));
+
+    act(() => {
+      result.current.setPosition('FW');
+      result.current.setDecade('2000');
+      result.current.setSquad('레전드');
+      result.current.setQuery('루니');
+    });
+
+    act(() => result.current.resetFilters());
+
+    expect(result.current.position).toBe(ALL_FILTER_KEY);
+    expect(result.current.decade).toBe(ALL_FILTER_KEY);
+    expect(result.current.squad).toBe(ALL_FILTER_KEY);
+    expect(result.current.query).toBe('');
+  });
+
+  it('결과가 한 페이지에 들어가면 totalPages는 1, pageResults는 전체다', () => {
+    const { result } = renderHook(() => usePlayerListFilters(players, PAGE_SIZE));
+
+    expect(result.current.page).toBe(1);
+    expect(result.current.totalPages).toBe(1);
+    expect(result.current.pageResults).toHaveLength(2);
+  });
+
+  it('pageResults는 pageSize 단위로 잘리고 setPage로 다음 조각을 노출한다', () => {
+    const many = buildPlayers(PAGE_SIZE + 3);
+    const { result } = renderHook(() => usePlayerListFilters(many, PAGE_SIZE));
+
+    expect(result.current.totalPages).toBe(2);
+    expect(result.current.pageResults).toHaveLength(PAGE_SIZE);
+    expect(result.current.pageResults[0]?.id).toBe('p0');
+
+    act(() => result.current.setPage(2));
+
+    expect(result.current.page).toBe(2);
+    expect(result.current.pageResults).toHaveLength(3);
+    expect(result.current.pageResults[0]?.id).toBe(`p${PAGE_SIZE}`);
+  });
+
+  it('필터를 바꾸면 첫 페이지로 되돌아간다', () => {
+    const many = buildPlayers(PAGE_SIZE * 2 + 1);
+    const { result } = renderHook(() => usePlayerListFilters(many, PAGE_SIZE));
+
+    act(() => result.current.setPage(3));
+    expect(result.current.page).toBe(3);
+
+    act(() => result.current.setPosition('MF'));
+
+    expect(result.current.page).toBe(1);
+  });
+
+  it('검색어를 바꿔도 첫 페이지로 되돌아간다', () => {
+    const many = buildPlayers(PAGE_SIZE * 2 + 1);
+    const { result } = renderHook(() => usePlayerListFilters(many, PAGE_SIZE));
+
+    act(() => result.current.setPage(2));
+    act(() => result.current.setQuery('player'));
+
+    expect(result.current.page).toBe(1);
+  });
+
+  it('resetFilters도 첫 페이지로 되돌린다', () => {
+    const many = buildPlayers(PAGE_SIZE * 2 + 1);
+    const { result } = renderHook(() => usePlayerListFilters(many, PAGE_SIZE));
+
+    act(() => result.current.setPage(2));
+    act(() => result.current.resetFilters());
+
+    expect(result.current.page).toBe(1);
+  });
+
+  it('목록이 줄어 현재 페이지가 사라지면 마지막 페이지로 보정한다', () => {
+    const many = buildPlayers(PAGE_SIZE * 2 + 1);
+    const { result, rerender } = renderHook(
+      ({ list }) => usePlayerListFilters(list, PAGE_SIZE),
+      { initialProps: { list: many } },
+    );
+
+    act(() => result.current.setPage(3));
+    expect(result.current.page).toBe(3);
+
+    rerender({ list: many.slice(0, PAGE_SIZE + 1) });
+
+    expect(result.current.totalPages).toBe(2);
+    expect(result.current.page).toBe(2);
+    expect(result.current.pageResults).toHaveLength(1);
+  });
+
+  it('언마운트 시 pending 새로고침 타이머를 clearTimeout한다', () => {
+    const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
+    const { result, unmount } = renderHook(() => usePlayerListFilters(players, PAGE_SIZE));
+
+    act(() => result.current.refresh());
+    unmount();
+
+    expect(clearTimeoutSpy).toHaveBeenCalled();
+    clearTimeoutSpy.mockRestore();
+  });
+
+  describe('pageSize가 런타임에 바뀔 때(A-7 — 새 보정 로직 없이 기존 클램프만으로 처리)', () => {
+    it('25개 결과·크기 10·3페이지에서 크기가 6이 되면 totalPages=5·page 유지·pageResults가 비지 않는다', () => {
+      const many = buildPlayers(25);
+      const { result, rerender } = renderHook(
+        ({ pageSize }) => usePlayerListFilters(many, pageSize),
+        { initialProps: { pageSize: 10 } },
+      );
+
+      act(() => result.current.setPage(3));
+      expect(result.current.page).toBe(3);
+      expect(result.current.totalPages).toBe(3);
+
+      rerender({ pageSize: 6 });
+
+      expect(result.current.totalPages).toBe(5);
+      expect(result.current.page).toBe(3);
+      expect(result.current.pageResults.length).toBeGreaterThan(0);
+      expect(result.current.pageResults).toHaveLength(6);
+    });
+
+    it('크기가 6→10으로 커지면 초과 페이지가 마지막 페이지로 클램프된다', () => {
+      const many = buildPlayers(25);
+      const { result, rerender } = renderHook(
+        ({ pageSize }) => usePlayerListFilters(many, pageSize),
+        { initialProps: { pageSize: 6 } },
+      );
+
+      act(() => result.current.setPage(5));
+      expect(result.current.page).toBe(5);
+      expect(result.current.totalPages).toBe(5);
+
+      rerender({ pageSize: 10 });
+
+      expect(result.current.totalPages).toBe(3);
+      expect(result.current.page).toBe(3);
+      expect(result.current.pageResults.length).toBeGreaterThan(0);
+    });
+  });
+});

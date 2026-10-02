@@ -70,4 +70,44 @@ describe('fetchNewsList', () => {
     expect(result.status).toBe(500);
     expect(result.data).toEqual(errorData);
   });
+
+  it('HTTP는 성공인데 응답 스키마가 어긋나면 502와 INVALID_RESPONSE_SCHEMA를 반환한다', async () => {
+    const mockRes = {
+      ok: true,
+      status: 200,
+      json: vi.fn().mockResolvedValue({ newsList: 'not-an-array' }),
+    };
+    vi.mocked(serverFetcher.get).mockResolvedValue(
+      mockRes as unknown as Response
+    );
+
+    const result = await fetchNewsList(validQuery);
+
+    expect(result.isSuccess).toBe(false);
+    expect(result.status).toBe(502);
+    if (!result.isSuccess) {
+      expect(result.data.code).toBe('INVALID_RESPONSE_SCHEMA');
+    }
+  });
+
+  it('종료 페이지(nextCursorAt·nextCursorId가 null)는 스키마 검증을 통과한다', async () => {
+    const data = {
+      newsList: [],
+      nextCursorAt: null,
+      nextCursorId: null,
+    };
+    const mockRes = {
+      ok: true,
+      status: 200,
+      json: vi.fn().mockResolvedValue(data),
+    };
+    vi.mocked(serverFetcher.get).mockResolvedValue(
+      mockRes as unknown as Response
+    );
+
+    const result = await fetchNewsList(validQuery);
+
+    expect(result.isSuccess).toBe(true);
+    expect(result.data).toEqual(data);
+  });
 });
