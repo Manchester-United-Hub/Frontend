@@ -1,6 +1,6 @@
 'use client';
 
-import { Newspaper } from 'lucide-react';
+import { ChevronDown, Newspaper } from 'lucide-react';
 
 import { DEFAULT_NEWS_PAGE_SIZE } from '@features/news/api';
 import { Button, StateBox } from '@shared/ui';
@@ -41,19 +41,16 @@ function NewsContent() {
 
   return (
     <>
-      {hasNextPage ? null : (
-        <p className="text-sm text-muted-foreground">
-          <b className="text-foreground">{newsItems.length}</b>개의 기사
-        </p>
-      )}
       <NewsList newsItems={newsItems} />
       {hasNextPage ? (
-        <div className="mt-7 flex justify-center">
+        <div className="flex justify-center pt-7">
           <Button
             variant="outline"
+            size="lg"
             onClick={onLoadMore}
             disabled={isFetchingNextPage}
           >
+            <ChevronDown size={16} aria-hidden="true" />
             {isFetchingNextPage ? '불러오는 중…' : '기사 더 보기'}
           </Button>
         </div>
