@@ -7,8 +7,7 @@ import { useState } from 'react';
 /**
  * PlayerCard(f_shared, 수정 금지)의 photo 슬롯에 주입하는 실사진.
  *
- * next/image는 로딩 실패 시 handleImageError(f_shared/utils)처럼 src를 직접 교체할 수
- * 없다(NewsRow.tsx 상단 주석 — next/image 전환 시 state 기반 폴백이 필요하다는 선례).
+ * next/image는 로딩 실패 시 handleImageError(f_shared/utils)처럼 src를 직접 교체할 수 없다.
  * 그래서 Crest(f_shared/ui/Crest)와 동일하게 에러를 로컬 state로 추적한다.
  *
  * `PlayerCard`의 `photo ?? <Silhouette />`는 **slot으로 넘긴 값**만 본다. 이 컴포넌트가

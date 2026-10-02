@@ -14,9 +14,6 @@
 
 import type { NewsItem } from '@pages/news/model';
 
-/** 썸네일 있는 기사용 — 결정적 목 이미지(추후 실 피드 이미지로 대체). */
-const mockImage = (seed: string): string => `https://picsum.photos/seed/${seed}/640/360`;
-
 /** 맨유 허브 뉴스 목데이터 (최신순). id가 클수록 최신. */
 export const MOCK_NEWS: NewsItem[] = [
   {
@@ -27,7 +24,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/liverpool-2-1',
     originalLink: 'https://original.example.com/mu/liverpool-2-1',
     publishedAt: '2025-05-18T22:45',
-    imageUrl: mockImage('mu-liverpool'),
   },
   {
     id: 20,
@@ -37,7 +33,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/amorim-shape',
     originalLink: 'https://original.example.com/mu/amorim-shape',
     publishedAt: '2025-05-14T10:00',
-    imageUrl: mockImage('mu-amorim'),
   },
   {
     id: 19,
@@ -56,7 +51,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/mainoo-interview',
     originalLink: 'https://original.example.com/mu/mainoo-interview',
     publishedAt: '2025-05-06T08:00',
-    imageUrl: mockImage('mu-mainoo'),
   },
   {
     id: 17,
@@ -75,7 +69,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/derby-draw',
     originalLink: 'https://original.example.com/mu/derby-draw',
     publishedAt: '2025-04-13T23:10',
-    imageUrl: mockImage('mu-derby'),
   },
   {
     id: 15,
@@ -94,7 +87,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/academy-next',
     originalLink: 'https://original.example.com/mu/academy-next',
     publishedAt: '2025-04-01T10:30',
-    imageUrl: mockImage('mu-academy'),
   },
   {
     id: 13,
@@ -113,7 +105,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/set-piece',
     originalLink: 'https://original.example.com/mu/set-piece',
     publishedAt: '2025-03-18T12:00',
-    imageUrl: mockImage('mu-setpiece'),
   },
   {
     id: 11,
@@ -132,7 +123,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/garnacho-goal',
     originalLink: 'https://original.example.com/mu/garnacho-goal',
     publishedAt: '2025-03-04T20:00',
-    imageUrl: mockImage('mu-garnacho'),
   },
   {
     id: 9,
@@ -151,7 +141,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/casemiro-role',
     originalLink: 'https://original.example.com/mu/casemiro-role',
     publishedAt: '2025-02-17T11:00',
-    imageUrl: mockImage('mu-casemiro'),
   },
   {
     id: 7,
@@ -170,7 +159,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/winter-window',
     originalLink: 'https://original.example.com/mu/winter-window',
     publishedAt: '2025-02-03T18:20',
-    imageUrl: mockImage('mu-window'),
   },
   {
     id: 5,
@@ -189,7 +177,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/amorim-100days',
     originalLink: 'https://original.example.com/mu/amorim-100days',
     publishedAt: '2025-01-20T09:00',
-    imageUrl: mockImage('mu-100days'),
   },
   {
     id: 3,
@@ -208,7 +195,6 @@ export const MOCK_NEWS: NewsItem[] = [
     link: 'https://news.example.com/mu/new-year-win',
     originalLink: 'https://original.example.com/mu/new-year-win',
     publishedAt: '2025-01-04T23:05',
-    imageUrl: mockImage('mu-newyear'),
   },
   {
     id: 1,

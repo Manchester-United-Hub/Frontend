@@ -8,7 +8,14 @@ import type { NewsItem } from '@pages/news/model';
 afterEach(cleanup);
 
 const newsItems: NewsItem[] = [
-  { id: 2, title: 'B', description: 'b', link: 'lb', originalLink: 'ob', publishedAt: '2025-05-18T00:00' },
+  {
+    id: 2,
+    title: 'B',
+    description: 'b',
+    link: 'https://sports.naver.com/b',
+    originalLink: 'ob',
+    publishedAt: '2025-05-18T00:00',
+  },
   { id: 1, title: 'A', description: 'a', link: 'la', originalLink: 'oa', publishedAt: '2025-01-04T00:00' },
 ];
 
@@ -20,5 +27,11 @@ describe('NewsList', () => {
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
     expect(screen.getByText('2025.05.18')).toBeInTheDocument();
     expect(screen.getByText('2025.01.04')).toBeInTheDocument();
+  });
+
+  it('link로부터 출처 라벨을 파생해 렌더한다', () => {
+    render(<NewsList newsItems={newsItems} />);
+
+    expect(screen.getByText('네이버 스포츠')).toBeInTheDocument();
   });
 });

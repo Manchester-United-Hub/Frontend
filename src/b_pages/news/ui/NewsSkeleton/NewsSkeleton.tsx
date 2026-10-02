@@ -1,6 +1,6 @@
 import { Skeleton } from '@shared/ui';
 
-import { ROW_LAYOUT_CLASSNAME, THUMB_CLASSNAME } from '../NewsRow';
+import { ROW_LAYOUT_CLASSNAME } from '../NewsRow';
 import { NEWS_LIST_CLASSNAME } from '../NewsList';
 
 /** 스켈레톤 로우 기본 개수 — 데이터가 아니라 표시용 기본값이므로 컴포넌트가 소유한다. */
@@ -17,12 +17,10 @@ function NewsSkeleton({ count = DEFAULT_NEWS_SKELETON_COUNT }: NewsSkeletonProps
     <div aria-hidden="true" className={NEWS_LIST_CLASSNAME}>
       {Array.from({ length: count }).map((_, index) => (
         <div key={index} className={ROW_LAYOUT_CLASSNAME}>
-          <Skeleton className={THUMB_CLASSNAME} />
-          <div className="flex min-w-0 flex-1 flex-col gap-2">
-            <Skeleton className="h-4 w-[85%]" />
-            <Skeleton className="h-4 w-[60%]" />
-            <Skeleton className="mt-1 h-3 w-[40%]" />
-          </div>
+          <Skeleton className="h-3 w-[110px]" />
+          <Skeleton className="h-5 w-[70%]" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-[55%]" />
         </div>
       ))}
     </div>
