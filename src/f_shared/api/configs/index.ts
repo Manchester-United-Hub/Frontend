@@ -47,6 +47,9 @@ const API_PATH = {
   currentSeason() {
     return `/api/seasons/current`;
   },
+  coach(teamId: number | string) {
+    return `/api/coaches/${teamId}`;
+  },
 };
 
 const BFF_PATH = {
