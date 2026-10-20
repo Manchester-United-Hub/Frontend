@@ -32,7 +32,7 @@ export const clubIdentity: ClubIdentity = {
   crest: 'MUN',
 };
 
-// ───────── Summary (6) ─────────
+// ───────── Summary (5 static + 감독 카드는 buildCoachSummaryCard) ─────────
 
 export const summaryCards: SummaryCard[] = [
   { icon: 'History', label: '창단연도', en: 'Founded', value: '1878', sub: 'Newton Heath LYR' },
@@ -40,7 +40,6 @@ export const summaryCards: SummaryCard[] = [
   { icon: 'Building2', label: '홈구장', en: 'Stadium', value: '올드 트래포드', sub: '74,310석' },
   { icon: 'Trophy', label: '리그', en: 'League', value: '프리미어리그', sub: '1부 · 잉글랜드' },
   { icon: 'Crown', label: '구단주', en: 'Owner', value: '래트클리프 · 글레이저', sub: '지분 공동' },
-  { icon: 'User', label: '감독', en: 'COACH', value: '마이클 캐릭', sub: '2026.01 부임' },
 ];
 
 // ───────── History (10) ─────────
