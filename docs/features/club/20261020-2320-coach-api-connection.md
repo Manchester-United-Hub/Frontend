@@ -49,7 +49,7 @@ Swagger는 모든 필드를 `string`으로 표기하지만 실측상 `null`이 �
 | D-3 | 사진 | 실루엣 자리에 `next/image`로 `photo`를 렌더한다. `photo`가 null이면 기존 `Silhouette`을 유지한다. |
 | D-4 | 이미지 도메인 | `pub-8dfe7ca8163c400aac6a83640c67edb4.r2.dev`는 선수 사진용으로 `next.config.ts`에 **이미 등록**되어 있다(감독 사진도 같은 버킷). 설정 변경 없음. |
 | D-5 | null 필드 표시 | 값이 null이면 `-`로 표시한다. |
-| D-6 | 데이터 조회 위치 | `ClubPage`(서버 컴포넌트)를 async로 바꿔 `fetchCoach`를 호출한다. props 전달은 `ClubPage → ClubTabs → ManagerTab` 2단계라 Context는 쓰지 않는다. |
+| D-6 | 데이터 조회 위치 | `app/club/page.tsx`(async)에서 `loadManager`를 호출해 `ClubPage`에 props로 넘긴다. async `ClubPage`는 테스트(React 클라이언트 렌더)에서 렌더할 수 없어 라우트로 올렸다(app/page·players/page와 동일 패턴). props 전달은 `ClubPage → ClubTabs → ManagerTab`이라 Context는 쓰지 않는다. |
 | D-7 | 캐시 | `app/club/page.tsx`에 `export const revalidate = 3600` (players 페이지와 동일 ISR). |
 | D-8 | 응답 검증 | `toServerApiResult`로 zod 검증. 계약 불일치 시 502 `UPSTREAM_CONTRACT_MISMATCH` → D-2 경로. `serverFetcher` 타임아웃 throw도 D-2 경로로 흡수한다. |
 | D-9 | 요약 카드 | 요약 카드의 감독 카드도 API 값으로 바꾼다. `value` = 영문 이름, `sub` = `{부임} 부임`. 실패 시 둘 다 `-`. 정적 5장(`mockData.summaryCards`) 뒤에 `buildCoachSummaryCard(manager)`를 붙인다. |
@@ -58,11 +58,13 @@ Swagger는 모든 필드를 `string`으로 표기하지만 실측상 `null`이 �
 ## 4. 데이터 흐름
 
 ```
-app/club/page.tsx (revalidate 3600)
-  └ ClubPage (async server)
-      ├ fetchCoach(33)                ← e_entities/coach/api/server
-      ├ mapCoachToManager(dto)        ← b_pages/clubInfo/model (순수 함수)
-      └ ClubTabs manager={Manager | null}   ('use client')
+app/club/page.tsx (async, revalidate 3600)
+  ├ loadManager()                     ← b_pages/clubInfo/api
+  │   ├ fetchCoach(33)                ← e_entities/coach/api/server
+  │   └ mapCoachToManager(dto)        ← b_pages/clubInfo/model (순수 함수)
+  └ ClubPage manager={Manager | null}
+      ├ SummaryCards (정적 5장 + buildCoachSummaryCard)
+      └ ClubTabs manager                ('use client')
           └ ManagerTab manager={Manager | null}
               ├ null  → StateBox (D-2)
               └ Manager → ManagerFacts · ManagerPhoto · ManagerCareer
@@ -117,8 +119,8 @@ interface Manager {
 | b_pages | `ui/ClubTabs/ClubTabs.tsx` | `manager` prop, manager 패널은 렌더 시점 생성 |
 | b_pages | `clubInfo/api/loadManager.ts` (신규) | `fetchCoach` → `Manager \| null` (실패·throw → null) |
 | b_pages | `clubInfo/model/buildCoachSummaryCard.ts` (신규) | `Manager \| null` → 감독 `SummaryCard` (D-9) |
-| b_pages | `ClubPage.tsx` | async + `loadManager`, 요약 카드 조립 |
-| app | `club/page.tsx` | `revalidate = 3600` |
+| b_pages | `ClubPage.tsx` | `manager` prop 수용, 요약 카드 조립 |
+| app | `club/page.tsx` | async + `loadManager`, `revalidate = 3600` |
 
 ## 7. 테스트 계획
 
