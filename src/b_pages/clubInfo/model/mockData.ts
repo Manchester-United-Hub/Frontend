@@ -17,7 +17,6 @@ import type {
   ClubIdentity,
   SummaryCard,
   HistoryEvent,
-  Manager,
   Stadium,
   SubTabMeta,
   EmptyTabCopy,
@@ -58,25 +57,6 @@ export const historyEvents: HistoryEvent[] = [
   { year: '2024', title: 'INEOS 체제 출범', desc: '스포츠 부문 운영권 변경, 구조 개편 착수.', tag: '구단 운영' },
   { year: '현재', title: '재건의 시즌', desc: '새 감독 체제 아래 스쿼드와 시스템을 재정비 중.', tag: '현재', now: true },
 ];
-
-// ───────── Manager ─────────
-
-export const manager: Manager = {
-  name: '마이클 캐릭',
-  en: 'Michael Carrick',
-  nat: '잉글랜드',
-  flag: 'eng',
-  role: '감독 · Head Coach',
-  appointed: '2026년 1월',
-  born: '1981년 7월 28일',
-  birthplace: '잉글랜드 타인위어주 월센드',
-  contract: '2028년 6월까지',
-  prevClubs: [
-    '맨체스터 유나이티드 (감독 대행)',
-    '맨체스터 유나이티드 (코치)',
-    '맨체스터 유나이티드 (플레잉 코치)',
-  ],
-};
 
 // ───────── Stadium ─────────
 
