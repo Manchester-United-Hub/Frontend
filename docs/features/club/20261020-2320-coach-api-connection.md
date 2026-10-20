@@ -51,7 +51,9 @@ Swagger는 모든 필드를 `string`으로 표기하지만 실측상 `null`이 �
 | D-5 | null 필드 표시 | 값이 null이면 `-`로 표시한다. |
 | D-6 | 데이터 조회 위치 | `ClubPage`(서버 컴포넌트)를 async로 바꿔 `fetchCoach`를 호출한다. props 전달은 `ClubPage → ClubTabs → ManagerTab` 2단계라 Context는 쓰지 않는다. |
 | D-7 | 캐시 | `app/club/page.tsx`에 `export const revalidate = 3600` (players 페이지와 동일 ISR). |
-| D-8 | 응답 검증 | `toServerApiResult`로 zod 검증. 계약 불일치 시 502 `UPSTREAM_CONTRACT_MISMATCH` → D-2 경로. |
+| D-8 | 응답 검증 | `toServerApiResult`로 zod 검증. 계약 불일치 시 502 `UPSTREAM_CONTRACT_MISMATCH` → D-2 경로. `serverFetcher` 타임아웃 throw도 D-2 경로로 흡수한다. |
+| D-9 | 요약 카드 | 요약 카드의 감독 카드도 API 값으로 바꾼다. `value` = 영문 이름, `sub` = `{부임} 부임`. 실패 시 둘 다 `-`. 정적 5장(`mockData.summaryCards`) 뒤에 `buildCoachSummaryCard(manager)`를 붙인다. |
+| D-10 | FlagSwatch | 국가 코드가 없어 렌더하지 않지만 파일과 테스트는 남겨둔다(#35 공통 국기 컴포넌트에서 정리). |
 
 ## 4. 데이터 흐름
 
@@ -113,7 +115,9 @@ interface Manager {
 | b_pages | `ui/ManagerTab/ManagerFacts.tsx` | 국적 행을 `nationality` 텍스트로 |
 | b_pages | `ui/ManagerTab/ManagerCareer.tsx` | `CURRENT_CLUB_*` 상수 제거, `careers` 렌더 |
 | b_pages | `ui/ClubTabs/ClubTabs.tsx` | `manager` prop, manager 패널은 렌더 시점 생성 |
-| b_pages | `ClubPage.tsx` | async + `fetchCoach` |
+| b_pages | `clubInfo/api/loadManager.ts` (신규) | `fetchCoach` → `Manager \| null` (실패·throw → null) |
+| b_pages | `clubInfo/model/buildCoachSummaryCard.ts` (신규) | `Manager \| null` → 감독 `SummaryCard` (D-9) |
+| b_pages | `ClubPage.tsx` | async + `loadManager`, 요약 카드 조립 |
 | app | `club/page.tsx` | `revalidate = 3600` |
 
 ## 7. 테스트 계획
@@ -122,7 +126,9 @@ interface Manager {
 |---|---|
 | `test/e_entities/coach/api/server/coach.test.ts` | 요청 경로, 성공, HTTP 실패, 스키마 불일치(502) |
 | `test/b_pages/clubInfo/model/mapCoachToManager.test.ts` | null → `-`, 날짜 포맷, 경력 정렬·현직 표시, 빈 careers |
-| `test/b_pages/clubInfo/ui/ManagerTab/ManagerPhoto.test.tsx` | photo 있음 → img(alt), null → 실루엣 |
+| `test/b_pages/clubInfo/ui/ManagerTab/ManagerPhoto.test.tsx` | photo 있음 → img(alt), null → 실루엣, 로드 실패 → 실루엣 |
+| `test/b_pages/clubInfo/api/loadManager.test.ts` | 성공 → Manager, 실패 → null, throw → null |
+| `test/b_pages/clubInfo/model/buildCoachSummaryCard.test.ts` | Manager → 이름·부임, null → `-` |
 | 기존 `ManagerTab`·`ManagerFacts`·`ManagerCareer`·`ClubTabs`·`ClubPage` 테스트 | 새 모델로 픽스처 교체, `fetchCoach` mock. 단언 완화 금지 |
 
 완료 조건: `pnpm exec tsc --noEmit` · `pnpm exec eslint` · `pnpm test` 통과, 분기 커버리지 80% 이상.
@@ -139,8 +145,9 @@ husky 규칙상 `docs` 타입이 없어 문서는 `chore`로 커밋한다.
 5. `feat: add manchester united team id config #74`
 6. `feat: add coach server fetcher #74`
 7. `feat: add manager photo component #74`
-8. `refactor: reshape manager model for coach api #74` — `types.ts`·`mapCoachToManager.ts`·`mockData.ts`·`ManagerTab`·`ManagerFacts`·`ManagerCareer`·`ClubTabs`·`ClubPage`는 타입이 연쇄로 묶여 있어 하나의 원자적 커밋으로 묶는다(분리 시 중간 커밋이 tsc 실패).
-9. `feat: revalidate club page hourly #74`
-10. 이후 테스트 파일별 `test: ... #74`
+8. `refactor: connect manager tab to coach api #74` — `types.ts`·`mapCoachToManager.ts`·`loadManager.ts`·`mockData.ts`(manager 제거)·`ManagerTab`·`ManagerFacts`·`ManagerCareer`·`ClubTabs`·`ClubPage`는 타입이 연쇄로 묶여 있어 하나의 원자적 커밋으로 묶는다(분리 시 중간 커밋이 tsc 실패).
+9. `feat: build coach summary card from api #74` — `buildCoachSummaryCard.ts`·`mockData.ts`(감독 카드 제거)·`ClubPage`
+10. `feat: revalidate club page hourly #74`
+11. 이후 테스트 파일별 `test: ... #74`
 
 > 코드 단계(2~9) 동안 기존 테스트는 실패 상태다. pre-push 훅이 테스트를 돌리므로 테스트 단계 완료 전에는 push하지 않는다.
