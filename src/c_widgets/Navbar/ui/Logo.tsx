@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-import { UnitedShield } from '@shared/ui';
+import { BrandShield } from '@shared/ui';
 
 // ── 서브컴포넌트 (모듈 스코프 — 컴포넌트 내부 정의 금지) ──────────────────
 
@@ -12,7 +12,7 @@ function LogoBlock() {
       className="flex items-center gap-2.5 shrink-0"
     >
       <span className="w-8.5 h-8.5 flex-none grid place-items-center">
-        <UnitedShield />
+        <BrandShield />
       </span>
       <span className="flex flex-col leading-none gap-0.75">
         <span className="text-[13px] font-extrabold tracking-[0.02em]">
