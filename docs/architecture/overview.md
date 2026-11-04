@@ -12,7 +12,7 @@
 [브라우저] → [Next.js 16 (BFF 포함) / Docker on EC2] → [백엔드 API]
 ```
 
-- 브라우저는 백엔드를 직접 호출하지 않고 Next.js Route Handler(`app/api/v1/*`)를 거친다. → [data-flow](data-flow.md)
+- 브라우저는 백엔드를 직접 호출하지 않고 Next.js Route Handler(`app/bff/v1/*`)를 거친다. → [data-flow](data-flow.md)
 - 프론트는 Docker 이미지로 빌드해 EC2에 배포한다. → [ci](../collaboration/ci.md)
 - 백엔드는 별도 저장소에서 운영한다.
 

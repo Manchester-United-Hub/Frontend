@@ -39,6 +39,7 @@ const routes = {
 ## API 경로
 
 - 백엔드 경로는 `API_PATH`, BFF 경로는 `BFF_PATH`에 둔다. → [data-flow](data-flow.md)
-- BFF Route Handler는 `app/api/v1/[domain]/...`에 둔다.
+- BFF Route Handler는 `app/bff/v1/[domain]/...`에 둔다.
+- `app/api/`는 쓰지 않는다. 운영 nginx가 `/api/`를 백엔드로 보내 Next에 도달하지 않는다. → [feature/infra/2026-11-04-bff-route-path](../feature/infra/2026-11-04-bff-route-path.md)
 
 현재 코드와 다른 부분은 [known-gaps](../known-gaps.md)에 있다.
