@@ -51,40 +51,40 @@ const API_PATH = {
 
 const BFF_PATH = {
   matchSchedule() {
-    return '/api/v1/match/schedule';
+    return '/bff/v1/match/schedule';
   },
   liveMatchLineup(matchId: number | string) {
-    return `/api/v1/match/${matchId}/lineups`;
+    return `/bff/v1/match/${matchId}/lineups`;
   },
   pastMatchLineup(matchId: number | string) {
-    return `/api/v1/match/${matchId}/detail`;
+    return `/bff/v1/match/${matchId}/detail`;
   },
   newsList() {
-    return '/api/v1/news';
+    return '/bff/v1/news';
   },
   playerList() {
-    return '/api/v1/player';
+    return '/bff/v1/player';
   },
   playerProfile(playerId: number | string) {
-    return `/api/v1/player/${playerId}`;
+    return `/bff/v1/player/${playerId}`;
   },
   playerStatistics(playerId: number | string) {
-    return `/api/v1/player-details/${playerId}`;
+    return `/bff/v1/player-details/${playerId}`;
   },
   teamInfo(teamId: string | number) {
-    return `/api/v1/team/${teamId}`;
+    return `/bff/v1/team/${teamId}`;
   },
   teamStatistics() {
-    return '/api/v1/team/statistics';
+    return '/bff/v1/team/statistics';
   },
   premierLeagueRank() {
-    return `/api/v1/rank/pl`;
+    return `/bff/v1/rank/pl`;
   },
   currentSeason() {
-    return `/api/v1/season`;
+    return `/bff/v1/season`;
   },
   landingMatches() {
-    return '/api/v1/match/landing';
+    return '/bff/v1/match/landing';
   },
 };
 

@@ -11,11 +11,11 @@ vi.mock('@shared/model', () => ({
 }));
 
 const requestGET = async () => {
-  const { GET } = await import('@app/api/v1/season/route');
+  const { GET } = await import('@app/bff/v1/season/route');
   return GET();
 };
 
-describe('GET /api/v1/season', () => {
+describe('GET /bff/v1/season', () => {
   beforeEach(() => vi.clearAllMocks());
 
   describe('성공 응답일 때', () => {

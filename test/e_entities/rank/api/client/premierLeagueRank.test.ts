@@ -19,7 +19,7 @@ vi.mock('@shared/api', async (importOriginal) => {
 describe('fetchPremierLeagueRankList', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('/api/v1/rank/pl 경로로 GET 요청한다', async () => {
+  it('/bff/v1/rank/pl 경로로 GET 요청한다', async () => {
     const mockRes = {
       json: vi.fn().mockResolvedValue([]),
     };
@@ -30,7 +30,7 @@ describe('fetchPremierLeagueRankList', () => {
     await fetchPremierLeagueRankList();
 
     expect(clientFetcher.get).toHaveBeenCalledWith(
-      '/api/v1/rank/pl',
+      '/bff/v1/rank/pl',
       undefined
     );
   });
@@ -45,7 +45,7 @@ describe('fetchPremierLeagueRankList', () => {
 
     await fetchPremierLeagueRankList({ season: 2026 });
 
-    expect(clientFetcher.get).toHaveBeenCalledWith('/api/v1/rank/pl', {
+    expect(clientFetcher.get).toHaveBeenCalledWith('/bff/v1/rank/pl', {
       season: 2026,
     });
   });

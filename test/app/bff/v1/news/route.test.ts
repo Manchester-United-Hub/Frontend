@@ -15,15 +15,15 @@ vi.mock('@shared/model', async (importOriginal) => {
   };
 });
 
-describe('GET /api/v1/news', () => {
+describe('GET /bff/v1/news', () => {
   beforeEach(() => vi.clearAllMocks());
 
   describe('preview=1 일 때', () => {
     it('fetchRecentNews를 호출한다', async () => {
       vi.mocked(fetchRecentNews).mockResolvedValue({ isSuccess: true, status: 200, data: [] });
 
-      const { GET } = await import('@app/api/v1/news/route');
-      const request = new NextRequest('http://localhost/api/v1/news?preview=1');
+      const { GET } = await import('@app/bff/v1/news/route');
+      const request = new NextRequest('http://localhost/bff/v1/news?preview=1');
       await GET(request);
 
       expect(fetchRecentNews).toHaveBeenCalledOnce();
@@ -33,8 +33,8 @@ describe('GET /api/v1/news', () => {
 
   describe('잘못된 파라미터일 때', () => {
     it('필수 파라미터 누락 시 400을 반환한다', async () => {
-      const { GET } = await import('@app/api/v1/news/route');
-      const request = new NextRequest('http://localhost/api/v1/news');
+      const { GET } = await import('@app/bff/v1/news/route');
+      const request = new NextRequest('http://localhost/bff/v1/news');
       const response = await GET(request);
 
       expect(response.status).toBe(400);
@@ -46,9 +46,9 @@ describe('GET /api/v1/news', () => {
     it('fetchNewsList를 query 파라미터와 함께 호출한다', async () => {
       vi.mocked(fetchNewsList).mockResolvedValue({ isSuccess: true, status: 200, data: { newsList: [], nextCursorAt: '2024-01-01T00:00', nextCursorId: 0 } });
 
-      const { GET } = await import('@app/api/v1/news/route');
+      const { GET } = await import('@app/bff/v1/news/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/news?cursorAt=2024-01-15T20:00&cursorId=1&size=10'
+        'http://localhost/bff/v1/news?cursorAt=2024-01-15T20:00&cursorId=1&size=10'
       );
       await GET(request);
 
@@ -59,9 +59,9 @@ describe('GET /api/v1/news', () => {
     it('200 응답을 반환한다', async () => {
       vi.mocked(fetchNewsList).mockResolvedValue({ isSuccess: true, status: 200, data: { newsList: [], nextCursorAt: '2024-01-01T00:00', nextCursorId: 0 } });
 
-      const { GET } = await import('@app/api/v1/news/route');
+      const { GET } = await import('@app/bff/v1/news/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/news?cursorAt=2024-01-15T20:00&cursorId=1&size=10'
+        'http://localhost/bff/v1/news?cursorAt=2024-01-15T20:00&cursorId=1&size=10'
       );
       const response = await GET(request);
 

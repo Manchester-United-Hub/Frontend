@@ -10,7 +10,7 @@ vi.mock('@shared/model', () => ({
   toBffResponse: vi.fn((result) => result),
 }));
 
-describe('GET /api/v1/player-details/[playerId]', () => {
+describe('GET /bff/v1/player-details/[playerId]', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('playerId를 number로, season을 파싱해 fetchPlayerStatistics를 호출한다', async () => {
@@ -20,8 +20,8 @@ describe('GET /api/v1/player-details/[playerId]', () => {
       data: [],
     });
 
-    const { GET } = await import('@app/api/v1/player-details/[playerId]/route');
-    const request = new NextRequest('http://localhost/api/v1/player-details/1485?season=2025');
+    const { GET } = await import('@app/bff/v1/player-details/[playerId]/route');
+    const request = new NextRequest('http://localhost/bff/v1/player-details/1485?season=2025');
     await GET(request, { params: Promise.resolve({ playerId: '1485' }) });
 
     expect(fetchPlayerStatistics).toHaveBeenCalledWith(1485, { season: 2025 });
@@ -34,8 +34,8 @@ describe('GET /api/v1/player-details/[playerId]', () => {
       data: [],
     });
 
-    const { GET } = await import('@app/api/v1/player-details/[playerId]/route');
-    const request = new NextRequest('http://localhost/api/v1/player-details/1485?season=2025');
+    const { GET } = await import('@app/bff/v1/player-details/[playerId]/route');
+    const request = new NextRequest('http://localhost/bff/v1/player-details/1485?season=2025');
     const response = await GET(request, { params: Promise.resolve({ playerId: '1485' }) });
 
     expect(response.status).toBe(200);
@@ -48,8 +48,8 @@ describe('GET /api/v1/player-details/[playerId]', () => {
       data: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' },
     });
 
-    const { GET } = await import('@app/api/v1/player-details/[playerId]/route');
-    const request = new NextRequest('http://localhost/api/v1/player-details/1485?season=2025');
+    const { GET } = await import('@app/bff/v1/player-details/[playerId]/route');
+    const request = new NextRequest('http://localhost/bff/v1/player-details/1485?season=2025');
     const response = await GET(request, { params: Promise.resolve({ playerId: '1485' }) });
 
     expect(response.status).toBe(500);

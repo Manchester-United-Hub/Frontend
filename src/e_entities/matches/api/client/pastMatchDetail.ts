@@ -1,4 +1,4 @@
-import { clientFetcher } from '@shared/api';
+import { BFF_PATH, clientFetcher } from '@shared/api';
 import type { BffApiResponse } from '@shared/model';
 import type {
   MatchDetailsQueryDTO,
@@ -8,7 +8,7 @@ import type {
 const getPastMatchDetail = async ({
   matchId,
 }: MatchDetailsQueryDTO): Promise<BffApiResponse<PastMatchDetailDTO>> => {
-  const response = await clientFetcher.get(`/api/v1/match/${matchId}/detail`);
+  const response = await clientFetcher.get(BFF_PATH.pastMatchLineup(matchId));
   return response.json();
 };
 
