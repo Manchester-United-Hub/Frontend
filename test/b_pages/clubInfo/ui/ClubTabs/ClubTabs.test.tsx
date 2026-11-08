@@ -13,10 +13,14 @@
  * subTabs에서 항목이 사라지면 탭 네비게이션에서도 해당 탭 버튼이 함께 사라지므로
  * (같은 배열을 공유 소스로 사용), 이 테스트는 "폴백 계산이 크래시 없이 실행되고
  * 나머지 탭 동작에 영향을 주지 않는다"를 검증한다.
+ *
+ * 추가로, manager 패널은 정적 매핑(STATIC_TAB_PANELS)이 아니라 props(manager)로
+ * 렌더 시점에 생성되므로 그 분기(감독 데이터 있음/null)를 함께 검증한다.
  */
 
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/vitest';
 
 vi.mock('@pages/clubInfo/model/mockData', async () => {
@@ -34,12 +38,13 @@ vi.mock('@pages/clubInfo/model/mockData', async () => {
 // vi.mock은 vitest 트랜스폼이 파일 최상단으로 호이스팅하므로, 아래 정적 import는
 // 이미 위 목업이 적용된 model/mockData를 대상으로 ClubTabs 모듈을 로드한다.
 import { ClubTabs } from '@pages/clubInfo/ui/ClubTabs';
+import { MANAGER_FIXTURE } from '@test/fixtures/coach';
 
 afterEach(cleanup);
 
 describe('ClubTabs 라벨 폴백 — subTabs에 팀통계 메타가 없을 때', () => {
   it('폴백 라벨 계산이 크래시 없이 실행되고, 남은 3개 탭은 정상 렌더된다', () => {
-    expect(() => render(<ClubTabs />)).not.toThrow();
+    expect(() => render(<ClubTabs manager={MANAGER_FIXTURE} />)).not.toThrow();
 
     const tabs = screen.getAllByRole('tab');
     expect(tabs).toHaveLength(3);
@@ -47,8 +52,24 @@ describe('ClubTabs 라벨 폴백 — subTabs에 팀통계 메타가 없을 때',
   });
 
   it('기본 활성 탭(history)은 subTabs 필터링과 무관하게 그대로 렌더된다', () => {
-    render(<ClubTabs />);
+    render(<ClubTabs manager={MANAGER_FIXTURE} />);
     expect(screen.getByRole('tab', { name: /연혁/ })).toHaveAttribute('aria-selected', 'true');
     expect(screen.getByText('뉴턴 히스 LYR 창단')).toBeInTheDocument();
+  });
+});
+
+describe('ClubTabs 감독 패널 — props(manager)로 렌더 시점 생성', () => {
+  it('감독 탭 클릭 시 주입된 manager의 이름(h2)이 렌더된다', async () => {
+    const user = userEvent.setup();
+    render(<ClubTabs manager={MANAGER_FIXTURE} />);
+    await user.click(screen.getByRole('tab', { name: /^감독/ }));
+    expect(screen.getByRole('heading', { level: 2, name: MANAGER_FIXTURE.name })).toBeInTheDocument();
+  });
+
+  it('manager가 null이면 감독 탭에 불러오기 실패 빈 상태가 렌더된다', async () => {
+    const user = userEvent.setup();
+    render(<ClubTabs manager={null} />);
+    await user.click(screen.getByRole('tab', { name: /^감독/ }));
+    expect(screen.getByRole('tabpanel')).toHaveTextContent('감독 정보를 불러오지 못했어요');
   });
 });

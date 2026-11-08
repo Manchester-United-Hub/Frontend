@@ -17,7 +17,6 @@ import type {
   ClubIdentity,
   SummaryCard,
   HistoryEvent,
-  Manager,
   Stadium,
   SubTabMeta,
   EmptyTabCopy,
@@ -33,7 +32,7 @@ export const clubIdentity: ClubIdentity = {
   crest: 'MUN',
 };
 
-// ───────── Summary (6) ─────────
+// ───────── Summary (5 static + 감독 카드는 buildCoachSummaryCard) ─────────
 
 export const summaryCards: SummaryCard[] = [
   { icon: 'History', label: '창단연도', en: 'Founded', value: '1878', sub: 'Newton Heath LYR' },
@@ -41,7 +40,6 @@ export const summaryCards: SummaryCard[] = [
   { icon: 'Building2', label: '홈구장', en: 'Stadium', value: '올드 트래포드', sub: '74,310석' },
   { icon: 'Trophy', label: '리그', en: 'League', value: '프리미어리그', sub: '1부 · 잉글랜드' },
   { icon: 'Crown', label: '구단주', en: 'Owner', value: '래트클리프 · 글레이저', sub: '지분 공동' },
-  { icon: 'User', label: '감독', en: 'COACH', value: '마이클 캐릭', sub: '2026.01 부임' },
 ];
 
 // ───────── History (10) ─────────
@@ -58,25 +56,6 @@ export const historyEvents: HistoryEvent[] = [
   { year: '2024', title: 'INEOS 체제 출범', desc: '스포츠 부문 운영권 변경, 구조 개편 착수.', tag: '구단 운영' },
   { year: '현재', title: '재건의 시즌', desc: '새 감독 체제 아래 스쿼드와 시스템을 재정비 중.', tag: '현재', now: true },
 ];
-
-// ───────── Manager ─────────
-
-export const manager: Manager = {
-  name: '마이클 캐릭',
-  en: 'Michael Carrick',
-  nat: '잉글랜드',
-  flag: 'eng',
-  role: '감독 · Head Coach',
-  appointed: '2026년 1월',
-  born: '1981년 7월 28일',
-  birthplace: '잉글랜드 타인위어주 월센드',
-  contract: '2028년 6월까지',
-  prevClubs: [
-    '맨체스터 유나이티드 (감독 대행)',
-    '맨체스터 유나이티드 (코치)',
-    '맨체스터 유나이티드 (플레잉 코치)',
-  ],
-};
 
 // ───────── Stadium ─────────
 

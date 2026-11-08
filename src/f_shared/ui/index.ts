@@ -1,4 +1,5 @@
 export * from './Badge';
+export * from './BrandShield';
 export * from './BilingualLabel';
 export * from './Button';
 export * from './Card';
