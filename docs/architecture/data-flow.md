@@ -2,17 +2,17 @@
 
 ## 구성
 
-브라우저는 백엔드를 직접 호출하지 않는다. Next.js Route Handler(`app/api/v1/*`)가 BFF 역할을 한다.
+브라우저는 백엔드를 직접 호출하지 않는다. Next.js Route Handler(`app/bff/v1/*`)가 BFF 역할을 한다.
 
 ```
-[브라우저] ──clientFetcher──▶ [BFF: app/api/v1/*] ──serverFetcher──▶ [Spring Boot API]
+[브라우저] ──clientFetcher──▶ [BFF: app/bff/v1/*] ──serverFetcher──▶ [Spring Boot API]
 [Server Component] ──────────────serverFetcher──────────────────────▶ [Spring Boot API]
 ```
 
 | 호출 주체 | Fetcher | 대상 경로 | 경로 상수 |
 | --- | --- | --- | --- |
 | 서버 (Server Component, Route Handler, 프리페치) | `serverFetcher` (`API_BASE_URL` 기준) | 백엔드 `/api/...` | `API_PATH` |
-| 브라우저 (TanStack Query 훅) | `clientFetcher` (같은 출처) | BFF `/api/v1/...` | `BFF_PATH` |
+| 브라우저 (TanStack Query 훅) | `clientFetcher` (같은 출처) | BFF `/bff/v1/...` | `BFF_PATH` |
 
 - Fetcher와 경로 상수는 `f_shared/api`에 있다. 도메인 코드에서 `fetch`를 직접 호출하지 않는다.
 - Fetcher는 네이티브 `fetch` 래퍼다. `AbortController`로 5초(`FETCH_TIMEOUT_MICROSECOND`) 후 요청을 끊는다.
@@ -29,7 +29,7 @@
 
 ```
 e_entities/[domain]/api/server   serverFetcher 호출 → zod 검증 → ServerApiResult<DTO>
-  → app/api/v1/*/route.ts        쿼리 검증 → toBffResponse() → BffApiResponse<DTO>
+  → app/bff/v1/*/route.ts        쿼리 검증 → toBffResponse() → BffApiResponse<DTO>
   → e_entities/[domain]/api/client  clientFetcher로 BFF 호출 → BffApiResponse<DTO>
   → d_features/[domain]/api      언랩 (실패면 throw) → queryOptions / 훅
   → b_pages · c_widgets          화면용 타입으로 변환 후 렌더

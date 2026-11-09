@@ -19,7 +19,7 @@
 
 ## 브라우저 → 백엔드 호출
 
-- 브라우저는 백엔드를 직접 호출하지 않는다. 같은 출처의 BFF(`/api/v1/...`)를 호출하고, BFF가 `API_BASE_URL`로 백엔드를 호출한다. → [data-flow](data-flow.md)
+- 브라우저는 백엔드를 직접 호출하지 않는다. 같은 출처의 BFF(`/bff/v1/...`)를 호출하고, BFF가 `API_BASE_URL`로 백엔드를 호출한다. → [data-flow](data-flow.md)
 - 따라서 백엔드 주소를 `NEXT_PUBLIC_`으로 노출하지 않는다.
 
 ## 접근 방식

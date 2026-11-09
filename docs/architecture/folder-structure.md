@@ -49,7 +49,7 @@ src/
 
 | 폴더 | 내용 |
 | --- | --- |
-| `app/api/v1/` | BFF Route Handler → [data-flow](data-flow.md) |
+| `app/bff/v1/` | BFF Route Handler → [data-flow](data-flow.md) |
 | `app/providers/` | `TanstackQueryProvider` |
 | `app/(dev)/` | 개발용 페이지 (`/api-test`) |
 
