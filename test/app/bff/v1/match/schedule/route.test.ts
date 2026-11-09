@@ -27,7 +27,7 @@ vi.mock('@shared/model', () => ({
   toBffResponse: vi.fn((result) => result),
 }));
 
-describe('GET /api/v1/match/schedule', () => {
+describe('GET /bff/v1/match/schedule', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('fetchMatchScheduleList를 호출한다', async () => {
@@ -37,9 +37,9 @@ describe('GET /api/v1/match/schedule', () => {
       data: { pastMatches: [], upcomingMatches: [] },
     });
 
-    const { GET } = await import('@app/api/v1/match/schedule/route');
+    const { GET } = await import('@app/bff/v1/match/schedule/route');
     const request = new NextRequest(
-      'http://localhost/api/v1/match/schedule?season=2025'
+      'http://localhost/bff/v1/match/schedule?season=2025'
     );
     await GET(request);
 
@@ -53,9 +53,9 @@ describe('GET /api/v1/match/schedule', () => {
       data: { pastMatches: [], upcomingMatches: [] },
     });
 
-    const { GET } = await import('@app/api/v1/match/schedule/route');
+    const { GET } = await import('@app/bff/v1/match/schedule/route');
     const request = new NextRequest(
-      'http://localhost/api/v1/match/schedule?season=2025'
+      'http://localhost/bff/v1/match/schedule?season=2025'
     );
     const response = await GET(request);
 
@@ -69,9 +69,9 @@ describe('GET /api/v1/match/schedule', () => {
       data: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' },
     });
 
-    const { GET } = await import('@app/api/v1/match/schedule/route');
+    const { GET } = await import('@app/bff/v1/match/schedule/route');
     const request = new NextRequest(
-      'http://localhost/api/v1/match/schedule?season=2025'
+      'http://localhost/bff/v1/match/schedule?season=2025'
     );
     const response = await GET(request);
 
@@ -80,9 +80,9 @@ describe('GET /api/v1/match/schedule', () => {
 
   describe('season 쿼리가 유효하지 않을 때', () => {
     it('season 누락 시 422를 반환하고 fetchMatchScheduleList를 호출하지 않는다', async () => {
-      const { GET } = await import('@app/api/v1/match/schedule/route');
+      const { GET } = await import('@app/bff/v1/match/schedule/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/match/schedule'
+        'http://localhost/bff/v1/match/schedule'
       );
       const response = await GET(request);
       const body = await response.json();
@@ -96,9 +96,9 @@ describe('GET /api/v1/match/schedule', () => {
     // 참이므로, 정규식 체크가 없다면 min-year 체크를 그대로 통과해버려 이 케이스가
     // 정규식 분기를 전혀 검증하지 못한다(mutation으로 실측 확인, result-ST-08-rework-1.md).
     it('season이 4자리가 아니면 422를 반환하고 fetchMatchScheduleList를 호출하지 않는다', async () => {
-      const { GET } = await import('@app/api/v1/match/schedule/route');
+      const { GET } = await import('@app/bff/v1/match/schedule/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/match/schedule?season=19999'
+        'http://localhost/bff/v1/match/schedule?season=19999'
       );
       const response = await GET(request);
       const body = await response.json();
@@ -113,9 +113,9 @@ describe('GET /api/v1/match/schedule', () => {
     // 문자열은 정규식이 없어도 Number()가 NaN을 반환해 min-year 체크에 걸리므로
     // 정규식 분기를 검증하지 못한다(mutation으로 실측 확인).
     it('season에 숫자 이외 문자가 포함되면 422를 반환하고 fetchMatchScheduleList를 호출하지 않는다', async () => {
-      const { GET } = await import('@app/api/v1/match/schedule/route');
+      const { GET } = await import('@app/bff/v1/match/schedule/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/match/schedule?season=0x7e9'
+        'http://localhost/bff/v1/match/schedule?season=0x7e9'
       );
       const response = await GET(request);
       const body = await response.json();
@@ -126,9 +126,9 @@ describe('GET /api/v1/match/schedule', () => {
     });
 
     it('season이 1992 미만이면 422를 반환하고 fetchMatchScheduleList를 호출하지 않는다', async () => {
-      const { GET } = await import('@app/api/v1/match/schedule/route');
+      const { GET } = await import('@app/bff/v1/match/schedule/route');
       const request = new NextRequest(
-        'http://localhost/api/v1/match/schedule?season=1991'
+        'http://localhost/bff/v1/match/schedule?season=1991'
       );
       const response = await GET(request);
       const body = await response.json();

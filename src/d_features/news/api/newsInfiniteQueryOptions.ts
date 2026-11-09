@@ -23,7 +23,7 @@ const NEWS_LIST_STALE_TIME_MS = 60_000;
  *
  * ⚠️ 이 센티널은 **임시 우회**다. 실 API(GET /api/news)는 "cursorAt·cursorId를 둘 다 생략"하는 것이
  * 정식 최초 페이지 호출 방식이지만(Swagger: "둘 다 입력하거나 둘 다 입력하지 않아야 합니다"),
- * BFF 계층의 NewsQuerySchema·app/api/v1/news/route.ts가 세 필드를 모두 필수로 강제해 생략할 수 없다.
+ * BFF 계층의 NewsQuerySchema·app/bff/v1/news/route.ts가 세 필드를 모두 필수로 강제해 생략할 수 없다.
  * **서버 프리페치 경로도 클라이언트 refetch와 같은 값을 써야 한다** — 서버만 커서를 생략하면
  * hydration된 pageParams[0]과 클라이언트 initialPageParam이 어긋난다(AD-7).
  *

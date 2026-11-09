@@ -6,12 +6,12 @@ const CATEGORIES: CategoryDef[] = [
     endpoints: [
       {
         name: 'Recent News',
-        path: '/api/v1/news?preview=1',
+        path: '/bff/v1/news?preview=1',
         fields: [],
       },
       {
         name: 'News List',
-        path: '/api/v1/news',
+        path: '/bff/v1/news',
         fields: [
           {
             name: 'cursorAt',
@@ -48,7 +48,7 @@ const CATEGORIES: CategoryDef[] = [
     endpoints: [
       {
         name: 'Player List',
-        path: '/api/v1/player',
+        path: '/bff/v1/player',
         fields: [
           {
             name: 'season',
@@ -75,12 +75,12 @@ const CATEGORIES: CategoryDef[] = [
     endpoints: [
       {
         name: 'Statistics',
-        path: '/api/v1/team/statistics',
+        path: '/bff/v1/team/statistics',
         fields: [],
       },
       {
         name: 'Team Info',
-        path: '/api/v1/team/{teamId}',
+        path: '/bff/v1/team/{teamId}',
         fields: [
           {
             name: 'teamId',
@@ -99,12 +99,12 @@ const CATEGORIES: CategoryDef[] = [
     endpoints: [
       {
         name: 'Schedule',
-        path: '/api/v1/match/schedule',
+        path: '/bff/v1/match/schedule',
         fields: [],
       },
       {
         name: 'Match Detail',
-        path: '/api/v1/match/{matchId}/detail',
+        path: '/bff/v1/match/{matchId}/detail',
         fields: [
           {
             name: 'matchId',
@@ -118,7 +118,7 @@ const CATEGORIES: CategoryDef[] = [
       },
       {
         name: 'Lineups',
-        path: '/api/v1/match/{matchId}/lineups',
+        path: '/bff/v1/match/{matchId}/lineups',
         fields: [
           {
             name: 'matchId',

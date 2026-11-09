@@ -39,49 +39,49 @@ describe('FETCH_TIMEOUT_MICROSECOND', () => {
 });
 
 describe('BFF_PATH', () => {
-  it('matchSchedule()는 /api/v1/match/schedule를 반환한다', () => {
-    expect(BFF_PATH.matchSchedule()).toBe('/api/v1/match/schedule');
+  it('matchSchedule()는 /bff/v1/match/schedule를 반환한다', () => {
+    expect(BFF_PATH.matchSchedule()).toBe('/bff/v1/match/schedule');
   });
 
-  it('liveMatchLineup(matchId)는 number를 받아 /api/v1/match/:matchId/lineups를 반환한다', () => {
-    expect(BFF_PATH.liveMatchLineup(12345)).toBe('/api/v1/match/12345/lineups');
+  it('liveMatchLineup(matchId)는 number를 받아 /bff/v1/match/:matchId/lineups를 반환한다', () => {
+    expect(BFF_PATH.liveMatchLineup(12345)).toBe('/bff/v1/match/12345/lineups');
   });
 
-  it('liveMatchLineup(matchId)는 string을 받아 /api/v1/match/:matchId/lineups를 반환한다', () => {
+  it('liveMatchLineup(matchId)는 string을 받아 /bff/v1/match/:matchId/lineups를 반환한다', () => {
     expect(BFF_PATH.liveMatchLineup('12345')).toBe(
-      '/api/v1/match/12345/lineups'
+      '/bff/v1/match/12345/lineups'
     );
   });
 
-  it('pastMatchLineup(matchId)는 number를 받아 /api/v1/match/:matchId/detail을 반환한다', () => {
-    expect(BFF_PATH.pastMatchLineup(42)).toBe('/api/v1/match/42/detail');
+  it('pastMatchLineup(matchId)는 number를 받아 /bff/v1/match/:matchId/detail을 반환한다', () => {
+    expect(BFF_PATH.pastMatchLineup(42)).toBe('/bff/v1/match/42/detail');
   });
 
-  it('pastMatchLineup(matchId)는 string을 받아 /api/v1/match/:matchId/detail을 반환한다', () => {
-    expect(BFF_PATH.pastMatchLineup('42')).toBe('/api/v1/match/42/detail');
+  it('pastMatchLineup(matchId)는 string을 받아 /bff/v1/match/:matchId/detail을 반환한다', () => {
+    expect(BFF_PATH.pastMatchLineup('42')).toBe('/bff/v1/match/42/detail');
   });
 
-  it('newsList()는 /api/v1/news를 반환한다', () => {
-    expect(BFF_PATH.newsList()).toBe('/api/v1/news');
+  it('newsList()는 /bff/v1/news를 반환한다', () => {
+    expect(BFF_PATH.newsList()).toBe('/bff/v1/news');
   });
 
-  it('playerList()는 /api/v1/player를 반환한다', () => {
-    expect(BFF_PATH.playerList()).toBe('/api/v1/player');
+  it('playerList()는 /bff/v1/player를 반환한다', () => {
+    expect(BFF_PATH.playerList()).toBe('/bff/v1/player');
   });
 
-  it('teamInfo(teamId)는 number를 받아 /api/v1/team/:teamId를 반환한다', () => {
-    expect(BFF_PATH.teamInfo(33)).toBe('/api/v1/team/33');
+  it('teamInfo(teamId)는 number를 받아 /bff/v1/team/:teamId를 반환한다', () => {
+    expect(BFF_PATH.teamInfo(33)).toBe('/bff/v1/team/33');
   });
 
-  it('teamInfo(teamId)는 string을 받아 /api/v1/team/:teamId를 반환한다', () => {
-    expect(BFF_PATH.teamInfo('33')).toBe('/api/v1/team/33');
+  it('teamInfo(teamId)는 string을 받아 /bff/v1/team/:teamId를 반환한다', () => {
+    expect(BFF_PATH.teamInfo('33')).toBe('/bff/v1/team/33');
   });
 
-  it('teamStatistics()는 /api/v1/team/statistics를 반환한다', () => {
-    expect(BFF_PATH.teamStatistics()).toBe('/api/v1/team/statistics');
+  it('teamStatistics()는 /bff/v1/team/statistics를 반환한다', () => {
+    expect(BFF_PATH.teamStatistics()).toBe('/bff/v1/team/statistics');
   });
 
-  it('landingMatches()는 /api/v1/match/landing를 반환한다', () => {
-    expect(BFF_PATH.landingMatches()).toBe('/api/v1/match/landing');
+  it('landingMatches()는 /bff/v1/match/landing를 반환한다', () => {
+    expect(BFF_PATH.landingMatches()).toBe('/bff/v1/match/landing');
   });
 });
