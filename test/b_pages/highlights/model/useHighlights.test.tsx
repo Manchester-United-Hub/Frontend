@@ -1,161 +1,123 @@
+import type { ReactNode } from 'react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, cleanup, renderHook } from '@testing-library/react';
+import { act, cleanup, renderHook, waitFor } from '@testing-library/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
+import { getHighlightList } from '@entities/highlight/api/client';
+import type { HighlightListQueryDTO } from '@entities/highlight/model';
 import { useHighlights } from '@pages/highlights/model';
-import type { HighlightItem } from '@pages/highlights/model';
+import { buildHighlightDTO, buildHighlightListDTO } from '@test/fixtures/highlights';
 
-const DELAY_MS = 100;
+vi.mock('@entities/highlight/api/client', () => ({
+  getHighlightList: vi.fn(),
+}));
 
-/** 결정적 테스트용 목데이터 — id1만 featured, 카테고리·조회수·날짜를 의도적으로 분산한다. */
-const makeItems = (): HighlightItem[] => [
-  {
-    id: '1',
-    title: '골 A',
-    category: '골',
-    competition: 'PL',
-    date: '2025.05.10',
-    views: '2.4M',
-    duration: '1:00',
-    featured: true,
-  },
-  {
-    id: '2',
-    title: '골 B',
-    category: '골',
-    competition: 'PL',
-    date: '2025.05.01',
-    views: '1.0M',
-    duration: '1:00',
-  },
-  {
-    id: '3',
-    title: '어시스트 A',
-    category: '어시스트',
-    competition: 'PL',
-    date: '2025.04.01',
-    views: '3.0M',
-    duration: '1:00',
-  },
-  {
-    id: '4',
-    title: '세이브 A',
-    category: '세이브',
-    competition: 'PL',
-    date: '2025.03.01',
-    views: '500K',
-    duration: '1:00',
-  },
-  {
-    id: '5',
-    title: '골 C',
-    category: '골',
-    competition: 'PL',
-    date: '2025.02.01',
-    views: '900K',
-    duration: '1:00',
-  },
-];
+const SEASON = 2026;
+const PAGE_SIZE = 9;
+const LIST_META = { totalElements: 12, totalPages: 2 };
+
+const toDTOs = (ids: string[]) => ids.map((id) => buildHighlightDTO({ videoId: id, title: `${id} | Highlights` }));
+
+const RESPONSES: Record<string, ReturnType<typeof buildHighlightListDTO>> = {
+  'LATEST-0': buildHighlightListDTO(toDTOs(['L1', 'L2', 'L3']), LIST_META),
+  'LATEST-1': buildHighlightListDTO(toDTOs(['L10', 'L11']), { ...LIST_META, page: 1 }),
+  'VIEW_COUNT-0': buildHighlightListDTO(toDTOs(['V1', 'V2']), LIST_META),
+};
+
+const respondByQuery = async ({ sort, page }: HighlightListQueryDTO) => ({
+  success: true as const,
+  data: RESPONSES[`${sort}-${page}`],
+  error: null,
+});
+
+const createWrapper = () => {
+  const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false, gcTime: 0 } } });
+
+  return function Wrapper({ children }: { children: ReactNode }) {
+    return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
+  };
+};
+
+const renderLoaded = async (options: { showFeatured?: boolean } = {}) => {
+  const rendered = renderHook(() => useHighlights({ season: SEASON, ...options }), {
+    wrapper: createWrapper(),
+  });
+  await waitFor(() => expect(rendered.result.current.isLoading).toBe(false));
+  return rendered;
+};
+
+const idsOf = (items: { id: string }[]) => items.map((item) => item.id);
 
 describe('useHighlights', () => {
-  beforeEach(() => vi.useFakeTimers());
+  beforeEach(() => {
+    vi.mocked(getHighlightList).mockImplementation(respondByQuery);
+  });
   afterEach(() => {
-    vi.runOnlyPendingTimers();
-    vi.useRealTimers();
+    vi.clearAllMocks();
     cleanup();
   });
 
-  it('최초 로딩 후 isLoading이 해제되고 대표 영상을 그리드에서 제외한다', () => {
-    const { result } = renderHook(() =>
-      useHighlights({ source: makeItems, pageSize: 2, delayMs: DELAY_MS }),
-    );
+  it('최신순 1페이지(page 0)를 페이지 크기 9로 조회한다', async () => {
+    await renderLoaded();
 
-    expect(result.current.isLoading).toBe(true);
-    act(() => vi.advanceTimersByTime(DELAY_MS));
-
-    expect(result.current.isLoading).toBe(false);
-    expect(result.current.featured?.id).toBe('1');
-    expect(result.current.totalCount).toBe(4);
-    expect(result.current.pageItems).toHaveLength(2);
-    expect(result.current.pageItems.some((item) => item.id === '1')).toBe(false);
+    expect(getHighlightList).toHaveBeenCalledWith({ season: SEASON, sort: 'LATEST', page: 0, size: PAGE_SIZE });
   });
 
-  it('카테고리 변경 시 페이지를 1로 리셋하고 그리드를 필터링한다', () => {
-    const { result } = renderHook(() =>
-      useHighlights({ source: makeItems, pageSize: 2, delayMs: DELAY_MS }),
-    );
-    act(() => vi.advanceTimersByTime(DELAY_MS));
+  it('1페이지는 첫 영상을 대표로, 나머지를 그리드로 나누고 전체 개수·페이지 수는 응답 값을 쓴다', async () => {
+    const { result } = await renderLoaded();
+
+    expect(result.current.featured?.id).toBe('L1');
+    expect(idsOf(result.current.pageItems)).toEqual(['L2', 'L3']);
+    expect(result.current.totalCount).toBe(12);
+    expect(result.current.totalPages).toBe(2);
+  });
+
+  it('2페이지로 이동하면 page 1을 조회하고 대표 없이 응답 전체를 그리드로 보여준다', async () => {
+    const { result } = await renderLoaded();
 
     act(() => result.current.goToPage(2));
+
+    await waitFor(() => expect(idsOf(result.current.pageItems)).toEqual(['L10', 'L11']));
     expect(result.current.page).toBe(2);
-
-    act(() => result.current.changeCategory('어시스트'));
-
-    expect(result.current.page).toBe(1);
-    expect(result.current.category).toBe('어시스트');
-    expect(result.current.totalCount).toBe(1);
-    expect(result.current.pageItems).toHaveLength(1);
-    expect(result.current.pageItems[0].id).toBe('3');
+    expect(result.current.featured).toBeUndefined();
+    expect(getHighlightList).toHaveBeenLastCalledWith({ season: SEASON, sort: 'LATEST', page: 1, size: PAGE_SIZE });
   });
 
-  it('정렬 변경 시 페이지를 1로 리셋하고 조회순으로 정렬한다', () => {
-    const { result } = renderHook(() =>
-      useHighlights({ source: makeItems, pageSize: 2, delayMs: DELAY_MS }),
-    );
-    act(() => vi.advanceTimersByTime(DELAY_MS));
+  it('정렬을 조회순으로 바꾸면 페이지를 1로 되돌리고 VIEW_COUNT 1페이지의 첫 영상이 대표가 된다', async () => {
+    const { result } = await renderLoaded();
     act(() => result.current.goToPage(2));
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
 
-    act(() => result.current.changeSort('views'));
+    act(() => result.current.changeSort('VIEW_COUNT'));
 
+    await waitFor(() => expect(result.current.featured?.id).toBe('V1'));
     expect(result.current.page).toBe(1);
-    expect(result.current.sortKey).toBe('views');
-    // featured(id1) 제외 후 조회순: 3(3.0M) > 2(1.0M) > 5(900K) > 4(500K)
-    expect(result.current.pageItems.map((item) => item.id)).toEqual(['3', '2']);
+    expect(result.current.sortKey).toBe('VIEW_COUNT');
+    expect(idsOf(result.current.pageItems)).toEqual(['V2']);
+    expect(getHighlightList).toHaveBeenLastCalledWith({ season: SEASON, sort: 'VIEW_COUNT', page: 0, size: PAGE_SIZE });
   });
 
-  it('goToPage로 다음 페이지 항목을 노출한다', () => {
-    const { result } = renderHook(() =>
-      useHighlights({ source: makeItems, pageSize: 2, delayMs: DELAY_MS }),
-    );
-    act(() => vi.advanceTimersByTime(DELAY_MS));
-
-    // 기본 정렬(recent) 제외 featured(id1): 2, 3, 4, 5 순
-    act(() => result.current.goToPage(2));
-
-    expect(result.current.page).toBe(2);
-    expect(result.current.pageItems.map((item) => item.id)).toEqual(['4', '5']);
-  });
-
-  it('showFeatured=false면 대표 영상도 그리드에 포함하고 featured는 undefined다', () => {
-    const { result } = renderHook(() =>
-      useHighlights({ source: makeItems, pageSize: 10, delayMs: DELAY_MS, showFeatured: false }),
-    );
-    act(() => vi.advanceTimersByTime(DELAY_MS));
+  it('showFeatured=false면 1페이지도 대표 없이 응답 전체를 그리드로 보여준다', async () => {
+    const { result } = await renderLoaded({ showFeatured: false });
 
     expect(result.current.featured).toBeUndefined();
-    expect(result.current.totalCount).toBe(5);
-    expect(result.current.pageItems.some((item) => item.id === '1')).toBe(true);
+    expect(idsOf(result.current.pageItems)).toEqual(['L1', 'L2', 'L3']);
   });
 
-  it('결과가 없는 카테고리는 pageItems가 0이다', () => {
-    const { result } = renderHook(() =>
-      useHighlights({ source: makeItems, pageSize: 2, delayMs: DELAY_MS }),
-    );
-    act(() => vi.advanceTimersByTime(DELAY_MS));
+  it('조회에 실패하면 isError가 true이고 refetch로 다시 조회한다', async () => {
+    vi.mocked(getHighlightList).mockResolvedValueOnce({
+      success: false,
+      data: null,
+      error: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' },
+    });
+    const { result } = renderHook(() => useHighlights({ season: SEASON }), { wrapper: createWrapper() });
 
-    act(() => result.current.changeCategory('풀매치'));
+    await waitFor(() => expect(result.current.isError).toBe(true));
 
-    expect(result.current.totalCount).toBe(0);
-    expect(result.current.pageItems).toHaveLength(0);
-    expect(result.current.totalPages).toBe(0);
-  });
+    act(() => result.current.refetch());
 
-  it('언마운트 시 대기 중인 로딩 타이머를 정리한다', () => {
-    const clearSpy = vi.spyOn(global, 'clearTimeout');
-    const { unmount } = renderHook(() => useHighlights({ source: makeItems, delayMs: DELAY_MS }));
-
-    unmount();
-
-    expect(clearSpy).toHaveBeenCalled();
-    clearSpy.mockRestore();
+    await waitFor(() => expect(result.current.isError).toBe(false));
+    expect(getHighlightList).toHaveBeenCalledTimes(2);
+    expect(result.current.featured?.id).toBe('L1');
   });
 });
