@@ -7,7 +7,7 @@ FSD(Feature-Sliced Design)를 따른다. 레이어 폴더에 알파벳 접두사
 ```
 src/
 ├── app/          # Next.js 라우트 + BFF Route Handler + 전역 providers·스타일
-├── b_pages/      # 페이지 단위 조합 (landing, season, playerList, playerDetail, clubInfo, news, highlights, notFound)
+├── b_pages/      # 페이지 단위 조합 (landing, season, playerList, playerDetail, clubInfo, news, highlights, live, notFound)
 ├── c_widgets/    # 여러 feature/entity를 조합한 큰 UI 블록 (Navbar, Footer, MatchSchedule, Standing, PlayerRoster)
 ├── d_features/   # 데이터 조회·필터 등 사용자 행동 단위 (matches, news, player, rank, seasonInfo)
 ├── e_entities/   # 도메인 (matches, news, player, rank, seasonInfo, team)

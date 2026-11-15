@@ -11,6 +11,7 @@
 | 구단 | `/club` | `clubInfo` | 목데이터 (`model/mockData.ts`) |
 | 기사 | `/news` | `news` | 실 API |
 | 하이라이트 | `/highlights` | `highlights` | 준비 중 화면 |
+| 라이브 | `/live` | `live` | 목데이터 (`model/mockData.ts`) |
 | 404 | — | `notFound` | — |
 | API 테스트 (개발용) | `/api-test` | `apiTest` | BFF 호출 도구 |
 

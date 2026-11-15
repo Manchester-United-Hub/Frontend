@@ -13,6 +13,7 @@ const routes = {
   club: (): Route => '/club',
   highlights: (): Route => '/highlights',
   news: (): Route => '/news',
+  live: (): Route => '/live',
 } as const;
 
 export { routes };
