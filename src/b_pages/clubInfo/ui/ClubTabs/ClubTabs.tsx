@@ -1,12 +1,11 @@
 'use client';
 
-import { useState, type ReactNode } from 'react';
+import { useMemo, useState, type ReactNode } from 'react';
 
-import type { SubTabId } from '../../model/types';
+import type { Manager, SubTabId } from '../../model/types';
 import {
   emptyTabCopy,
   historyEvents,
-  manager,
   stadium,
   subTabs,
 } from '../../model/mockData';
@@ -24,12 +23,12 @@ const DEFAULT_TAB_ID: SubTabId = 'history';
 const STATS_LABEL = subTabs.find((tab) => tab.id === 'stats')?.kr ?? '팀통계';
 
 /**
- * 탭 id → 패널 콘텐츠 매핑(스위치 남발 금지, README §JS 패턴). 각 값은 정적
+ * 정적 탭 id → 패널 콘텐츠 매핑(스위치 남발 금지, README §JS 패턴). 각 값은 정적
  * mockData만 소비하므로 컴포넌트 밖 모듈 스코프에서 한 번만 생성한다(§code-conventions 2).
+ * manager 패널은 API 데이터(props)를 받으므로 컴포넌트 안에서 생성한다.
  */
-const TAB_PANELS: Record<SubTabId, ReactNode> = {
+const STATIC_TAB_PANELS: Record<Exclude<SubTabId, 'manager'>, ReactNode> = {
   history: <HistoryTab historyEvents={historyEvents} />,
-  manager: <ManagerTab manager={manager} />,
   stadium: <StadiumTab stadium={stadium} />,
   stats: <EmptyTab label={STATS_LABEL} copy={emptyTabCopy.stats} />,
 };
@@ -45,8 +44,18 @@ const TAB_PANELS: Record<SubTabId, ReactNode> = {
  * 갖는다(SubTabNav.tsx). 이 tabpanel은 그 짝으로 `id="panel-{id}"`·
  * `aria-labelledby="tab-{id}"`를 부여한다.
  */
-export function ClubTabs() {
+export interface ClubTabsProps {
+  /** 감독 API 결과. 실패 시 null — ManagerTab이 빈 상태를 렌더한다. */
+  manager: Manager | null;
+}
+
+export function ClubTabs({ manager }: ClubTabsProps) {
   const [activeId, setActiveId] = useState<SubTabId>(DEFAULT_TAB_ID);
+
+  const activePanel = useMemo(
+    () => (activeId === 'manager' ? <ManagerTab manager={manager} /> : STATIC_TAB_PANELS[activeId]),
+    [activeId, manager]
+  );
 
   return (
     <>
@@ -57,7 +66,7 @@ export function ClubTabs() {
         aria-labelledby={`tab-${activeId}`}
         tabIndex={0}
       >
-        {TAB_PANELS[activeId]}
+        {activePanel}
       </div>
     </>
   );

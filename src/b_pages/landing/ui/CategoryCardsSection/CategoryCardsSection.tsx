@@ -45,7 +45,7 @@ export function CategoryCardsSection() {
         </div>
         <ul
           role="list"
-          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6"
+          className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"
         >
           {NAV_ITEMS.map((nav: NavItem) => {
             const card = (

@@ -2,7 +2,6 @@ import type { ReactNode } from 'react';
 import { Cake, MapPin, CalendarDays, Newspaper, Globe } from 'lucide-react';
 
 import type { Manager } from '../../model/types';
-import { FlagSwatch } from './FlagSwatch';
 
 /** dt 아이콘 크기(시안 club.jsx `<Icon size={14} />` 그대로) */
 const FACT_ICON_SIZE = 14;
@@ -19,16 +18,7 @@ const buildFactRows = (manager: Manager): FactRow[] => [
   { label: '출생지', icon: <MapPin size={FACT_ICON_SIZE} aria-hidden="true" />, value: manager.birthplace },
   { label: '부임', icon: <CalendarDays size={FACT_ICON_SIZE} aria-hidden="true" />, value: manager.appointed },
   { label: '계약 기간', icon: <Newspaper size={FACT_ICON_SIZE} aria-hidden="true" />, value: manager.contract },
-  {
-    label: '국적',
-    icon: <Globe size={FACT_ICON_SIZE} aria-hidden="true" />,
-    value: (
-      <>
-        <FlagSwatch code={manager.flag} />
-        {manager.nat}
-      </>
-    ),
-  },
+  { label: '국적', icon: <Globe size={FACT_ICON_SIZE} aria-hidden="true" />, value: manager.nationality },
 ];
 
 export interface ManagerFactsProps {

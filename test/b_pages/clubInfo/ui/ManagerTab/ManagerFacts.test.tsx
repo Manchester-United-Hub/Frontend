@@ -4,7 +4,8 @@
  * 검증 목적:
  * - 5행이 라벨 순서대로(출생/출생지/부임/계약 기간/국적) dt/dd 구조로 렌더된다
  * - 각 dd 값이 manager 데이터와 일치한다
- * - 국적 행의 dd는 FlagSwatch(장식, aria-hidden) + 국가명 텍스트를 함께 렌더한다
+ * - 국적 행의 dd는 국가명 텍스트만 렌더한다(API에 국가 코드가 없어 FlagSwatch 미렌더 — 설계 D-10)
+ * - API null 값("-")도 그대로 렌더된다
  * - dt 아이콘은 장식 요소로 aria-hidden 처리된다(svg[aria-hidden])
  */
 
@@ -13,10 +14,11 @@ import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { ManagerFacts } from '@pages/clubInfo/ui/ManagerTab/ManagerFacts';
-import { manager } from '@pages/clubInfo/model/mockData';
+import { MANAGER_FIXTURE } from '@test/fixtures/coach';
 
 afterEach(cleanup);
 
+const manager = MANAGER_FIXTURE;
 const FACT_LABELS = ['출생', '출생지', '부임', '계약 기간', '국적'];
 
 describe('ManagerFacts', () => {
@@ -37,11 +39,23 @@ describe('ManagerFacts', () => {
     expect(screen.getByText(manager.contract)).toBeInTheDocument();
   });
 
-  it('국적 행의 dd는 FlagSwatch(aria-hidden)와 국가명을 함께 렌더한다', () => {
+  it('국적 행의 dd는 국기 스와치 없이 국가명만 렌더한다', () => {
     const { container } = render(<ManagerFacts manager={manager} />);
-    expect(screen.getByText(manager.nat)).toBeInTheDocument();
-    const flag = container.querySelector('dd span[aria-hidden="true"]');
-    expect(flag).not.toBeNull();
+    const dds = container.querySelectorAll('dd');
+    const nationalityDd = dds[FACT_LABELS.indexOf('국적')];
+    expect(nationalityDd).toHaveTextContent(manager.nationality);
+    expect(nationalityDd.querySelector('span[aria-hidden="true"]')).toBeNull();
+  });
+
+  it('API에서 null이던 값("-")도 각 dd에 그대로 렌더된다', () => {
+    const { container } = render(
+      <ManagerFacts
+        manager={{ ...manager, born: '-', birthplace: '-', appointed: '-', contract: '-', nationality: '-' }}
+      />
+    );
+    container.querySelectorAll('dd').forEach((dd) => {
+      expect(dd).toHaveTextContent(/^-$/);
+    });
   });
 
   it('dt 아이콘은 장식 요소로 aria-hidden 처리된다', () => {
