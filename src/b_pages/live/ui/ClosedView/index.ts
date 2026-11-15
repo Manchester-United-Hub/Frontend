@@ -1,0 +1,1 @@
+export { ClosedView } from './ClosedView';
