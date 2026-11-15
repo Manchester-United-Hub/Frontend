@@ -1,24 +1,25 @@
-import type { UseHighlightsResult } from '@pages/highlights/model';
+'use client';
+
+import { Clapperboard } from 'lucide-react';
+
+import { FEATURED_LABELS, type UseHighlightsResult } from '@pages/highlights/model';
+import { StateBox } from '@shared/ui';
 
 import { FeaturedHighlight } from '../FeaturedHighlight';
+import { HighlightsErrorState } from '../HighlightsErrorState';
 import { HighlightsFilterBar } from '../HighlightsFilterBar';
 import { HighlightsGrid } from '../HighlightsGrid';
 import { HighlightsPager } from '../HighlightsPager';
 import { HighlightsSkeleton } from '../HighlightsSkeleton';
 
-export interface HighlightsContentProps extends UseHighlightsResult {
-  /** 대표 영상 노출 여부(AD-6). 기본 true. false면 featured가 있어도 렌더하지 않는다. */
+interface HighlightsContentProps extends UseHighlightsResult {
   showFeatured?: boolean;
 }
 
-/**
- * 하이라이트 콘텐츠 영역 — 로딩 → 필터 바 + 결과 개수 + (대표 영상) + 그리드 + 페이저 3단 분기.
- * useHighlights(ST-2)의 상태·핸들러를 props로 그대로 수취하는 표현 전용 조립 컴포넌트(NewsContent 미러).
- */
 function HighlightsContent({
   isLoading,
-  category,
-  changeCategory,
+  isError,
+  refetch,
   sortKey,
   changeSort,
   featured,
@@ -30,12 +31,33 @@ function HighlightsContent({
   showFeatured = true,
 }: HighlightsContentProps) {
   if (isLoading) return <HighlightsSkeleton />;
+  if (isError) return <HighlightsErrorState onRetry={refetch} />;
+
+  const visibleFeatured = showFeatured ? featured : undefined;
+
+  if (!visibleFeatured && totalCount === 0) {
+    return (
+      <div className="rounded-lg border border-dashed border-border">
+        <StateBox
+          className="py-[72px]"
+          variant="empty"
+          icon={<Clapperboard size={24} aria-hidden="true" />}
+          title="아직 등록된 하이라이트가 없어요"
+          description="경기가 끝나면 하이라이트가 올라와요."
+        />
+      </div>
+    );
+  }
+
+  // 페이지를 넘기면 바뀐 목록이 처음부터 보이도록 맨 위로 올린다.
+  const handlePageChange = (nextPage: number) => {
+    goToPage(nextPage);
+    window.scrollTo({ top: 0 });
+  };
 
   return (
     <>
       <HighlightsFilterBar
-        category={category}
-        onCategoryChange={changeCategory}
         sortKey={sortKey}
         onSortChange={changeSort}
       />
@@ -44,26 +66,25 @@ function HighlightsContent({
         <b className="font-semibold text-foreground">{totalCount}</b>개의 영상
       </p>
 
-      {showFeatured && featured ? (
+      {visibleFeatured ? (
         <FeaturedHighlight
-          title={featured.title}
-          category={featured.category}
-          competition={featured.competition}
-          date={featured.date}
-          views={featured.views}
-          duration={featured.duration}
-          description={featured.description ?? ''}
+          title={visibleFeatured.title}
+          label={FEATURED_LABELS[sortKey]}
+          thumbnailUrl={visibleFeatured.thumbnailUrl}
+          date={visibleFeatured.date}
+          views={visibleFeatured.views}
+          watchUrl={visibleFeatured.watchUrl}
           className="mb-6"
         />
       ) : null}
 
-      <HighlightsGrid items={pageItems} />
+      {pageItems.length > 0 ? <HighlightsGrid items={pageItems} /> : null}
 
       {totalPages > 1 ? (
         <HighlightsPager
           currentPage={page}
           totalPages={totalPages}
-          onPageChange={goToPage}
+          onPageChange={handlePageChange}
           className="mt-8"
         />
       ) : null}
@@ -72,3 +93,4 @@ function HighlightsContent({
 }
 
 export { HighlightsContent };
+export type { HighlightsContentProps };
