@@ -48,6 +48,7 @@ page.tsx: new QueryClient({ retry: false }) → prefetchQuery(xxxServerQueries..
 | matches (랜딩) | 5분 | `300` | — | `300_000` |
 | news | 5분 / 1분 | `300` | — | `60_000` |
 | player (목록) | 1시간 | `3600` | `'hours'` | `3_600_000` |
+| highlight | 5분 | `300` | — | `300_000` |
 | seasonInfo | 1시간 | — | `'hours'` | — |
 | rank | 1시간 / 1분 | `60` (BFF) | `'hours'` | — |
 | matches (시즌 일정) | 캐시 없음 (매 요청) | — | — | — |

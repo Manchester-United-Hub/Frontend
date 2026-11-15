@@ -28,6 +28,7 @@
 | `player` | 선수 목록·상세·기록 | `GET /api/players`, `/api/players/{playerId}`, `/api/player-details/{playerId}` |
 | `rank` | 리그 순위·득점·도움 순위 | `GET /api/rank/premier-league`, `.../topscorers`, `.../topassists` |
 | `seasonInfo` | 현재 시즌 | `GET /api/seasons/current` |
+| `highlight` | 시즌별 하이라이트 영상 | `GET /api/highlights` |
 
 - 모든 API는 GET이며 인증이 없다.
 
