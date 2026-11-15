@@ -3,29 +3,21 @@ import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { HighlightsGrid } from '@pages/highlights/ui/HighlightsGrid';
-import type { HighlightItem } from '@pages/highlights/model';
+import { buildHighlightItem } from '@test/fixtures/highlights';
 
 afterEach(cleanup);
 
-const items: HighlightItem[] = [
-  {
+const items = [
+  buildHighlightItem({
     id: 'h2',
-    title: '브루누 중거리 프리킥',
-    category: '골',
-    competition: 'FA컵',
-    date: '2025.05.11',
-    views: '1.8M',
-    duration: '0:58',
-  },
-  {
+    title: 'Leeds 1-1 Man Utd | Highlights',
+    watchUrl: 'https://www.youtube.com/watch?v=h2',
+  }),
+  buildHighlightItem({
     id: 'h3',
-    title: '오나나 연속 선방',
-    category: '세이브',
-    competition: '챔피언스리그',
-    date: '2025.05.06',
-    views: '940K',
-    duration: '2:15',
-  },
+    title: 'Man Utd v AC Milan | Full Match',
+    watchUrl: 'https://www.youtube.com/watch?v=h3',
+  }),
 ];
 
 describe('HighlightsGrid', () => {
@@ -33,18 +25,17 @@ describe('HighlightsGrid', () => {
     render(<HighlightsGrid items={items} />);
 
     expect(screen.getByRole('list')).toBeInTheDocument();
-    expect(screen.getAllByRole('link')).toHaveLength(items.length);
+    expect(screen.getAllByRole('listitem')).toHaveLength(items.length);
     expect(screen.getByRole('heading', { level: 3, name: items[0].title })).toBeInTheDocument();
     expect(screen.getByRole('heading', { level: 3, name: items[1].title })).toBeInTheDocument();
   });
 
-  it('빈 배열이면 StateBox 빈 상태를 렌더한다', () => {
-    render(<HighlightsGrid items={[]} />);
+  it('각 카드는 자기 영상의 YouTube 시청 링크를 갖는다', () => {
+    render(<HighlightsGrid items={items} />);
 
-    expect(screen.queryByRole('list')).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('heading', { name: '해당 카테고리 영상이 없어요' }),
-    ).toBeInTheDocument();
-    expect(screen.getByText('다른 카테고리를 선택해 보세요.')).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: items[1].title })).toHaveAttribute(
+      'href',
+      'https://www.youtube.com/watch?v=h3',
+    );
   });
 });
