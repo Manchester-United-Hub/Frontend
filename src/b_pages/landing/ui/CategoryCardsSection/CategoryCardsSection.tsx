@@ -27,6 +27,10 @@ const FALLBACK_ICON = <LayoutGrid size={ICON_SIZE} aria-hidden />;
 
 const SECTION_HEADING_ID = 'category-cards-heading';
 
+const CATEGORY_ITEMS = NAV_ITEMS.filter(
+  (nav: NavItem) => !nav.isHiddenInCategoryCards
+);
+
 export function CategoryCardsSection() {
   return (
     <section
@@ -47,7 +51,7 @@ export function CategoryCardsSection() {
           role="list"
           className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5"
         >
-          {NAV_ITEMS.map((nav: NavItem) => {
+          {CATEGORY_ITEMS.map((nav: NavItem) => {
             const card = (
               <CategoryCard
                 icon={ICON_MAP[nav.id] ?? FALLBACK_ICON}

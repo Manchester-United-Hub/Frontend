@@ -7,6 +7,8 @@ interface NavItem {
   href: Route;
   description?: string;
   isOuterLink?: boolean;
+  hasLiveIndicator?: boolean;
+  isHiddenInCategoryCards?: boolean;
 }
 
 export type { NavItem };

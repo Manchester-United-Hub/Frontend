@@ -1,7 +1,11 @@
 import { NAV_ITEMS } from './model/configs';
 import { BurgerButton, LogoBlock, NavLinkItem } from './ui';
 
-function Navbar() {
+interface NavbarProps {
+  isMatchLive?: boolean;
+}
+
+function Navbar({ isMatchLive = false }: NavbarProps) {
   return (
     <header className="sticky top-0 z-50 bg-background/86 backdrop-blur-[10px] backdrop-saturate-[1.4] border-b border-border">
       <div className="max-w-[1200px] mx-auto px-6 flex items-center gap-7 h-16">
@@ -11,7 +15,11 @@ function Navbar() {
           className="hidden min-[861px]:flex items-center gap-0.5 ml-1.5"
         >
           {NAV_ITEMS.map((item) => (
-            <NavLinkItem key={item.id} item={item} />
+            <NavLinkItem
+              key={item.id}
+              item={item}
+              isMatchLive={isMatchLive}
+            />
           ))}
         </nav>
         <span className="flex-1" aria-hidden="true" />
@@ -24,4 +32,4 @@ function Navbar() {
   );
 }
 
-export { Navbar };
+export { Navbar, type NavbarProps };

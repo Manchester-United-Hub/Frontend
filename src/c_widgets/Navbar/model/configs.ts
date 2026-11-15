@@ -1,6 +1,16 @@
+import { routes } from '@shared/utils';
+
 import { NavItem } from './types';
 
 const NAV_ITEMS: NavItem[] = [
+  {
+    id: 'live',
+    label: '라이브',
+    labelEn: 'Live',
+    href: routes.live(),
+    hasLiveIndicator: true,
+    isHiddenInCategoryCards: true,
+  },
   {
     id: 'season',
     label: '시즌',
