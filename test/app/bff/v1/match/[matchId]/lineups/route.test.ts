@@ -10,7 +10,7 @@ vi.mock('@shared/model', () => ({
   toBffResponse: vi.fn((result) => result),
 }));
 
-describe('GET /api/v1/match/[matchId]/lineups', () => {
+describe('GET /bff/v1/match/[matchId]/lineups', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('matchId를 number로 변환해 fetchLiveMatchLineup을 호출한다', async () => {
@@ -20,9 +20,9 @@ describe('GET /api/v1/match/[matchId]/lineups', () => {
       data: { matchId: 100, lineups: [] },
     });
 
-    const { GET } = await import('@app/api/v1/match/[matchId]/lineups/route');
+    const { GET } = await import('@app/bff/v1/match/[matchId]/lineups/route');
     const request = new NextRequest(
-      'http://localhost/api/v1/match/100/lineups'
+      'http://localhost/bff/v1/match/100/lineups'
     );
     await GET(request, { params: Promise.resolve({ matchId: '100' }) });
 
@@ -38,9 +38,9 @@ describe('GET /api/v1/match/[matchId]/lineups', () => {
       data: { matchId: 100, lineups: [] },
     });
 
-    const { GET } = await import('@app/api/v1/match/[matchId]/lineups/route');
+    const { GET } = await import('@app/bff/v1/match/[matchId]/lineups/route');
     const request = new NextRequest(
-      'http://localhost/api/v1/match/100/lineups'
+      'http://localhost/bff/v1/match/100/lineups'
     );
     const response = await GET(request, {
       params: Promise.resolve({ matchId: '100' }),
@@ -56,9 +56,9 @@ describe('GET /api/v1/match/[matchId]/lineups', () => {
       data: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' },
     });
 
-    const { GET } = await import('@app/api/v1/match/[matchId]/lineups/route');
+    const { GET } = await import('@app/bff/v1/match/[matchId]/lineups/route');
     const request = new NextRequest(
-      'http://localhost/api/v1/match/100/lineups'
+      'http://localhost/bff/v1/match/100/lineups'
     );
     const response = await GET(request, {
       params: Promise.resolve({ matchId: '100' }),

@@ -10,7 +10,7 @@
  * (EmptyTab's real call-site data wasn't present in the captured source) —
  * see result-ST-001.md for the full reconciliation note.
  *
- * No imports from e_entities / d_features / app/api (SERVICE.md 결합도 원칙).
+ * No imports from e_entities / d_features / app/bff (SERVICE.md 결합도 원칙).
  */
 
 import type {

@@ -1,5 +1,5 @@
 /**
- * GET /api/v1/rank/[league] 라우트 테스트.
+ * GET /bff/v1/rank/[league] 라우트 테스트.
  *
  * 검증 목적:
  * - league='pl'·유효한 season 쿼리일 때 convertPLRankDTO2DAO로 변환된 data를 응답한다
@@ -47,15 +47,15 @@ const createPlRankDTO = (overrides: Partial<PLRankDTO> = {}): PLRankDTO => ({
 });
 
 const requestGET = async (league: string, query?: string) => {
-  const { GET } = await import('@app/api/v1/rank/[league]/route');
+  const { GET } = await import('@app/bff/v1/rank/[league]/route');
   const url = query
-    ? `http://localhost/api/v1/rank/${league}?${query}`
-    : `http://localhost/api/v1/rank/${league}`;
+    ? `http://localhost/bff/v1/rank/${league}?${query}`
+    : `http://localhost/bff/v1/rank/${league}`;
   const request = new NextRequest(url);
   return GET(request, { params: Promise.resolve({ league }) });
 };
 
-describe('GET /api/v1/rank/[league]', () => {
+describe('GET /bff/v1/rank/[league]', () => {
   beforeEach(() => vi.clearAllMocks());
 
   describe("league가 'pl'이고 season 쿼리가 유효하며 성공 응답일 때", () => {

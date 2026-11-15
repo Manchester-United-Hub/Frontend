@@ -9,13 +9,13 @@ vi.mock('@shared/model', () => ({
   toBffResponse: vi.fn((result) => result),
 }));
 
-describe('GET /api/v1/team/statistics', () => {
+describe('GET /bff/v1/team/statistics', () => {
   beforeEach(() => vi.clearAllMocks());
 
   it('fetchTeamStatistics를 호출한다', async () => {
     vi.mocked(fetchTeamStatistics).mockResolvedValue({ isSuccess: true, status: 200, data: [] });
 
-    const { GET } = await import('@app/api/v1/team/statistics/route');
+    const { GET } = await import('@app/bff/v1/team/statistics/route');
     await GET();
 
     expect(fetchTeamStatistics).toHaveBeenCalledOnce();
@@ -24,7 +24,7 @@ describe('GET /api/v1/team/statistics', () => {
   it('200 응답을 반환한다', async () => {
     vi.mocked(fetchTeamStatistics).mockResolvedValue({ isSuccess: true, status: 200, data: [] });
 
-    const { GET } = await import('@app/api/v1/team/statistics/route');
+    const { GET } = await import('@app/bff/v1/team/statistics/route');
     const response = await GET();
 
     expect(response.status).toBe(200);
@@ -33,7 +33,7 @@ describe('GET /api/v1/team/statistics', () => {
   it('외부 API 실패 시 500 상태로 응답한다', async () => {
     vi.mocked(fetchTeamStatistics).mockResolvedValue({ isSuccess: false, status: 500, data: { code: 'INTERNAL_SERVER_ERROR', message: '서버 오류' } });
 
-    const { GET } = await import('@app/api/v1/team/statistics/route');
+    const { GET } = await import('@app/bff/v1/team/statistics/route');
     const response = await GET();
 
     expect(response.status).toBe(500);

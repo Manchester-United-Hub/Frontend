@@ -10,14 +10,14 @@ vi.mock('@shared/api', async (importOriginal) => {
 describe('getNewsList', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('/api/v1/news 경로로 query와 함께 GET 요청한다', async () => {
+  it('/bff/v1/news 경로로 query와 함께 GET 요청한다', async () => {
     const mockRes = { json: vi.fn().mockResolvedValue({}) };
     vi.mocked(clientFetcher.get).mockResolvedValue(mockRes as unknown as Response);
 
     const query = { cursorAt: '2026-01-01T00:00', cursorId: 10, size: 10 };
     await getNewsList(query);
 
-    expect(clientFetcher.get).toHaveBeenCalledWith('/api/v1/news', query);
+    expect(clientFetcher.get).toHaveBeenCalledWith('/bff/v1/news', query);
   });
 
   it('json()의 반환값을 그대로 반환한다', async () => {

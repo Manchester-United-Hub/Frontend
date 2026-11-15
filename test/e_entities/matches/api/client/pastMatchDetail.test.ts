@@ -10,7 +10,7 @@ vi.mock('@shared/api', async (importOriginal) => {
 describe('getPastMatchDetail', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('/api/v1/match/:matchId/detail 경로로 GET 요청한다', async () => {
+  it('/bff/v1/match/:matchId/detail 경로로 GET 요청한다', async () => {
     const mockRes = {
       json: vi.fn().mockResolvedValue({}),
     };
@@ -20,7 +20,7 @@ describe('getPastMatchDetail', () => {
 
     await getPastMatchDetail({ matchId: 42 });
 
-    expect(clientFetcher.get).toHaveBeenCalledWith('/api/v1/match/42/detail');
+    expect(clientFetcher.get).toHaveBeenCalledWith('/bff/v1/match/42/detail');
   });
 
   it('json()의 반환값을 그대로 반환한다', async () => {

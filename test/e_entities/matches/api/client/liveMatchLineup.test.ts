@@ -10,7 +10,7 @@ vi.mock('@shared/api', async (importOriginal) => {
 describe('getLiveMatchLineup', () => {
   beforeEach(() => vi.clearAllMocks());
 
-  it('/api/v1/match/:matchId/lineups 경로로 GET 요청한다', async () => {
+  it('/bff/v1/match/:matchId/lineups 경로로 GET 요청한다', async () => {
     const mockRes = {
       json: vi.fn().mockResolvedValue({}),
     };
@@ -21,7 +21,7 @@ describe('getLiveMatchLineup', () => {
     await getLiveMatchLineup({ matchId: 12345 });
 
     expect(clientFetcher.get).toHaveBeenCalledWith(
-      '/api/v1/match/12345/lineups'
+      '/bff/v1/match/12345/lineups'
     );
   });
 
