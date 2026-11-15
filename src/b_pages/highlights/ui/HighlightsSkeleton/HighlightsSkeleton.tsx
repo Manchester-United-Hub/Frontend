@@ -1,10 +1,10 @@
-import { PAGE_SIZE } from '@pages/highlights/model';
+import { HIGHLIGHT_LIST_PAGE_SIZE } from '@features/highlight/api';
 import { Skeleton } from '@shared/ui';
 
 import { HIGHLIGHTS_GRID_CLASSNAME } from '../HighlightsGrid';
 
 export interface HighlightsSkeletonProps {
-  /** 렌더할 스켈레톤 카드 개수. 미지정 시 한 페이지 분량(PAGE_SIZE)을 사용한다. */
+  /** 렌더할 스켈레톤 카드 개수. 미지정 시 한 페이지 분량(HIGHLIGHT_LIST_PAGE_SIZE)을 사용한다. */
   count?: number;
 }
 
@@ -13,7 +13,7 @@ export interface HighlightsSkeletonProps {
  * 대회·메타 2개) 미러. 전체 aria-hidden(스크린리더에 로딩 placeholder 노출 안 함).
  * 개별 Skeleton은 motion-safe:animate-pulse를 이미 내장한다(@shared/ui).
  */
-function HighlightsSkeleton({ count = PAGE_SIZE }: HighlightsSkeletonProps) {
+function HighlightsSkeleton({ count = HIGHLIGHT_LIST_PAGE_SIZE }: HighlightsSkeletonProps) {
   return (
     <div aria-hidden="true" className={HIGHLIGHTS_GRID_CLASSNAME}>
       {Array.from({ length: count }).map((_, index) => (

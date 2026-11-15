@@ -20,7 +20,7 @@ describe('HighlightsHeadSection', () => {
   it('설명 문구를 렌더한다', () => {
     render(<HighlightsHeadSection />);
     expect(
-      screen.getByText('골과 선방, 풀매치까지 — 레드 데빌스의 가장 빛난 순간을 다시 보세요.')
+      screen.getByText('레드 데빌스의 가장 빛난 순간을 다시 보세요.')
     ).toBeInTheDocument();
   });
 });

@@ -63,9 +63,11 @@ const newsServerQueries = { infiniteList: (size?: number) => newsInfiniteQueryOp
 | --- | --- | --- | --- |
 | 뉴스 | 커서 (`cursorAt`, `cursorId`, `size`) | 더보기 버튼 | `useInfiniteQuery` |
 | 선수 | 전체 스쿼드를 한 번에 조회 | 클라이언트에서 필터·페이지 분할 | `useQuery` + `usePlayerListFilters` |
+| 하이라이트 | 페이지 (`sort`, `page` 0부터, `size=9`) | 정렬 토글 + 페이지 번호 | `useQuery` + `useHighlights` |
 
 - 뉴스의 다음 커서는 응답의 `nextCursorAt`, `nextCursorId`를 쓴다. 둘 중 하나가 `null`이거나 빈 페이지면 끝이다.
 - 선수 목록은 필터·검색이 전체 스쿼드를 대상으로 하므로 서버 페이징을 쓰지 않는다.
+- 하이라이트는 화면 페이지(1부터)를 API `page`(0부터)로 바꿔 조회하고, 전체 개수·페이지 수는 응답의 `totalElements`·`totalPages`를 쓴다.
 
 ## Suspense
 

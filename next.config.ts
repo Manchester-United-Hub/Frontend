@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
         hostname: 'pub-8dfe7ca8163c400aac6a83640c67edb4.r2.dev',
         pathname: '**/*',
       },
+      {
+        // 하이라이트 썸네일 중 R2에 아직 복사되지 않은 영상은 YouTube 썸네일 URL이 그대로 내려온다(실측).
+        protocol: 'https',
+        hostname: 'i.ytimg.com',
+        pathname: '/vi/**',
+      },
     ],
   },
 };

@@ -10,7 +10,7 @@
 | 선수 상세 | `/players/[playerId]` | `playerDetail` | 실 API (클라이언트 조회) |
 | 구단 | `/club` | `clubInfo` | 목데이터 (`model/mockData.ts`) |
 | 기사 | `/news` | `news` | 실 API |
-| 하이라이트 | `/highlights` | `highlights` | 준비 중 화면 |
+| 하이라이트 | `/highlights` | `highlights` | 실 API |
 | 404 | — | `notFound` | — |
 | API 테스트 (개발용) | `/api-test` | `apiTest` | BFF 호출 도구 |
 

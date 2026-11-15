@@ -12,7 +12,7 @@ function HighlightsHeadSection() {
         하이라이트
       </h1>
       <p className="mt-2 max-w-[560px] text-[15px] text-muted-foreground">
-        골과 선방, 풀매치까지 — 레드 데빌스의 가장 빛난 순간을 다시 보세요.
+        레드 데빌스의 가장 빛난 순간을 다시 보세요.
       </p>
     </Shell>
   );

@@ -1,7 +1,4 @@
-import { Play } from 'lucide-react';
-
 import type { HighlightItem } from '@pages/highlights/model';
-import { StateBox } from '@shared/ui';
 
 import { HighlightCard } from '../HighlightCard';
 
@@ -16,33 +13,18 @@ export interface HighlightsGridProps {
   items: HighlightItem[];
 }
 
-/** 하이라이트 카드 그리드 — 빈 배열이면 StateBox 빈 상태를 렌더한다. */
+/** 하이라이트 카드 그리드. 빈 목록 처리는 호출하는 쪽(HighlightsContent)이 맡는다. */
 function HighlightsGrid({ items }: HighlightsGridProps) {
-  if (items.length === 0) {
-    return (
-      <div className="rounded-lg border border-dashed border-border">
-        <StateBox
-          className="py-[72px]"
-          variant="empty"
-          icon={<Play size={24} aria-hidden="true" />}
-          title="해당 카테고리 영상이 없어요"
-          description="다른 카테고리를 선택해 보세요."
-        />
-      </div>
-    );
-  }
-
   return (
     <ul role="list" className={HIGHLIGHTS_GRID_CLASSNAME}>
       {items.map((item) => (
         <li key={item.id}>
           <HighlightCard
             title={item.title}
-            category={item.category}
-            competition={item.competition}
+            thumbnailUrl={item.thumbnailUrl}
             date={item.date}
             views={item.views}
-            duration={item.duration}
+            watchUrl={item.watchUrl}
             className="h-full"
           />
         </li>

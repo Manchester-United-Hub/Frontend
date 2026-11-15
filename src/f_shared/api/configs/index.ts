@@ -50,6 +50,9 @@ const API_PATH = {
   coach(teamId: number | string) {
     return `/api/coaches/${teamId}`;
   },
+  highlightList() {
+    return '/api/highlights';
+  },
 };
 
 const BFF_PATH = {
@@ -88,6 +91,9 @@ const BFF_PATH = {
   },
   landingMatches() {
     return '/bff/v1/match/landing';
+  },
+  highlightList() {
+    return '/bff/v1/highlight';
   },
 };
 
