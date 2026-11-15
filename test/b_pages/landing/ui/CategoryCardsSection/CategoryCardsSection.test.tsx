@@ -91,6 +91,12 @@ describe('CategoryCardsSection', () => {
     expect(innerLinks).toHaveLength(4);
   });
 
+  it('카드에서 숨기기로 한 라이브 메뉴는 카드로 렌더하지 않는다', () => {
+    const { container } = render(<CategoryCardsSection />);
+    expect(container.textContent).not.toContain('라이브');
+    expect(container.querySelector('a[href="/live"]')).toBeNull();
+  });
+
   it('lg 뷰포트에서 카드 5개가 한 줄에 배치되도록 grid-cols-5를 적용한다', () => {
     const { container } = render(<CategoryCardsSection />);
     const list = container.querySelector('ul[role="list"]');

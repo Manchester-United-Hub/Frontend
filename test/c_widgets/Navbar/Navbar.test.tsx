@@ -14,6 +14,7 @@
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, cleanup } from '@testing-library/react';
+import '@testing-library/jest-dom/vitest';
 import React from 'react';
 
 afterEach(cleanup);
@@ -80,5 +81,27 @@ describe('Navbar 위젯', () => {
     expect(hrefs).toContain('/club');
     expect(hrefs).not.toContain('/highlights');
     expect(hrefs).toContain('/news');
+  });
+
+  it('라이브 메뉴가 맨 앞에 /live 링크로 렌더된다', () => {
+    const { container } = render(<Navbar />);
+    const firstLink = container.querySelector('nav a');
+    expect(firstLink).toHaveAttribute('href', '/live');
+    expect(firstLink).toHaveTextContent('라이브');
+    expect(firstLink).toHaveTextContent('Live');
+  });
+
+  it('isMatchLive 기본값(false)에서는 경기 진행 표시 점이 없다', () => {
+    const { queryByRole } = render(<Navbar />);
+    expect(queryByRole('img', { name: '경기 진행 중' })).toBeNull();
+  });
+
+  it('isMatchLive면 라이브 메뉴에만 경기 진행 표시 점이 하나 붙는다', () => {
+    const { getAllByRole, container } = render(<Navbar isMatchLive />);
+    const dots = getAllByRole('img', { name: '경기 진행 중' });
+    expect(dots).toHaveLength(1);
+    expect(container.querySelector('nav a[href="/live"]')).toContainElement(
+      dots[0]
+    );
   });
 });

@@ -57,6 +57,14 @@ const outerLinkItem: NavItem = {
   isOuterLink: true,
 };
 
+const liveItem: NavItem = {
+  id: 'live',
+  label: '라이브',
+  labelEn: 'Live',
+  href: '/live' as Route,
+  hasLiveIndicator: true,
+};
+
 describe('NavLinkItem', () => {
   it('내부 링크는 <a>로 렌더된다', () => {
     const { container } = render(<NavLinkItem item={linkedItem} />);
@@ -97,5 +105,25 @@ describe('NavLinkItem', () => {
     const { container } = render(<NavLinkItem item={linkedItem} />);
     const link = container.querySelector('a[href="/season"]');
     expect(link).not.toHaveAttribute('target');
+  });
+
+  it('hasLiveIndicator와 isMatchLive가 모두 참이면 라벨 앞에 경기 진행 표시 점을 그린다', () => {
+    const { getByRole } = render(<NavLinkItem item={liveItem} isMatchLive />);
+    const dot = getByRole('img', { name: '경기 진행 중' });
+    expect(dot).toHaveClass('motion-safe:animate-pulse');
+    expect(dot.parentElement).toHaveTextContent('라이브');
+    expect(dot.nextSibling?.textContent).toBe('라이브');
+  });
+
+  it('hasLiveIndicator만 참이고 isMatchLive가 기본값이면 점을 그리지 않는다', () => {
+    const { queryByRole } = render(<NavLinkItem item={liveItem} />);
+    expect(queryByRole('img', { name: '경기 진행 중' })).toBeNull();
+  });
+
+  it('isMatchLive가 참이어도 hasLiveIndicator가 없는 항목에는 점을 그리지 않는다', () => {
+    const { queryByRole } = render(
+      <NavLinkItem item={linkedItem} isMatchLive />
+    );
+    expect(queryByRole('img', { name: '경기 진행 중' })).toBeNull();
   });
 });
