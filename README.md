@@ -2,50 +2,59 @@
 
 팬이 만든 맨체스터 유나이티드 정보 허브. 시즌·경기·선수·구단·기사·하이라이트를 제공하는 웹앱입니다.
 
-## 기술 스택
+## 시작하기
 
-- **Next.js 16** (App Router) · **React 19** · **TypeScript** (strict)
-- **Tailwind CSS v4** + class-variance-authority(CVA) + clsx + tailwind-merge(`cn`)
-- **Headless UI** (인터랙션) · **lucide-react** (아이콘)
-- **TanStack Query** · **Zod**
-- **Vitest** + Testing Library
+요구 사항: Node.js 24, pnpm 11
 
-## 아키텍처 — Feature-Sliced Design (FSD)
-
-의존 방향은 **위 → 아래만** 허용합니다.
-
-```
-src/
-  app/         Next App Router (라우팅 · API route · providers)
-  b_pages/     페이지 조합
-  c_widgets/   위젯 (Navbar · Footer · News ...)
-  d_features/  기능 단위
-  e_entities/  도메인 엔티티 (match · news · team · player — model · api)
-  f_shared/    공유 — ui(공통 컴포넌트) · api · utils · model
+```bash
+pnpm install
+cp .env.example .env.local   # API_BASE_URL 값 채우기
+pnpm dev                     # http://localhost:3000
 ```
 
-경로 별칭: `@app` `@pages` `@widgets` `@features` `@entities` `@shared` `@test`
-
-## 공통 UI 컴포넌트
-
-`@shared/ui` 에서 가져옵니다 — Button · Badge · ResultBadge · Eyebrow · Skeleton · SearchInput · StateBox · MatchCard · PlayerCard · CategoryCard.
-
-- 스타일: Tailwind v4 + CVA, `cn()` 병합(호출자 우선)
-- 아이콘: lucide-react 직접 import, 주입 슬롯은 `ReactNode`
-- 인터랙션: Headless UI 기반
-- 디자인 토큰: `f_shared/ui/tokens` → `app/globals.css`의 `@theme inline`
+환경변수는 [docs/architecture/env.md](docs/architecture/env.md)를 참고하세요.
 
 ## 스크립트
 
-| 명령                 | 설명            |
-| -------------------- | --------------- |
-| `pnpm dev`           | 개발 서버       |
-| `pnpm build`         | 프로덕션 빌드   |
-| `pnpm start`         | 프로덕션 서버   |
-| `pnpm test`          | 테스트 (vitest) |
-| `pnpm test:coverage` | 커버리지        |
-| `pnpm lint`          | 린트 (ESLint)   |
+| 명령 | 설명 |
+| --- | --- |
+| `pnpm dev` | 개발 서버 |
+| `pnpm build` | 프로덕션 빌드 (`standalone`) |
+| `pnpm start` | 프로덕션 서버 |
+| `pnpm test` | 테스트 (Vitest, 커버리지 포함) |
+| `pnpm test:coverage` | 커버리지 |
+| `pnpm lint` | 린트 (ESLint) |
+| `pnpm exec tsc --noEmit` | 타입 검사 |
 
-## 컨벤션
+## 기술 스택
 
-코딩·아키텍처·커밋 컨벤션의 세부 규약은 [`.claude/CLAUDE.md`](.claude/CLAUDE.md)의 "프로젝트: Manchester United Hub" 섹션을 참조하세요.
+Next.js 16 (App Router) · React 19 · TypeScript · Tailwind CSS v4 · CVA · Headless UI · lucide-react · TanStack Query · zod · Vitest
+
+자세한 내용: [docs/architecture/tech-stack.md](docs/architecture/tech-stack.md)
+
+## 구조
+
+Feature-Sliced Design을 따릅니다. 의존 방향은 위 → 아래만 허용합니다.
+
+```
+src/
+├── app/          Next.js 라우트 + BFF(app/api/v1) + providers
+├── b_pages/      페이지 조합
+├── c_widgets/    큰 UI 블록 (Navbar, Footer, Standing ...)
+├── d_features/   데이터 조회·필터 (TanStack Query)
+├── e_entities/   도메인 (matches, news, player, rank, seasonInfo, team)
+└── f_shared/     공용 (ui, api, model, utils)
+test/             src 미러 구조의 테스트
+```
+
+자세한 내용: [docs/architecture/folder-structure.md](docs/architecture/folder-structure.md)
+
+## 문서
+
+설계 결정과 코드 규칙은 [`docs/`](docs/README.md)에 있습니다.
+
+| 영역 | 시작 문서 |
+| --- | --- |
+| 구조·기술 결정 | [overview](docs/architecture/overview.md), [data-flow](docs/architecture/data-flow.md), [rendering](docs/architecture/rendering.md) |
+| 코드 규칙 | [naming](docs/convention/naming.md), [ui-component](docs/convention/ui-component.md), [test](docs/convention/test.md) |
+| 협업 | [branch-strategy](docs/collaboration/branch-strategy.md), [commit](docs/collaboration/commit.md), [pr-flow](docs/collaboration/pr-flow.md) |

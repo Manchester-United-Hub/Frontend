@@ -75,6 +75,13 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 > 팬이 만든 맨체스터 유나이티드 정보 허브(시즌·경기·선수·구단·기사·하이라이트). 위 행동지침에 더해 이 프로젝트의 도메인·아키텍처·컨벤션을 따른다.
 
+## 문서
+
+- 설계 결정·코드 규칙의 기준은 [`docs/`](../docs/README.md)다. 이 파일은 요약이며, 내용이 다르면 docs를 따른다.
+- 작업 전 관련 문서를 먼저 읽는다: 구조 `docs/architecture/`, 코드 규칙 `docs/convention/`, 협업 `docs/collaboration/`.
+- 규칙과 다른 기존 코드는 `docs/known-gaps.md`에 있다. 기존 코드를 따라 하지 말고 규칙을 따른다.
+- 문서에 없는 규칙이 필요하면 임의로 만들지 말고 먼저 묻는다.
+
 ## 기술 스택
 
 - Next.js 16 (App Router) · React 19 · TypeScript(strict, `any` 금지)

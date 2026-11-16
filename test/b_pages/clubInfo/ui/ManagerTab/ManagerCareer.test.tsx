@@ -3,9 +3,9 @@
  *
  * 검증 목적:
  * - ol이 h3 id를 aria-labelledby로 참조한다
- * - prevClubs가 역순(toReversed)으로 렌더되고, 마지막에 now 항목("맨체스터 유나이티드")이 append된다
- * - now 항목만 기간("2026.01 – 현재")을 함께 렌더한다
- * - 원본 prevClubs 배열은 변이되지 않는다(toReversed)
+ * - careers가 주어진 순서(매퍼가 최신순 정렬 — mapCoachToManager.test 소유)대로 팀·기간을 렌더한다
+ * - 현직(now) 항목만 강조 스타일과 united-red dot을 갖는다
+ * - careers가 비어 있으면 항목 없이 빈 목록을 렌더한다
  */
 
 import { afterEach, describe, expect, it } from 'vitest';
@@ -13,9 +13,11 @@ import { cleanup, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
 
 import { ManagerCareer } from '@pages/clubInfo/ui/ManagerTab/ManagerCareer';
-import { manager } from '@pages/clubInfo/model/mockData';
+import { MANAGER_FIXTURE } from '@test/fixtures/coach';
 
 afterEach(cleanup);
+
+const manager = MANAGER_FIXTURE;
 
 describe('ManagerCareer', () => {
   it('h3와 ol이 aria-labelledby로 연결된다', () => {
@@ -26,29 +28,29 @@ describe('ManagerCareer', () => {
     expect(list).toHaveAttribute('aria-labelledby', heading.id);
   });
 
-  it('prevClubs가 역순으로 렌더되고 now 항목이 마지막에 append된다', () => {
+  it('careers를 주어진 순서대로 팀명과 기간을 함께 렌더한다', () => {
     render(<ManagerCareer manager={manager} />);
     const items = screen.getAllByRole('listitem');
-    const expectedOrder = [...manager.prevClubs.toReversed(), '맨체스터 유나이티드'];
-    expect(items).toHaveLength(expectedOrder.length);
+    expect(items).toHaveLength(manager.careers.length);
     items.forEach((item, i) => {
-      expect(item).toHaveTextContent(expectedOrder[i]);
+      expect(item).toHaveTextContent(manager.careers[i].team);
+      expect(item).toHaveTextContent(manager.careers[i].period);
     });
   });
 
-  it('now 항목만 기간 텍스트를 함께 렌더한다', () => {
+  it('현직(now) 항목만 강조 스타일과 united-red dot을 갖는다', () => {
     render(<ManagerCareer manager={manager} />);
     const items = screen.getAllByRole('listitem');
-    const nowItem = items[items.length - 1];
-    expect(nowItem).toHaveTextContent('2026.01 – 현재');
-    items.slice(0, -1).forEach((item) => {
-      expect(item).not.toHaveTextContent('현재');
+    items.forEach((item, i) => {
+      const isNow = manager.careers[i].now;
+      expect(item.classList.contains('font-semibold')).toBe(isNow);
+      expect(item.querySelector('span[aria-hidden="true"]')?.classList.contains('bg-united-red')).toBe(isNow);
     });
   });
 
-  it('원본 prevClubs 배열은 변이되지 않는다', () => {
-    const before = [...manager.prevClubs];
-    render(<ManagerCareer manager={manager} />);
-    expect(manager.prevClubs).toEqual(before);
+  it('careers가 비어 있으면 항목 없는 목록을 렌더한다', () => {
+    render(<ManagerCareer manager={{ ...manager, careers: [] }} />);
+    expect(screen.getByRole('list')).toBeInTheDocument();
+    expect(screen.queryAllByRole('listitem')).toHaveLength(0);
   });
 });

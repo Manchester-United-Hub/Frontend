@@ -64,24 +64,34 @@ export interface HistoryEvent {
 
 // ───────── Manager ─────────
 
-/** Mirrors `CLUB_DATA.manager`. */
+/** A single career line entry, latest first. */
+export interface ManagerCareerEntry {
+  team: string;
+  /** Display text, e.g. "2025.08 – 현재". */
+  period: string;
+  /** True for the current (endDate-less) entry. */
+  now: boolean;
+}
+
+/**
+ * Coach API(`GET /api/coaches/{teamId}`) mapped for display by mapCoachToManager.
+ * Null API fields are rendered as "-".
+ */
 export interface Manager {
+  /** English name as returned by the API, e.g. "Michael Carrick". */
   name: string;
-  en: string;
-  /** Nationality, Korean display text, e.g. "포르투갈". */
-  nat: string;
-  /** Flag lookup code for the Flag component/icons.jsx FLAGS map, e.g. "pt". */
-  flag: string;
+  photo: string | null;
   /** Role label, e.g. "감독 · Head Coach". */
   role: string;
+  /** Display text, e.g. "2025년 8월". */
   appointed: string;
   /** Date of birth, display text, e.g. "1981년 7월 28일". */
   born: string;
-  /** Birthplace, display text, e.g. "잉글랜드 타인위어주 월센드". */
   birthplace: string;
+  /** Display text, e.g. "2028년 6월까지". */
   contract: string;
-  /** Previous clubs managed (3), joined with " · " for display. */
-  prevClubs: string[];
+  nationality: string;
+  careers: ManagerCareerEntry[];
 }
 
 // ───────── Stadium ─────────

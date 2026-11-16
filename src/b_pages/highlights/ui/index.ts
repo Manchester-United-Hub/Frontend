@@ -6,3 +6,5 @@ export * from './HighlightsGrid';
 export * from './HighlightsPager';
 export * from './HighlightsSkeleton';
 export * from './HighlightsContent';
+export * from './HighlightsErrorState';
+export * from './HighlightPlayerDialog';
